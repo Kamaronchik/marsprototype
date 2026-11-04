@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
-const { sendVerificationEmail } = require('../services/emailService');
+const emailService = require('../services/emailService');
 const db = require('../databaseService');
 const supabase = require('../config/supabase');
 
@@ -15,9 +15,21 @@ const hashToken = (token) => {
   return crypto.createHash('sha256').update(token).digest('hex');
 };
 
+const getCookieOptions = (maxAgeMs) => ({
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production' || !!process.env.VERCEL,
+  sameSite: 'lax',
+  path: '/',
+  maxAge: maxAgeMs,
+});
+
 const login = async (req, res) => {
   try {
     const { username, password } = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({ message: 'Username and password are required' });
+    }
 
     // 1. Find user in Supabase
     const user = await db.findUserByUsername(username);
@@ -27,7 +39,7 @@ const login = async (req, res) => {
 
     // 2. Check status
     if (user.status === 'blocked') {
-      return res.status(403).json({ message: 'Your account is blocked. Contact admin.' });
+      return res.status(403).json({ message: 'Your account is blocked. Contact administrator.' });
     }
 
     // 3. Verify password using bcrypt
@@ -40,35 +52,31 @@ const login = async (req, res) => {
     let deviceToken = req.cookies.deviceId;
     if (!deviceToken) {
       deviceToken = crypto.randomBytes(32).toString('hex');
-      res.cookie('deviceId', deviceToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 30 * 24 * 60 * 60 * 1000
-      });
+      res.cookie('deviceId', deviceToken, getCookieOptions(30 * 24 * 60 * 60 * 1000));
     }
 
     const deviceHash = hashToken(deviceToken);
     const isTrusted = await db.isDeviceTrusted(user.id, deviceHash);
 
     if (isTrusted) {
-      // Trusted: Create full session
+      // Trusted: Create full session directly without 2FA
       const sessionToken = crypto.randomBytes(32).toString('hex');
       const sessionHash = hashToken(sessionToken);
       const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
       await db.createSession(sessionHash, user.id, deviceHash, expiresAt);
 
-      res.cookie('sessionId', sessionToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 24 * 60 * 60 * 1000
-      });
+      res.cookie('sessionId', sessionToken, getCookieOptions(24 * 60 * 60 * 1000));
 
       return res.status(200).json({
         message: 'Login successful',
-        user: { id: user.id, fullName: user.full_name, role: user.role }
+        user: {
+          id: user.id,
+          username: user.username,
+          fullName: user.full_name,
+          email: user.email,
+          role: user.role
+        }
       });
     }
 
@@ -78,7 +86,16 @@ const login = async (req, res) => {
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
 
     await db.saveVerificationCode(user.id, codeHash, expiresAt);
-    await sendVerificationEmail(user.email, code);
+
+    try {
+      await emailService.sendVerificationEmail(user.email, code);
+    } catch (emailError) {
+      console.error('❌ [Auth:Login] Failed to send verification email to:', user.email, emailError.message);
+      return res.status(500).json({
+        message: 'Failed to send verification email. Please check server email configuration or Gmail credentials.',
+        error: process.env.NODE_ENV === 'development' ? emailError.message : undefined
+      });
+    }
 
     res.status(200).json({
       message: 'New device detected. Verification code sent to email.',
@@ -94,10 +111,12 @@ const login = async (req, res) => {
 const verifyDevice = async (req, res) => {
   try {
     const { userId, code } = req.body;
-    const deviceToken = req.cookies.deviceId;
+    let deviceToken = req.cookies.deviceId;
 
+    // If deviceId cookie was not yet stored, issue and save it now
     if (!deviceToken) {
-      return res.status(400).json({ message: 'Device identification missing' });
+      deviceToken = crypto.randomBytes(32).toString('hex');
+      res.cookie('deviceId', deviceToken, getCookieOptions(30 * 24 * 60 * 60 * 1000));
     }
 
     const deviceHash = hashToken(deviceToken);
@@ -108,11 +127,11 @@ const verifyDevice = async (req, res) => {
     }
 
     if (Date.now() > new Date(record.expires_at).getTime()) {
-      return res.status(400).json({ message: 'Code has expired' });
+      return res.status(400).json({ message: 'Verification code has expired. Please request a new one.' });
     }
 
     if (record.attempts >= 5) {
-      return res.status(403).json({ message: 'Too many failed attempts. Please request a new code' });
+      return res.status(403).json({ message: 'Too many failed attempts. Please request a new code.' });
     }
 
     const inputHash = hashCode(code);
@@ -121,7 +140,7 @@ const verifyDevice = async (req, res) => {
       return res.status(400).json({ message: 'Invalid verification code' });
     }
 
-    // Success: Mark device as trusted
+    // Success: Mark device as trusted in database
     await db.trustDevice(userId, deviceHash, 'Verified Device');
     await db.markCodeUsed(record.id);
 
@@ -130,26 +149,61 @@ const verifyDevice = async (req, res) => {
     const sessionHash = hashToken(sessionToken);
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
-    // Fetch user role for the session
     const user = await db.findUserById(userId);
     const role = user?.role || 'Student';
 
     await db.createSession(sessionHash, userId, deviceHash, expiresAt);
 
-    res.cookie('sessionId', sessionToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 24 * 60 * 60 * 1000
-    });
+    res.cookie('sessionId', sessionToken, getCookieOptions(24 * 60 * 60 * 1000));
 
     res.status(200).json({
       message: 'Device verified successfully',
-      user: { id: userId, role: role }
+      user: {
+        id: userId,
+        username: user?.username || '',
+        fullName: user?.full_name || '',
+        email: user?.email || '',
+        role: role
+      }
     });
   } catch (error) {
     console.error('VerifyDevice Error:', error);
     res.status(500).json({ message: 'Internal server error during verification' });
+  }
+};
+
+const resendCode = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    if (!userId) {
+      return res.status(400).json({ message: 'User ID is required' });
+    }
+
+    const user = await db.findUserById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const code = crypto.randomInt(100000, 999999).toString();
+    const codeHash = hashCode(code);
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
+
+    await db.saveVerificationCode(user.id, codeHash, expiresAt);
+
+    try {
+      await emailService.sendVerificationEmail(user.email, code);
+    } catch (emailError) {
+      console.error('❌ [Auth:Resend] Failed to send verification email to:', user.email, emailError.message);
+      return res.status(500).json({
+        message: 'Failed to resend verification email. Please check server email configuration or Gmail credentials.',
+        error: process.env.NODE_ENV === 'development' ? emailError.message : undefined
+      });
+    }
+
+    res.status(200).json({ message: 'Verification code resent successfully' });
+  } catch (error) {
+    console.error('ResendCode Error:', error);
+    res.status(500).json({ message: 'Internal server error during code resend' });
   }
 };
 
@@ -159,7 +213,7 @@ const logout = async (req, res) => {
     const sessionHash = hashToken(sessionToken);
     await db.deleteSession(sessionHash);
   }
-  res.clearCookie('sessionId');
+  res.clearCookie('sessionId', { path: '/' });
   res.status(200).json({ message: 'Logged out successfully' });
 };
 
@@ -172,7 +226,16 @@ const me = async (req, res) => {
 
   if (!session) return res.status(401).json({ message: 'Unauthorized' });
 
-  res.status(200).json({ user: { id: session.user_id, role: session.role } });
+  const user = await db.findUserById(session.user_id);
+  res.status(200).json({
+    user: {
+      id: session.user_id,
+      username: user?.username || '',
+      fullName: user?.full_name || '',
+      email: user?.email || '',
+      role: session.role || user?.role || 'Student'
+    }
+  });
 };
 
 const getDevices = async (req, res) => {
@@ -193,7 +256,7 @@ const getDevices = async (req, res) => {
 };
 
 const revokeDevice = async (req, res) => {
-  const { deviceIdHash } = req.body; // Pass the hash from frontend
+  const { deviceIdHash } = req.body;
   const sessionToken = req.cookies.sessionId;
   if (!sessionToken) return res.status(401).json({ message: 'Unauthorized' });
 
@@ -205,9 +268,9 @@ const revokeDevice = async (req, res) => {
 
   if (deviceIdHash === session.device_id_hash) {
     await db.deleteSession(sessionHash);
-    res.clearCookie('sessionId');
+    res.clearCookie('sessionId', { path: '/' });
   }
   res.status(200).json({ message: 'Device trust revoked' });
 };
 
-module.exports = { login, verifyDevice, logout, me, getDevices, revokeDevice };
+module.exports = { login, verifyDevice, resendCode, logout, me, getDevices, revokeDevice };

@@ -69,10 +69,11 @@ const db = {
         user_id: userId,
         device_id_hash: deviceIdHash,
         device_name: deviceName,
-        last_used_at: new Date().toISOString()
+        last_used_at: new Date().toISOString(),
+        expires_at: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString()
       }, { onConflict: 'user_id,device_id_hash' })
       .select()
-      .single();
+      .maybeSingle();
     if (error) throw error;
     return data;
   },
