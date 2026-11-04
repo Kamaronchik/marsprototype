@@ -1,6 +1,8 @@
 const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
 const { sendVerificationEmail } = require('../services/emailService');
 const db = require('../databaseService');
+const supabase = require('../config/supabase');
 
 const hashCode = (code) => {
   return crypto
@@ -29,7 +31,6 @@ const login = async (req, res) => {
     }
 
     // 3. Verify password using bcrypt
-    const bcrypt = require('bcryptjs');
     const isMatch = await bcrypt.compare(password, user.password_hash);
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid username or password' });
@@ -130,10 +131,8 @@ const verifyDevice = async (req, res) => {
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
     // Fetch user role for the session
-    const user = await db.findUserByUsername(userId); // This needs a findById, let's assume we have it or fix dbService
-    // For now, we'll fetch role from the user table in the DB
-    const { data: userRoleData } = await require('./config/supabase').from('users').select('role').eq('id', userId).single();
-    const role = userRoleData?.role || 'Student';
+    const user = await db.findUserById(userId);
+    const role = user?.role || 'Student';
 
     await db.createSession(sessionHash, userId, deviceHash, expiresAt);
 
@@ -184,7 +183,7 @@ const getDevices = async (req, res) => {
   const session = await db.getSession(sessionHash);
   if (!session) return res.status(401).json({ message: 'Unauthorized' });
 
-  const { data: devices, error } = await require('./config/supabase')
+  const { data: devices, error } = await supabase
     .from('trusted_devices')
     .select('*')
     .eq('user_id', session.user_id);

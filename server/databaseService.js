@@ -12,8 +12,18 @@ const db = {
       .from('users')
       .select('*')
       .eq('username', username)
-      .single();
+      .maybeSingle();
     if (error) throw error;
+    return data;
+  },
+
+  async findUserById(id) {
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+    if (error) return null;
     return data;
   },
 
@@ -46,7 +56,7 @@ const db = {
       .eq('user_id', userId)
       .eq('device_id_hash', deviceIdHash)
       .gt('expires_at', new Date().toISOString())
-      .single();
+      .maybeSingle();
 
     if (error || !data) return false;
     return true;
@@ -96,7 +106,7 @@ const db = {
       .from('sessions')
       .select('*, users(role)')
       .eq('session_hash', sessionIdHash)
-      .single();
+      .maybeSingle();
     if (error || !data) return null;
     return { ...data, role: data.users?.role };
   },
@@ -139,7 +149,7 @@ const db = {
       .eq('is_used', false)
       .order('created_at', { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
     if (error || !data) return null;
     return data;
   },

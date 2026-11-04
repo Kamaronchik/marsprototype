@@ -7,6 +7,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import LoginPage from './features/auth/LoginPage';
+import DeviceVerificationPage from './pages/auth/DeviceVerificationPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminLayout from './layouts/Admin/AdminLayout';
 import AdminDashboard from './pages/Admin/AdminDashboard';
@@ -22,6 +23,7 @@ const App = () => {
         <ToastContainer position="bottom-right" theme="dark" />
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/verify-device" element={<DeviceVerificationPage />} />
 
           {/* Admin Routes */}
           <Route

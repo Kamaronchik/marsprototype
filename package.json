@@ -8,10 +8,14 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "dev-all": "concurrently \"npm run dev\" \"cd server && node server.js\""
+    "server": "node server/server.js",
+    "start": "node server/server.js",
+    "dev-all": "concurrently \"npm run dev\" \"node server/server.js\""
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.14.0",
+    "@supabase/supabase-js": "^2.119.0",
+    "bcryptjs": "^3.0.3",
     "concurrently": "^10.0.6",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",

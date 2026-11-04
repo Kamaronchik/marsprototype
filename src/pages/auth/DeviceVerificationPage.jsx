@@ -1,30 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ShieldAlert, ArrowLeft, Loader2 } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 
 const DeviceVerificationPage = () => {
-  const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const userId = searchParams.get('userId');
+
   const [code, setCode] = useState(['', '', '', '', '', '']);
   const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(300); // 5 minutes
-  const [userId, setUserId] = useState(null);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get('userId');
-    if (id) setUserId(id);
-    else navigate('/login');
+    if (!userId) {
+      navigate('/login');
+      return;
+    }
 
     const interval = setInterval(() => {
       setTimer((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [navigate]);
+  }, [navigate, userId]);
 
   const handleInputChange = (index, value) => {
     if (isNaN(Number(value))) return;
@@ -71,11 +70,11 @@ const DeviceVerificationPage = () => {
 
       if (response.ok) {
         toast.success('Device verified successfully!');
-        navigate(`/${data.user.role.toLowerCase()}`);
+        navigate(`/${data.user?.role?.toLowerCase() || 'student'}`);
       } else {
         toast.error(data.message || 'Verification failed');
       }
-    } catch (error) {
+    } catch {
       toast.error('Connection error. Please try again.');
     } finally {
       setLoading(false);
