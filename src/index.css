@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-space-dark text-space-text font-sans;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-space-dark;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-space-deep rounded-full border-2 border-space-dark;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-space-muted/30;
+}

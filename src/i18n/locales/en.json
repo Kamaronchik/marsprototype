@@ -1,0 +1,42 @@
+{
+  "translation": {
+    "common": {
+      "logout": "Logout",
+      "save": "Save",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "delete": "Delete",
+      "edit": "Edit",
+      "search": "Search...",
+      "forbidden": "Access Forbidden",
+      "notFound": "404 Not Found",
+      "welcome": "Welcome back",
+      "please_fill": "Please fill in all fields",
+      "invalid_email": "Invalid email format",
+      "username_exists": "Username already exists",
+      "success_save": "Saved successfully",
+      "success_delete": "Deleted successfully"
+    },
+    "auth": {
+      "login": "Sign In",
+      "username": "Username",
+      "password": "Password",
+      "welcome_back": "Welcome Back",
+      "subtitle": "Please enter your credentials to access the portal"
+    },
+    "admin": {
+      "title": "Administration Portal",
+      "dashboard": "Dashboard",
+      "users": "User Management",
+      "groups": "Group Management",
+      "settings": "Settings",
+      "user_mgmt_title": "User Management",
+      "user_mgmt_subtitle": "Manage students, teachers, and financiers of the platform",
+      "add_user": "Add User",
+      "filter_role": "Filter Role",
+      "all_roles": "All Roles",
+      "status_active": "Active",
+      "status_blocked": "Blocked"
+    }
+  }
+}

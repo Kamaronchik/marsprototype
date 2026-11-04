@@ -1,0 +1,42 @@
+{
+  "translation": {
+    "common": {
+      "logout": "Chiqish",
+      "save": "Saqlash",
+      "cancel": "Bekor qilish",
+      "confirm": "Tasdiqlash",
+      "delete": "O'chirish",
+      "edit": "Tahrirlash",
+      "search": "Qidiruv...",
+      "forbidden": "Kirish taqiqlangan",
+      "notFound": "404 Topilmadi",
+      "welcome": "Xush kelibsiz",
+      "please_fill": "Iltimos, barcha maydonlarni to'ldiring",
+      "invalid_email": "Email formati noto'g'ri",
+      "username_exists": "Foydalanuvchi nomi band",
+      "success_save": "Muvaffaqiyatli saqlandi",
+      "success_delete": "Muvaffaqiyatli o'chirildi"
+    },
+    "auth": {
+      "login": "Kirish",
+      "username": "Foydalanuvchi nomi",
+      "password": "Parol",
+      "welcome_back": "Xush kelibsiz",
+      "subtitle,": "Portalga kirish uchun ma'lumotlaringizni kiriting"
+    },
+    "admin": {
+      "title": "Administrator Portali",
+      "dashboard": "Boshqaruv paneli",
+      "users": "Foydalanuvchilarni boshqarish",
+      "groups": "Guruhlarni boshqarish",
+      "settings": "Sozlamalar",
+      "user_mgmt_title": "Foydalanuvchilarni boshqarish",
+      "user_mgmt_subtitle": "Platforma foydalanuvchilarini boshqarish",
+      "add_user": "Foydalanuvchi qo'shish",
+      "filter_role": "Rol bo'yicha filtr",
+      "all_roles": "Barcha rollar",
+      "status_active": "Faol",
+      "status_blocked": "Bloklangan"
+    }
+  }
+}
