@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { addUser, deleteUser, updateUser, toggleUserStatus } from '../../features/users/usersSlice';
+import { fetchUsers, createUser, deleteUser, updateUser } from '../../features/users/usersSlice';
 import { toast } from 'react-toastify';
 import {
   Plus,
@@ -18,6 +18,10 @@ import {
 const UserManagement = () => {
   const users = useSelector((state) => state.users.list);
   const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchUsers());
+  }, [dispatch]);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState('All');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -42,37 +46,43 @@ const UserManagement = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.fullName || !formData.username || !formData.password || !formData.email) {
+    const { fullName, username, password, email, role } = formData;
+    const emailRequired = role !== 'Admin'; // only Admin may have no email
+    if (!fullName || !username || (emailRequired && !email) || (!editingUser && !password)) {
       toast.error('All fields are required');
       return;
     }
-
-    if (users.some(u => u.username === formData.username && u.id !== editingUser?.id)) {
-      toast.error('Username already exists');
-      return;
-    }
-
-    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    if (email && !/\S+@\S+\.\S+/.test(email)) {
       toast.error('Invalid email format');
       return;
     }
 
-    if (editingUser) {
-      dispatch(updateUser({ id: editingUser.id, updatedData: formData }));
-      toast.success('User updated successfully');
-    } else {
-      dispatch(addUser({
-        ...formData,
-        id: Date.now().toString(),
-        createdAt: new Date().toISOString(),
-        status: 'active',
-      }));
-      toast.success('User created successfully');
+    try {
+      if (editingUser) {
+        const changes = { fullName, username, email, role };
+        if (password) changes.password = password; // empty = keep old password
+        await dispatch(updateUser({ id: editingUser.id, changes })).unwrap();
+        toast.success('User updated successfully');
+      } else {
+        await dispatch(createUser({ fullName, username, password, email, role })).unwrap();
+        toast.success('User created successfully');
+      }
+      setIsModalOpen(false);
+      resetForm();
+    } catch (err) {
+      toast.error(err.message);
     }
-    setIsModalOpen(false);
-    resetForm();
+  };
+
+  const toggleStatus = async (user) => {
+    const status = user.status === 'active' ? 'blocked' : 'active';
+    try {
+      await dispatch(updateUser({ id: user.id, changes: { status } })).unwrap();
+    } catch (err) {
+      toast.error(err.message);
+    }
   };
 
   const resetForm = () => {
@@ -82,14 +92,17 @@ const UserManagement = () => {
 
   const openEditModal = (user) => {
     setEditingUser(user);
-    setFormData({ ...user });
+    setFormData({ fullName: user.fullName, username: user.username, email: user.email || '', role: user.role, password: '' });
     setIsModalOpen(true);
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
-      dispatch(deleteUser(id));
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this user?')) return;
+    try {
+      await dispatch(deleteUser(id)).unwrap();
       toast.info('User deleted');
+    } catch (err) {
+      toast.error(err.message);
     }
   };
 
@@ -156,7 +169,14 @@ const UserManagement = () => {
                     </div>
                     <div>
                       <div className="font-medium text-space-text">{user.fullName}</div>
-                      <div className="text-xs text-space-muted">{user.username} • {user.email}</div>
+                      <div className="text-xs text-space-muted">
+                        {user.username} • {user.email || 'no email'}{' '}
+                        {user.email && (
+                          <span className={user.emailVerified ? 'text-green-400' : 'text-yellow-400'}>
+                            ({user.emailVerified ? 'email verified' : 'email not verified'})
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </td>
@@ -172,7 +192,7 @@ const UserManagement = () => {
                 </td>
                 <td className="px-6 py-4">
                   <button
-                    onClick={() => dispatch(toggleUserStatus(user.id))}
+                    onClick={() => toggleStatus(user)}
                     className={`flex items-center gap-1 text-xs font-medium transition-colors ${
                       user.status === 'active' ? 'text-green-400' : 'text-red-400'
                     }`}
@@ -267,19 +287,19 @@ const UserManagement = () => {
                     value={formData.password}
                     onChange={handleInputChange}
                     className="w-full bg-space-dark border border-space-muted/20 rounded-xl pl-10 pr-4 py-2 text-space-text focus:outline-none focus:ring-2 focus:ring-space-accent/50"
-                    placeholder="••••••••"
+                    placeholder={editingUser ? 'Leave empty to keep current' : 'Min 8 characters'}
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-medium text-space-muted uppercase tracking-wider">Email Address</label>
+                <label className="text-xs font-medium text-space-muted uppercase tracking-wider">Email Address{formData.role === 'Admin' ? ' (optional for Admin)' : ''}</label>
                 <div className="relative">
                   <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-space-muted" />
                   <input
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="w-full bg-dark border border-space-muted/20 rounded-xl pl-10 pr-4 py-2 text-space-text focus:outline-none focus:ring-2 focus:ring-space-accent/50"
+                    className="w-full bg-space-dark border border-space-muted/20 rounded-xl pl-10 pr-4 py-2 text-space-text focus:outline-none focus:ring-2 focus:ring-space-accent/50"
                     placeholder="email@example.com"
                   />
                 </div>

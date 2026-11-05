@@ -1,5 +1,6 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchUsers } from '../../features/users/usersSlice';
 import {
   Users,
   UserCheck,
@@ -10,6 +11,10 @@ import {
 } from 'lucide-react';
 
 const AdminDashboard = () => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchUsers());
+  }, [dispatch]);
   const users = useSelector((state) => state.users.list);
   const groups = useSelector((state) => state.groups.list);
   const payments = useSelector((state) => state.payments.list);

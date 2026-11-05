@@ -20,6 +20,8 @@
     "auth": {
       "login": "Sign In",
       "username": "Username",
+      "email": "Email",
+      "email_admin_optional": "Email (not required for Admin)",
       "password": "Password",
       "welcome_back": "Welcome Back",
       "subtitle": "Please enter your credentials to access the portal"

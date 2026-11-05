@@ -5,8 +5,11 @@ const db = require('../databaseService');
 const supabase = require('../config/supabase');
 
 const hashCode = (code) => {
+  if (!process.env.HMAC_SECRET) {
+    throw new Error('HMAC_SECRET is not set in .env');
+  }
   return crypto
-    .createHmac('sha256', process.env.HMAC_SECRET || 'default-mars-secret-key')
+    .createHmac('sha256', process.env.HMAC_SECRET)
     .update(code)
     .digest('hex');
 };
@@ -25,14 +28,14 @@ const getCookieOptions = (maxAgeMs) => ({
 
 const login = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, email, password } = req.body;
 
     if (!username || !password) {
       return res.status(400).json({ message: 'Username and password are required' });
     }
 
     // 1. Find user in Supabase
-    const user = await db.findUserByUsername(username);
+    const user = await db.findUserByUsername(String(username).trim());
     if (!user) {
       return res.status(401).json({ message: 'Invalid username or password' });
     }
@@ -44,7 +47,11 @@ const login = async (req, res) => {
 
     // 3. Verify password using bcrypt
     const isMatch = await bcrypt.compare(password, user.password_hash);
-    if (!isMatch) {
+    // Email must be given and match, except for an Admin that has no email on record.
+    const noEmailAdmin = user.role === 'Admin' && !user.email;
+    const emailMatch = noEmailAdmin ||
+      (!!user.email && !!email && user.email.toLowerCase() === String(email).trim().toLowerCase());
+    if (!isMatch || !emailMatch) {
       return res.status(401).json({ message: 'Invalid username or password' });
     }
 
@@ -58,8 +65,8 @@ const login = async (req, res) => {
     const deviceHash = hashToken(deviceToken);
     const isTrusted = await db.isDeviceTrusted(user.id, deviceHash);
 
-    if (isTrusted) {
-      // Trusted: Create full session directly without 2FA
+    if (isTrusted || noEmailAdmin) {
+      // Trusted device (or Admin without email, who has nowhere to get a code): create the session directly
       const sessionToken = crypto.randomBytes(32).toString('hex');
       const sessionHash = hashToken(sessionToken);
       const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
@@ -143,6 +150,7 @@ const verifyDevice = async (req, res) => {
     // Success: Mark device as trusted in database
     await db.trustDevice(userId, deviceHash, 'Verified Device');
     await db.markCodeUsed(record.id);
+    await db.updateUserSettings(userId, { email_verified: true }); // the code reached this inbox
 
     // Create session
     const sessionToken = crypto.randomBytes(32).toString('hex');
@@ -217,23 +225,27 @@ const logout = async (req, res) => {
   res.status(200).json({ message: 'Logged out successfully' });
 };
 
+// Who is logged in? Always answers 200: {user} when there is a valid session, {user: null} when not.
+// (A 401 here would only fill the browser console with red errors for every visitor.)
 const me = async (req, res) => {
+  const guest = () => res.status(200).json({ user: null });
+
   const sessionToken = req.cookies.sessionId;
-  if (!sessionToken) return res.status(401).json({ message: 'Unauthorized' });
+  if (!sessionToken) return guest();
 
-  const sessionHash = hashToken(sessionToken);
-  const session = await db.getSession(sessionHash);
-
-  if (!session) return res.status(401).json({ message: 'Unauthorized' });
+  const session = await db.getSession(hashToken(sessionToken));
+  if (!session || new Date() > new Date(session.expires_at)) return guest();
 
   const user = await db.findUserById(session.user_id);
+  if (!user || user.status === 'blocked') return guest();
+
   res.status(200).json({
     user: {
-      id: session.user_id,
-      username: user?.username || '',
-      fullName: user?.full_name || '',
-      email: user?.email || '',
-      role: session.role || user?.role || 'Student'
+      id: user.id,
+      username: user.username,
+      fullName: user.full_name,
+      email: user.email || '',
+      role: user.role
     }
   });
 };

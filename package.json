@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "server": "node server/server.js",
+    "create-admin": "node server/scripts/createAdmin.js",
     "start": "node server/server.js",
     "dev-all": "concurrently \"npm run dev\" \"node server/server.js\""
   },

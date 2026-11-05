@@ -20,6 +20,8 @@
     "auth": {
       "login": "Kirish",
       "username": "Foydalanuvchi nomi",
+      "email": "Email",
+      "email_admin_optional": "Email (Admin uchun majburiy emas)",
       "password": "Parol",
       "welcome_back": "Xush kelibsiz",
       "subtitle,": "Portalga kirish uchun ma'lumotlaringizni kiriting"

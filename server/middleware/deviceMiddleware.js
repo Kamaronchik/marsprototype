@@ -1,4 +1,3 @@
-const { sessions } = require('../utils/authStore'); // This will be deleted soon, keeping for structure
 const crypto = require('crypto');
 const db = require('../databaseService');
 
@@ -37,4 +36,12 @@ const authMiddleware = async (req, res, next) => {
   next();
 };
 
-module.exports = { authMiddleware };
+// Allow only the listed roles, e.g. router.use(authMiddleware, requireRole('Admin'))
+const requireRole = (...roles) => (req, res, next) => {
+  if (!req.user || !roles.includes(req.user.role)) {
+    return res.status(403).json({ message: 'Forbidden' });
+  }
+  next();
+};
+
+module.exports = { authMiddleware, requireRole };

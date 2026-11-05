@@ -19,6 +19,15 @@ const sendVerificationEmail = async (email, code) => {
   const emailPass = rawPass.replace(/\s+/g, '');
 
   if (!emailUser || !emailPass) {
+    // Local development without Gmail: print the code in the server console instead.
+    // Never happens in production (NODE_ENV=production or on Vercel): there it is an error.
+    const isDev = process.env.NODE_ENV !== 'production' && !process.env.VERCEL;
+    if (isDev) {
+      console.log(`
+📧 [DEV] Gmail is not configured. Verification code for ${email}: ${code}
+`);
+      return { dev: true };
+    }
     const errorMsg = 'Email service is not configured: missing EMAIL_USER or EMAIL_PASS environment variables';
     console.error(`❌ [EmailService] ${errorMsg}`);
     throw new Error(errorMsg);

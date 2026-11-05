@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 const LoginPage = () => {
   const { t } = useTranslation();
-  const [formData, setFormData] = useState({ username: '', password: '' });
+  const [formData, setFormData] = useState({ username: '', email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { username, password } = formData;
+    const { username, email, password } = formData;
 
     if (!username.trim() || !password) {
       toast.error(t('common.please_fill') || 'Please fill in all fields');
@@ -32,6 +32,7 @@ const LoginPage = () => {
         credentials: 'include',
         body: JSON.stringify({
           username: username.trim(),
+          email: email.trim(),
           password,
         }),
       });
@@ -94,6 +95,20 @@ const LoginPage = () => {
               value={formData.username}
               onChange={(e) => setFormData({ ...formData, username: e.target.value })}
               placeholder="e.g. admin"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-space-muted mb-2">
+              {t('auth.email_admin_optional') || 'Email (not required for Admin)'}
+            </label>
+            <input
+              type="email"
+              autoComplete="email"
+              className="w-full bg-space-dark/80 border border-space-muted/20 rounded-xl px-4 py-3 text-space-text placeholder-space-muted/40 focus:outline-none focus:ring-2 focus:ring-space-accent/50 focus:border-space-accent/60 transition-all text-sm"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              placeholder="name@gmail.com"
             />
           </div>
 

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { Provider } from 'react-redux';
+import { Provider, useDispatch } from 'react-redux';
+import { restoreSession } from './features/auth/authSlice';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './app/store';
 import { ToastContainer } from 'react-toastify';
@@ -16,10 +17,14 @@ import FinancierLayout from './layouts/Financier/FinancierLayout';
 import TeacherLayout from './layouts/Teacher/TeacherLayout';
 import StudentLayout from './layouts/Student/StudentLayout';
 
-const App = () => {
+const AppRoutes = () => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(restoreSession());
+  }, [dispatch]);
+
   return (
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
+    <>
         <ToastContainer position="bottom-right" theme="dark" />
         <Routes>
           <Route path="/login" element={<LoginPage />} />
@@ -89,9 +94,16 @@ const App = () => {
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="*" element={<div className="p-8 text-white">404 Not Found</div>} />
         </Routes>
-      </PersistGate>
-    </Provider>
+    </>
   );
 };
+
+const App = () => (
+  <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
+      <AppRoutes />
+    </PersistGate>
+  </Provider>
+);
 
 export default App;

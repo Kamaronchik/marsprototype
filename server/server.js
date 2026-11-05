@@ -9,7 +9,7 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 dotenv.config();
 
-const emailRoutes = require('./routes/emailRoutes');
+const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
 
 const app = express();
@@ -23,7 +23,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 // API Routes
-app.use('/api/email', emailRoutes);
+app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
 
 app.get('/api/health', (req, res) => {
