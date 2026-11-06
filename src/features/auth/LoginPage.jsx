@@ -3,8 +3,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { loginStart, loginSuccess, loginFailure } from '../../features/auth/authSlice';
 import { toast } from 'react-toastify';
-import { LogIn, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import Logo from '../../components/Logo';
 
 const LoginPage = () => {
   const { t } = useTranslation();
@@ -65,94 +66,121 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-space-dark p-4">
-      <div className="w-full max-w-md bg-space-deep border border-space-muted/10 rounded-3xl p-8 shadow-2xl relative overflow-hidden backdrop-blur-md">
-        {/* Subtle decorative glow */}
-        <div className="absolute -top-24 -left-24 w-48 h-48 bg-space-accent/15 rounded-full blur-3xl pointer-events-none" />
+    <div className="grid min-h-screen bg-paper lg:grid-cols-[1.05fr_1fr]">
+      {/* Left: flat brand panel, desktop only */}
+      <aside className="relative hidden flex-col justify-between overflow-hidden bg-mars p-12 text-card lg:flex">
+        <Logo inverted />
 
-        <div className="text-center mb-8 relative">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-space-accent/10 text-space-accent rounded-2xl mb-4 shadow-inner">
-            <LogIn size={32} />
-          </div>
-          <h1 className="text-3xl font-bold text-space-text tracking-tight">
-            {t('auth.welcome_back') || 'Welcome Back'}
-          </h1>
-          <p className="text-space-muted mt-2 text-sm">
-            {t('auth.subtitle') || 'Enter your Mars Space credentials to continue'}
+        <div className="max-w-md">
+          <h2 className="font-display text-[2.9rem] font-semibold leading-[1.08] tracking-tight">
+            Good to see you again.
+          </h2>
+          <p className="mt-5 text-[15px] leading-relaxed text-card/85">
+            Groups, attendance and payments for the whole school, kept in one calm place.
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6 relative">
-          <div>
-            <label className="block text-sm font-medium text-space-muted mb-2">
-              {t('auth.username') || 'Username'}
-            </label>
-            <input
-              type="text"
-              required
-              autoComplete="username"
-              className="w-full bg-space-dark/80 border border-space-muted/20 rounded-xl px-4 py-3 text-space-text placeholder-space-muted/40 focus:outline-none focus:ring-2 focus:ring-space-accent/50 focus:border-space-accent/60 transition-all text-sm"
-              value={formData.username}
-              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-              placeholder="e.g. admin"
-            />
-          </div>
+        <ul className="space-y-2 border-t border-card/25 pt-6 text-sm text-card/85">
+          <li>Teachers take attendance in a couple of taps.</li>
+          <li>Students see their schedule and courses.</li>
+          <li>Finance sees who has paid and who has not.</li>
+        </ul>
 
-          <div>
-            <label className="block text-sm font-medium text-space-muted mb-2">
-              {t('auth.email_admin_optional') || 'Email (not required for Admin)'}
-            </label>
-            <input
-              type="email"
-              autoComplete="email"
-              className="w-full bg-space-dark/80 border border-space-muted/20 rounded-xl px-4 py-3 text-space-text placeholder-space-muted/40 focus:outline-none focus:ring-2 focus:ring-space-accent/50 focus:border-space-accent/60 transition-all text-sm"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              placeholder="name@gmail.com"
-            />
-          </div>
+        {/* Big orbit line, purely decorative */}
+        <svg
+          className="pointer-events-none absolute -bottom-40 -right-40 text-card/15"
+          width="520" height="520" viewBox="0 0 520 520" fill="none" aria-hidden="true"
+        >
+          <circle cx="260" cy="260" r="250" stroke="currentColor" strokeWidth="1.5" />
+          <circle cx="260" cy="260" r="170" stroke="currentColor" strokeWidth="1.5" />
+        </svg>
+      </aside>
 
-          <div>
-            <label className="block text-sm font-medium text-space-muted mb-2">
-              {t('auth.password') || 'Password'}
-            </label>
-            <div className="relative">
+      {/* Right: the form */}
+      <main className="flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-sm">
+          <Logo className="mb-10 lg:hidden" />
+
+          <h1 className="font-display text-[2rem] font-semibold tracking-tight text-ink">
+            {t('auth.welcome_back') || 'Welcome back'}
+          </h1>
+          <p className="mt-1.5 text-[15px] text-ink-soft">
+            {t('auth.subtitle') || 'Sign in with the account your school gave you.'}
+          </p>
+
+          <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+            <div>
+              <label htmlFor="username" className="field-label">
+                {t('auth.username') || 'Username'}
+              </label>
               <input
-                type={showPassword ? 'text' : 'password'}
+                id="username"
+                type="text"
                 required
-                autoComplete="current-password"
-                className="w-full bg-space-dark/80 border border-space-muted/20 rounded-xl px-4 py-3 pr-11 text-space-text placeholder-space-muted/40 focus:outline-none focus:ring-2 focus:ring-space-accent/50 focus:border-space-accent/60 transition-all text-sm"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                placeholder="••••••••"
+                autoComplete="username"
+                className="field"
+                value={formData.username}
+                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-space-muted hover:text-space-text transition-colors p-1"
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
             </div>
-          </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-space-accent hover:bg-space-accent/90 text-white font-semibold py-3.5 rounded-xl transition-all shadow-lg shadow-space-accent/25 hover:shadow-space-accent/40 active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-2 text-sm"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="animate-spin" size={18} />
-                <span>Authenticating...</span>
-              </>
-            ) : (
-              <span>{t('auth.login') || 'Sign In'}</span>
-            )}
-          </button>
-        </form>
-      </div>
+            <div>
+              <label htmlFor="email" className="field-label">
+                Email <span className="font-normal text-ink-faint">(admins can skip this)</span>
+              </label>
+              <input
+                id="email"
+                type="email"
+                autoComplete="email"
+                className="field"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                placeholder="name@gmail.com"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="password" className="field-label">
+                {t('auth.password') || 'Password'}
+              </label>
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  autoComplete="current-password"
+                  className="field pr-11"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1.5 text-ink-faint hover:text-ink"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" disabled={loading} className="btn-primary w-full py-3">
+              {loading ? (
+                <>
+                  <Loader2 className="animate-spin" size={17} />
+                  <span>Signing in...</span>
+                </>
+              ) : (
+                <span>{t('auth.login') || 'Sign in'}</span>
+              )}
+            </button>
+          </form>
+
+          <p className="mt-8 text-sm leading-relaxed text-ink-faint">
+            Forgot your password? Ask your administrator to reset it.
+          </p>
+        </div>
+      </main>
     </div>
   );
 };

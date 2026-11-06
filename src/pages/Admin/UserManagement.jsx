@@ -2,18 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchUsers, createUser, deleteUser, updateUser } from '../../features/users/usersSlice';
 import { toast } from 'react-toastify';
-import {
-  Plus,
-  Search,
-  Edit2,
-  Trash2,
-  UserX,
-  UserCheck,
-  Filter,
-  Mail,
-  Lock,
-  User
-} from 'lucide-react';
+import { Plus, Search, Pencil, Trash2, X } from 'lucide-react';
+import PageHeader from '../../components/PageHeader';
+
+const roleStyle = {
+  Admin: 'bg-ink/10 text-ink',
+  Teacher: 'bg-sky-tint text-sky',
+  Financier: 'bg-moss-tint text-moss',
+  Student: 'bg-mars-tint text-mars-deep',
+};
 
 const UserManagement = () => {
   const users = useSelector((state) => state.users.list);
@@ -107,109 +104,107 @@ const UserManagement = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-space-text">User Management</h1>
-          <p className="text-space-muted">Manage students, teachers, and financiers of the platform</p>
-        </div>
-        <button
-          onClick={() => { resetForm(); setIsModalOpen(true); }}
-          className="bg-space-accent hover:bg-space-accent/90 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-lg shadow-space-accent/20"
-        >
-          <Plus size={18} /> Add User
-        </button>
-      </div>
+    <>
+      <PageHeader
+        title="People"
+        action={
+          <button onClick={() => { resetForm(); setIsModalOpen(true); }} className="btn-primary">
+            <Plus size={17} /> Add person
+          </button>
+        }
+      >
+        Everyone with an account: students, teachers, finance and admins.
+      </PageHeader>
 
-      <div className="flex flex-wrap gap-4 bg-space-deep p-4 rounded-2xl border border-space-muted/10">
-        <div className="relative flex-1 min-w-[300px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-space-muted" size={18} />
+      <div className="mb-4 flex flex-wrap gap-3">
+        <div className="relative min-w-[240px] flex-1">
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-faint" size={17} />
           <input
             type="text"
-            placeholder="Search by name or username..."
-            className="w-full bg-space-dark border border-space-muted/20 rounded-xl pl-10 pr-4 py-2 text-space-text focus:outline-none focus:ring-2 focus:ring-space-accent/50"
+            placeholder="Search by name or username"
+            aria-label="Search people"
+            className="field pl-10"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <div className="flex items-center gap-2">
-          <Filter size={18} className="text-space-muted" />
-          <select
-            className="bg-space-dark border border-space-muted/20 rounded-xl px-4 py-2 text-space-text focus:outline-none focus:ring-2 focus:ring-space-accent/50"
-            value={filterRole}
-            onChange={(e) => setFilterRole(e.target.value)}
-          >
-            <option value="All">All Roles</option>
-            <option value="Admin">Admin</option>
-            <option value="Teacher">Teacher</option>
-            <option value="Student">Student</option>
-            <option value="Financier">Financier</option>
-          </select>
-        </div>
+        <select
+          aria-label="Filter by role"
+          className="field w-auto pr-8"
+          value={filterRole}
+          onChange={(e) => setFilterRole(e.target.value)}
+        >
+          <option value="All">All roles</option>
+          <option value="Admin">Admins</option>
+          <option value="Teacher">Teachers</option>
+          <option value="Student">Students</option>
+          <option value="Financier">Finance</option>
+        </select>
       </div>
 
-      <div className="bg-space-deep rounded-2xl border border-space-muted/10 overflow-hidden">
-        <table className="w-full text-left border-collapse">
+      <div className="overflow-x-auto rounded-xl border border-line bg-card">
+        <table className="w-full min-w-[640px] border-collapse text-left">
           <thead>
-            <tr className="bg-space-dark/50 text-space-muted text-sm font-medium uppercase tracking-wider">
-              <th className="px-6 py-4">User</th>
-              <th className="px-6 py-4">Role</th>
-              <th className="px-6 py-4">Status</th>
-              <th className="px-6 py-4">Created At</th>
-              <th className="px-6 py-4 text-right">Actions</th>
+            <tr className="border-b border-line bg-sunken/60 text-xs font-semibold uppercase tracking-wider text-ink-soft">
+              <th className="px-5 py-3">Person</th>
+              <th className="px-5 py-3">Role</th>
+              <th className="px-5 py-3">Status</th>
+              <th className="px-5 py-3">Added</th>
+              <th className="px-5 py-3"><span className="sr-only">Actions</span></th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-space-muted/10">
-            {filteredUsers.map(user => (
-              <tr key={user.id} className="hover:bg-space-muted/5 transition-colors">
-                <td className="px-6 py-4">
+          <tbody className="divide-y divide-line">
+            {filteredUsers.map((user) => (
+              <tr key={user.id} className="hover:bg-sunken/40">
+                <td className="px-5 py-3.5">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-space-accent/10 text-space-accent rounded-full flex items-center justify-center font-bold">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sunken font-display text-base font-semibold text-ink-soft">
                       {user.fullName.charAt(0)}
                     </div>
-                    <div>
-                      <div className="font-medium text-space-text">{user.fullName}</div>
-                      <div className="text-xs text-space-muted">
-                        {user.username} • {user.email || 'no email'}{' '}
-                        {user.email && (
-                          <span className={user.emailVerified ? 'text-green-400' : 'text-yellow-400'}>
-                            ({user.emailVerified ? 'email verified' : 'email not verified'})
-                          </span>
-                        )}
+                    <div className="min-w-0">
+                      <div className="truncate text-sm font-semibold text-ink">{user.fullName}</div>
+                      <div className="truncate text-xs text-ink-faint">
+                        @{user.username}
+                        {user.email ? ` · ${user.email}` : ''}
+                        {user.email && !user.emailVerified ? ' · not confirmed' : ''}
                       </div>
                     </div>
                   </div>
                 </td>
-                <td className="px-6 py-4">
-                  <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${
-                    user.role === 'Admin' ? 'bg-purple-500/10 text-purple-400' :
-                    user.role === 'Teacher' ? 'bg-blue-500/10 text-blue-400' :
-                    user.role === 'Financier' ? 'bg-green-500/10 text-green-400' :
-                    'bg-orange-500/10 text-orange-400'
-                  }`}>
+                <td className="px-5 py-3.5">
+                  <span className={`rounded-md px-2 py-1 text-xs font-semibold ${roleStyle[user.role] || 'bg-sunken text-ink-soft'}`}>
                     {user.role}
                   </span>
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-5 py-3.5">
                   <button
                     onClick={() => toggleStatus(user)}
-                    className={`flex items-center gap-1 text-xs font-medium transition-colors ${
-                      user.status === 'active' ? 'text-green-400' : 'text-red-400'
+                    title={user.status === 'active' ? 'Click to block' : 'Click to unblock'}
+                    className={`inline-flex items-center gap-2 text-sm font-medium ${
+                      user.status === 'active' ? 'text-moss' : 'text-brick'
                     }`}
                   >
-                    {user.status === 'active' ? <UserCheck size={14} /> : <UserX size={14} />}
+                    <span className={`h-2 w-2 rounded-full ${user.status === 'active' ? 'bg-moss' : 'bg-brick'}`} />
                     {user.status === 'active' ? 'Active' : 'Blocked'}
                   </button>
                 </td>
-                <td className="px-6 py-4 text-sm text-space-muted">
-                  {new Date(user.createdAt).toLocaleDateString()}
+                <td className="px-5 py-3.5 text-sm text-ink-soft">
+                  {new Date(user.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                 </td>
-                <td className="px-6 py-4 text-right">
-                  <div className="flex justify-end gap-2">
-                    <button onClick={() => openEditModal(user)} className="p-2 text-space-muted hover:text-space-accent transition-colors rounded-lg hover:bg-space-accent/10">
-                      <Edit2 size={16} />
+                <td className="px-5 py-3.5">
+                  <div className="flex justify-end gap-1">
+                    <button
+                      onClick={() => openEditModal(user)}
+                      aria-label={`Edit ${user.fullName}`}
+                      className="rounded-lg p-2 text-ink-faint hover:bg-sunken hover:text-ink"
+                    >
+                      <Pencil size={16} />
                     </button>
-                    <button onClick={() => handleDelete(user.id)} className="p-2 text-space-muted hover:text-red-400 transition-colors rounded-lg hover:bg-red-500/10">
+                    <button
+                      onClick={() => handleDelete(user.id)}
+                      aria-label={`Delete ${user.fullName}`}
+                      className="rounded-lg p-2 text-ink-faint hover:bg-brick-tint hover:text-brick"
+                    >
                       <Trash2 size={16} />
                     </button>
                   </div>
@@ -218,8 +213,9 @@ const UserManagement = () => {
             ))}
             {filteredUsers.length === 0 && (
               <tr>
-                <td colSpan="5" className="px-6 py-12 text-center text-space-muted">
-                  No users found matching your criteria
+                <td colSpan="5" className="px-5 py-14 text-center">
+                  <p className="font-display text-lg font-semibold text-ink">No one matches that</p>
+                  <p className="mt-1 text-sm text-ink-soft">Try a different name, or clear the role filter.</p>
                 </td>
               </tr>
             )}
@@ -228,103 +224,73 @@ const UserManagement = () => {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-space-deep border border-space-muted/20 w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
-            <div className="p-6 border-b border-space-muted/10 flex justify-between items-center">
-              <h3 className="text-xl font-bold text-space-text">{editingUser ? 'Edit User' : 'Add New User'}</h3>
-              <button onClick={() => setIsModalOpen(false)} className="text-space-muted hover:text-space-text transition-colors">✕</button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4">
+          <div role="dialog" aria-modal="true" className="w-full max-w-lg rounded-2xl border border-line bg-card shadow-xl">
+            <div className="flex items-center justify-between border-b border-line px-6 py-4">
+              <h3 className="font-display text-xl font-semibold text-ink">
+                {editingUser ? 'Edit person' : 'Add a person'}
+              </h3>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                aria-label="Close"
+                className="rounded-lg p-1.5 text-ink-faint hover:bg-sunken hover:text-ink"
+              >
+                <X size={18} />
+              </button>
             </div>
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-xs font-medium text-space-muted uppercase tracking-wider">Full Name</label>
-                  <div className="relative">
-                    <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-space-muted" />
-                    <input
-                      name="fullName"
-                      value={formData.fullName}
-                      onChange={handleInputChange}
-                      className="w-full bg-space-dark border border-space-muted/20 rounded-xl pl-10 pr-4 py-2 text-space-text focus:outline-none focus:ring-2 focus:ring-space-accent/50"
-                      placeholder="John Doe"
-                    />
-                  </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4 p-6">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label htmlFor="fullName" className="field-label">Full name</label>
+                  <input id="fullName" name="fullName" value={formData.fullName} onChange={handleInputChange} className="field" />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-medium text-space-muted uppercase tracking-wider">Role</label>
-                  <select
-                    name="role"
-                    value={formData.role}
-                    onChange={handleInputChange}
-                    className="w-full bg-space-dark border border-space-muted/20 rounded-xl px-4 py-2 text-space-text focus:outline-none focus:ring-2 focus:ring-space-accent/50"
-                  >
+                <div>
+                  <label htmlFor="role" className="field-label">Role</label>
+                  <select id="role" name="role" value={formData.role} onChange={handleInputChange} className="field">
                     <option value="Student">Student</option>
                     <option value="Teacher">Teacher</option>
-                    <option value="Financier">Financier</option>
+                    <option value="Financier">Finance</option>
                     <option value="Admin">Admin</option>
                   </select>
                 </div>
               </div>
-              <div className="space-y-2">
-                <label className="text-xs font-medium text-space-muted uppercase tracking-wider">Username</label>
-                <div className="relative">
-                  <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-space-muted" />
-                  <input
-                    name="username"
-                    value={formData.username}
-                    onChange={handleInputChange}
-                    className="w-full bg-space-dark border border-space-muted/20 rounded-xl pl-10 pr-4 py-2 text-space-text focus:outline-none focus:ring-2 focus:ring-space-accent/50"
-                    placeholder="johndoe123"
-                  />
-                </div>
+              <div>
+                <label htmlFor="username" className="field-label">Username</label>
+                <input id="username" name="username" value={formData.username} onChange={handleInputChange} className="field" />
               </div>
-              <div className="space-y-2">
-                <label className="text-xs font-medium text-space-muted uppercase tracking-wider">Password</label>
-                <div className="relative">
-                  <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-space-muted" />
-                  <input
-                    type="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    className="w-full bg-space-dark border border-space-muted/20 rounded-xl pl-10 pr-4 py-2 text-space-text focus:outline-none focus:ring-2 focus:ring-space-accent/50"
-                    placeholder={editingUser ? 'Leave empty to keep current' : 'Min 8 characters'}
-                  />
-                </div>
+              <div>
+                <label htmlFor="password" className="field-label">Password</label>
+                <input
+                  id="password"
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  className="field"
+                  placeholder={editingUser ? 'Leave empty to keep the current one' : 'At least 8 characters'}
+                />
               </div>
-              <div className="space-y-2">
-                <label className="text-xs font-medium text-space-muted uppercase tracking-wider">Email Address{formData.role === 'Admin' ? ' (optional for Admin)' : ''}</label>
-                <div className="relative">
-                  <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-space-muted" />
-                  <input
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className="w-full bg-space-dark border border-space-muted/20 rounded-xl pl-10 pr-4 py-2 text-space-text focus:outline-none focus:ring-2 focus:ring-space-accent/50"
-                    placeholder="email@example.com"
-                  />
-                </div>
+              <div>
+                <label htmlFor="email" className="field-label">
+                  Email{formData.role === 'Admin' && <span className="font-normal text-ink-faint"> (optional for admins)</span>}
+                </label>
+                <input id="email" name="email" value={formData.email} onChange={handleInputChange} className="field" placeholder="name@example.com" />
               </div>
-              <div className="flex justify-end gap-3 mt-6">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 text-space-muted hover:text-space-text transition-colors"
-                >
+
+              <div className="flex justify-end gap-3 pt-2">
+                <button type="button" onClick={() => setIsModalOpen(false)} className="btn-quiet">
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  onClick={handleSubmit}
-                  className="bg-space-accent hover:bg-space-accent/90 text-white px-6 py-2 rounded-lg font-semibold transition-all"
-                >
-                  Save User
+                <button type="submit" className="btn-primary">
+                  {editingUser ? 'Save changes' : 'Add person'}
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

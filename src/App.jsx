@@ -16,6 +16,8 @@ import UserManagement from './pages/Admin/UserManagement';
 import FinancierLayout from './layouts/Financier/FinancierLayout';
 import TeacherLayout from './layouts/Teacher/TeacherLayout';
 import StudentLayout from './layouts/Student/StudentLayout';
+import ComingSoon from './components/ComingSoon';
+import StatusPage from './components/StatusPage';
 
 const AppRoutes = () => {
   const dispatch = useDispatch();
@@ -25,7 +27,7 @@ const AppRoutes = () => {
 
   return (
     <>
-        <ToastContainer position="bottom-right" theme="dark" />
+        <ToastContainer position="bottom-right" theme="light" />
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/verify-device" element={<DeviceVerificationPage />} />
@@ -41,8 +43,8 @@ const AppRoutes = () => {
           >
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<UserManagement />} />
-            <Route path="groups" element={<div className="p-8 text-white">Group Management (Coming Soon)</div>} />
-            <Route path="settings" element={<div className="p-8 text-white">Settings (Coming Soon)</div>} />
+            <Route path="groups" element={<ComingSoon title="Groups" />} />
+            <Route path="settings" element={<ComingSoon title="Settings" />} />
           </Route>
 
           {/* Financier Routes */}
@@ -54,10 +56,10 @@ const AppRoutes = () => {
               </ProtectedRoute>
             }
           >
-            <Route index element={<div className="p-8 text-white">Financier Dashboard (Coming Soon)</div>} />
-            <Route path="payments" element={<div className="p-8 text-white">Payments (Coming Soon)</div>} />
-            <Route path="debts" element={<div className="p-8 text-white">Debts (Coming Soon)</div>} />
-            <Route path="students" element={<div className="p-8 text-white">Students (Coming Soon)</div>} />
+            <Route index element={<ComingSoon title="Overview" />} />
+            <Route path="payments" element={<ComingSoon title="Payments" />} />
+            <Route path="debts" element={<ComingSoon title="Debts" />} />
+            <Route path="students" element={<ComingSoon title="Students" />} />
           </Route>
 
           {/* Teacher Routes */}
@@ -69,10 +71,10 @@ const AppRoutes = () => {
               </ProtectedRoute>
             }
           >
-            <Route index element={<div className="p-8 text-white">Teacher Dashboard (Coming Soon)</div>} />
-            <Route path="groups" element={<div className="p-8 text-white">Groups (Coming Soon)</div>} />
-            <Route path="schedule" element={<div className="p-8 text-white">Schedule (Coming Soon)</div>} />
-            <Route path="attendance" element={<div className="p-8 text-white">Attendance (Coming Soon)</div>} />
+            <Route index element={<ComingSoon title="Today" />} />
+            <Route path="groups" element={<ComingSoon title="My groups" />} />
+            <Route path="schedule" element={<ComingSoon title="Schedule" />} />
+            <Route path="attendance" element={<ComingSoon title="Attendance" />} />
           </Route>
 
           {/* Student Routes */}
@@ -84,15 +86,15 @@ const AppRoutes = () => {
               </ProtectedRoute>
             }
           >
-            <Route index element={<div className="p-8 text-white">Student Dashboard (Coming Soon)</div>} />
-            <Route path="profile" element={<div className="p-8 text-white">Profile (Coming Soon)</div>} />
-            <Route path="courses" element={<div className="p-8 text-white">Courses (Coming Soon)</div>} />
-            <Route path="schedule" element={<div className="p-8 text-white">Schedule (Coming Soon)</div>} />
+            <Route index element={<ComingSoon title="Home" />} />
+            <Route path="profile" element={<ComingSoon title="Profile" />} />
+            <Route path="courses" element={<ComingSoon title="Courses" />} />
+            <Route path="schedule" element={<ComingSoon title="Schedule" />} />
           </Route>
 
-          <Route path="/forbidden" element={<div className="p-8 text-white">Access Forbidden</div>} />
+          <Route path="/forbidden" element={<StatusPage code="403" title="This page is not for your account" text="Your role does not have access here. If you think that is a mistake, ask an administrator." />} />
           <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="*" element={<div className="p-8 text-white">404 Not Found</div>} />
+          <Route path="*" element={<StatusPage code="404" title="We could not find that page" text="The link may be old or mistyped." />} />
         </Routes>
     </>
   );

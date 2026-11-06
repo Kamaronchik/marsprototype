@@ -3,7 +3,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../../features/auth/authSlice';
 import { toast } from 'react-toastify';
-import { ShieldAlert, ArrowLeft, Loader2, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Loader2, RefreshCw } from 'lucide-react';
+import Logo from '../../components/Logo';
 
 const DeviceVerificationPage = () => {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ const DeviceVerificationPage = () => {
   const [code, setCode] = useState(['', '', '', '', '', '']);
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
-  const [timer, setTimer] = useState(300); // 5 minutes
+  const [timer, setTimer] = useState(60); // resend available every 1 minute
 
   useEffect(() => {
     if (!userId) {
@@ -116,7 +117,7 @@ const DeviceVerificationPage = () => {
 
       if (response.ok) {
         toast.success(data.message || 'New verification code sent to your email');
-        setTimer(300);
+        setTimer(60);
         setCode(['', '', '', '', '', '']);
         document.getElementById('code-0')?.focus();
       } else {
@@ -130,31 +131,24 @@ const DeviceVerificationPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-space-dark p-4">
-      <div className="w-full max-w-md bg-space-deep border border-space-muted/10 rounded-3xl p-8 shadow-2xl text-center relative overflow-hidden backdrop-blur-md">
-        {/* Subtle decorative glow */}
-        <div className="absolute -top-24 -right-24 w-48 h-48 bg-space-accent/15 rounded-full blur-3xl pointer-events-none" />
+    <div className="flex min-h-screen flex-col items-center bg-paper px-6 py-10">
+      <Logo />
 
-        <div className="flex justify-start mb-6">
-          <button
-            onClick={() => navigate('/login')}
-            className="flex items-center gap-2 text-space-muted hover:text-space-text transition-colors text-sm"
-          >
-            <ArrowLeft size={16} /> Back to Login
-          </button>
-        </div>
+      <div className="my-auto w-full max-w-md py-10">
+        <button
+          onClick={() => navigate('/login')}
+          className="mb-8 inline-flex items-center gap-1.5 text-sm font-medium text-ink-soft hover:text-ink"
+        >
+          <ArrowLeft size={16} /> Back to sign in
+        </button>
 
-        <div className="inline-flex items-center justify-center w-20 h-20 bg-space-accent/10 text-space-accent rounded-full mb-6">
-          <ShieldAlert size={40} />
-        </div>
-
-        <h1 className="text-3xl font-bold text-space-text mb-2 tracking-tight">Two-Factor Authentication</h1>
-        <p className="text-space-muted mb-8 text-sm leading-relaxed">
-          New device detected. We have sent a 6-digit confirmation code to your registered email address.
+        <h1 className="font-display text-[2rem] font-semibold tracking-tight text-ink">Check your email</h1>
+        <p className="mt-2 text-[15px] leading-relaxed text-ink-soft">
+          This looks like a new device, so we sent a 6-digit code to the email on your account. Enter it below.
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-8">
-          <div className="flex justify-center gap-2.5 sm:gap-3" onPaste={handlePaste}>
+        <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+          <div className="flex gap-2 sm:gap-3" onPaste={handlePaste}>
             {code.map((digit, idx) => (
               <input
                 key={idx}
@@ -163,7 +157,8 @@ const DeviceVerificationPage = () => {
                 inputMode="numeric"
                 maxLength="1"
                 autoComplete="one-time-code"
-                className="w-12 h-14 text-center text-2xl font-bold bg-space-dark/80 border border-space-muted/20 rounded-xl text-space-text focus:outline-none focus:ring-2 focus:ring-space-accent/50 focus:border-space-accent/60 transition-all shadow-inner"
+                aria-label={`Digit ${idx + 1}`}
+                className="field h-14 w-full min-w-0 px-0 text-center font-display text-2xl font-semibold"
                 value={digit}
                 onChange={(e) => handleInputChange(idx, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(idx, e)}
@@ -171,30 +166,24 @@ const DeviceVerificationPage = () => {
             ))}
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-space-accent hover:bg-space-accent/90 text-white font-semibold py-3.5 rounded-xl transition-all shadow-lg shadow-space-accent/25 hover:shadow-space-accent/40 active:scale-[0.99] disabled:opacity-50 flex items-center justify-center gap-2 text-sm"
-          >
+          <button type="submit" disabled={loading} className="btn-primary w-full py-3">
             {loading ? (
               <>
-                <Loader2 className="animate-spin" size={18} />
-                <span>Verifying Device...</span>
+                <Loader2 className="animate-spin" size={17} />
+                <span>Checking...</span>
               </>
             ) : (
-              <span>Verify & Continue</span>
+              <span>Confirm and continue</span>
             )}
           </button>
         </form>
 
-        <div className="mt-8 pt-6 border-t border-space-muted/10">
-          <p className="text-space-muted text-xs mb-3">
-            Didn't receive the email code? Check your Spam folder or resend.
-          </p>
+        <div className="mt-8 border-t border-line pt-6 text-sm text-ink-soft">
+          <p>Nothing arrived? Look in your spam folder first.</p>
           <button
             type="button"
             disabled={timer > 0 || resending}
-            className="inline-flex items-center gap-1.5 text-space-accent hover:text-space-accent/80 font-medium text-sm disabled:text-space-muted/50 disabled:pointer-events-none transition-colors"
+            className="mt-2 inline-flex items-center gap-1.5 font-semibold text-mars hover:text-mars-deep disabled:pointer-events-none disabled:text-ink-faint"
             onClick={handleResend}
           >
             {resending ? (
@@ -203,9 +192,9 @@ const DeviceVerificationPage = () => {
                 <span>Sending...</span>
               </>
             ) : timer > 0 ? (
-              <span>Resend code in {formatTime(timer)}</span>
+              <span>Send a new code in {formatTime(timer)}</span>
             ) : (
-              <span>Resend Code Now</span>
+              <span>Send a new code</span>
             )}
           </button>
         </div>

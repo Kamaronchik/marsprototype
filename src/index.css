@@ -3,30 +3,50 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
-  @apply bg-space-dark text-space-text font-sans;
+  @apply bg-paper text-ink font-sans;
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom Scrollbar */
+::selection {
+  background: #F0C9B7;
+}
+
+/* Scrollbar: thin, warm */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
-
 ::-webkit-scrollbar-track {
-  @apply bg-space-dark;
+  background: transparent;
 }
-
 ::-webkit-scrollbar-thumb {
-  @apply bg-space-deep rounded-full border-2 border-space-dark;
+  @apply bg-line rounded-full border-2 border-paper;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-ink-faint/50;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-space-muted/30;
+@layer components {
+  .field {
+    @apply w-full rounded-lg border border-line bg-card px-3.5 py-2.5 text-sm text-ink placeholder-ink-faint/70
+      focus:border-ink focus:outline-none focus:ring-2 focus:ring-mars/25;
+  }
+  .field-label {
+    @apply mb-1.5 block text-sm font-medium text-ink;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-mars px-4 py-2.5 text-sm font-semibold text-white
+      hover:bg-mars-deep focus:outline-none focus:ring-2 focus:ring-mars/40 focus:ring-offset-2 focus:ring-offset-paper
+      disabled:pointer-events-none disabled:opacity-50;
+  }
+  .btn-quiet {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-line bg-card px-4 py-2.5 text-sm font-medium text-ink
+      hover:bg-sunken focus:outline-none focus:ring-2 focus:ring-mars/25;
+  }
 }

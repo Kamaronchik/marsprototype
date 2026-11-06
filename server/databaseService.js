@@ -155,6 +155,18 @@ const db = {
     return data;
   },
 
+  // When was the newest code for this user created? (used for the resend cooldown)
+  async getLastCodeTime(userId) {
+    const { data } = await supabase
+      .from('verification_codes')
+      .select('created_at')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    return data ? new Date(data.created_at).getTime() : 0;
+  },
+
   async updateCodeAttempts(codeId, attempts) {
     const { error } = await supabase
       .from('verification_codes')

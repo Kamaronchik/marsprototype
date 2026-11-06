@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
 const path = require('path');
 
 // Load environment variables from either root .env or server/.env
@@ -14,7 +15,11 @@ const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 
+// Vercel (and most hosts) sit behind a proxy: needed so rate limits see the real client IP.
+app.set('trust proxy', 1);
+
 // Middleware
+app.use(helmet());
 app.use(cors({
   origin: process.env.CLIENT_URL || 'http://localhost:5173',
   credentials: true

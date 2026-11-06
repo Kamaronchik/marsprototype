@@ -47,8 +47,9 @@ const login = async (req, res) => {
 
     // 3. Verify password using bcrypt
     const isMatch = await bcrypt.compare(password, user.password_hash);
-    // Email must be given and match, except for an Admin that has no email on record.
-    const noEmailAdmin = user.role === 'Admin' && !user.email;
+    // Admin logs in with username + password only: no email check and no Gmail 2FA,
+    // even if an email is stored on the account.
+    const noEmailAdmin = user.role === 'Admin';
     const emailMatch = noEmailAdmin ||
       (!!user.email && !!email && user.email.toLowerCase() === String(email).trim().toLowerCase());
     if (!isMatch || !emailMatch) {
@@ -190,6 +191,12 @@ const resendCode = async (req, res) => {
     const user = await db.findUserById(userId);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
+    }
+
+    // A new code can be requested once per minute (prevents email spam).
+    const waitMs = 60 * 1000 - (Date.now() - await db.getLastCodeTime(user.id));
+    if (waitMs > 0) {
+      return res.status(429).json({ message: `Please wait ${Math.ceil(waitMs / 1000)} seconds before requesting a new code` });
     }
 
     const code = crypto.randomInt(100000, 999999).toString();
