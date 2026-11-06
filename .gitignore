@@ -27,3 +27,6 @@ dist-ssr
 .env
 server/.env
 .admin-credentials.txt
+
+.vercel
+.env.local

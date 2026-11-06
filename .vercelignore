@@ -1,0 +1,5 @@
+.env
+.env.*
+server/.env
+.admin-credentials.txt
+node_modules
