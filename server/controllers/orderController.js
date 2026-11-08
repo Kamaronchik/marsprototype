@@ -1,6 +1,6 @@
 const supabase = require('../config/supabase');
 const { handleDbError } = require('../utils/apiErrors');
-const { ORDER_ITEMS_SELECT, toOrderItem, orderAction } = require('../utils/orders');
+const { ORDER_ITEMS_SELECT, toOrderItem, orderAction, tellStudentDelivered, tellAboutCancel } = require('../utils/orders');
 
 const STATUSES = ['Pending', 'Completed', 'Cancelled'];
 
@@ -36,7 +36,7 @@ const listOrders = async (req, res) => {
   res.json({ orders: data.map(toClient) });
 };
 
-const deliverOrder = orderAction('deliver_order', 'p_admin_id');
-const cancelOrder = orderAction('cancel_order', 'p_actor_id');
+const deliverOrder = orderAction('deliver_order', 'p_admin_id', tellStudentDelivered);
+const cancelOrder = orderAction('cancel_order', 'p_actor_id', tellAboutCancel);
 
 module.exports = { listOrders, deliverOrder, cancelOrder };

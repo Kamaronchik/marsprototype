@@ -6,7 +6,7 @@ export const api = async (url, options = {}) => {
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     ...rest,
-    body: body === undefined || typeof body === 'string' ? body : JSON.stringify(body),
+    body: body === undefined || typeof body === 'string' || body instanceof Blob ? body : JSON.stringify(body),
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {

@@ -41,6 +41,7 @@ const NotificationBell = () => {
     ...n.data,
     date: n.data.date ? formatDate(n.data.date, i18n.language) : '',
     amount: n.data.amount != null ? formatMoney(n.data.amount, i18n.language, t) : '',
+    reason: n.data.reason ? ` (${n.data.reason})` : '',
     defaultValue: t('notif.unknown'),
   });
 

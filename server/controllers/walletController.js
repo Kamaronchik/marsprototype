@@ -1,6 +1,7 @@
 const supabase = require('../config/supabase');
 const { handleDbError, sendRpcError } = require('../utils/apiErrors');
 const { isUuid, isPositiveInt } = require('../utils/validate');
+const { notify } = require('../utils/notify');
 
 const toClient = (t) => ({
   id: t.id,
@@ -47,6 +48,7 @@ const awardCoins = async (req, res) => {
   if (error) return handleDbError(error, res);
   if (!data.success) return sendRpcError(res, data);
 
+  await notify(studentId, 'coins.awarded', { coins: amount, reason: note }, { link: '/student/coins' });
   res.json({ balance: data.balance, remaining: data.remaining, poolBalance: data.pool_balance });
 };
 
@@ -91,6 +93,7 @@ const grantTeacherCoins = async (req, res) => {
   if (error) return handleDbError(error, res);
   if (!data.success) return sendRpcError(res, data);
 
+  await notify(teacherId, 'coins.granted', { coins: amount }, { link: '/teacher/coins' });
   res.json({ balance: data.pool_balance });
 };
 

@@ -21,6 +21,13 @@ import Salaries from './pages/shared/Salaries';
 import TeacherAttendance from './pages/Teacher/Attendance';
 import MyGroups from './pages/Teacher/MyGroups';
 import StudentAttendance from './pages/Student/Attendance';
+import Shop from './pages/Student/Shop';
+import StudentCoins from './pages/Student/Coins';
+import Purchases from './pages/Student/Purchases';
+import ShopProducts from './pages/Admin/ShopProducts';
+import ShopOrders from './pages/Admin/ShopOrders';
+import AdminCoins from './pages/Admin/Coins';
+import TeacherCoins from './pages/Teacher/Coins';
 import FinancierLayout from './layouts/Financier/FinancierLayout';
 import TeacherLayout from './layouts/Teacher/TeacherLayout';
 import StudentLayout from './layouts/Student/StudentLayout';
@@ -57,6 +64,9 @@ const AppRoutes = () => {
             <Route path="payments" element={<Payments />} />
             <Route path="salaries" element={<Salaries />} />
             <Route path="debts" element={<Students debts />} />
+            <Route path="shop" element={<ShopProducts />} />
+            <Route path="orders" element={<ShopOrders />} />
+            <Route path="coins" element={<AdminCoins />} />
             <Route path="settings" element={<ComingSoon title="Settings" />} />
           </Route>
 
@@ -88,6 +98,7 @@ const AppRoutes = () => {
             <Route index element={<Navigate to="/teacher/attendance" replace />} />
             <Route path="groups" element={<MyGroups />} />
             <Route path="attendance" element={<TeacherAttendance />} />
+            <Route path="coins" element={<TeacherCoins />} />
           </Route>
 
           {/* Student Routes */}
@@ -101,6 +112,9 @@ const AppRoutes = () => {
           >
             <Route index element={<ComingSoon title="Home" />} />
             <Route path="attendance" element={<StudentAttendance />} />
+            <Route path="shop" element={<Shop />} />
+            <Route path="coins" element={<StudentCoins />} />
+            <Route path="purchases" element={<Purchases />} />
             <Route path="profile" element={<ComingSoon title="Profile" />} />
           </Route>
 

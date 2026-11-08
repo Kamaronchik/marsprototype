@@ -50,7 +50,7 @@ const AppShell = ({ sectionLabel, menuItems }) => {
           {t(sectionLabel)}
         </p>
 
-        <nav className="flex gap-1 overflow-x-auto px-3 pb-3 md:flex-1 md:flex-col md:overflow-y-auto md:pb-0">
+        <nav className="flex gap-1 overflow-x-auto px-3 pb-3 md:min-h-0 md:flex-1 md:flex-col md:overflow-y-auto md:pb-0">
           {menuItems.map((item) => (
             <NavLink key={item.path} to={item.path} end={item.end ?? true} className={linkClass}>
               <item.icon size={18} strokeWidth={1.8} className="shrink-0" />

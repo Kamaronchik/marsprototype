@@ -20,6 +20,8 @@ const GROUP_NAMES = ['ZZ Test Group', 'ZZ Test Group B'];
 
 // --- shortcuts -------------------------------------------------------------
 
+// Types of the notifications in the bell of this user.
+const bellTypes = async (who) => (await call('GET', '/api/notifications', who)).body.notifications.map((n) => n.type);
 const balanceOf = async (student) => (await call('GET', '/api/wallet', student)).body.balance;
 const award = (giver, student, amount) => call('POST', '/api/wallet/award', giver, { studentId: student.id, amount });
 const line = (product, quantity = 1) => ({ productId: product.id, quantity });
@@ -90,6 +92,7 @@ const testTeacherPool = async ({ admin, teacher, teacherB, studentA, studentB })
   const before = await poolOf(teacher);
   const granted = await grant(admin, teacher, 100);
   check('admin tops up the pool', granted.status === 200 && granted.body.balance === before + 100, granted.body);
+  check('the teacher is told about the coins', (await bellTypes(teacher)).includes('coins.granted'));
   check('teacher sees the new pool', (await poolOf(teacher)) === before + 100);
   const listed = (await call('GET', '/api/wallet/teachers', admin)).body.teachers;
   check('admin sees every teacher with the pool', listed.some((t) => t.id === teacher.id && t.balance === before + 100));
@@ -134,6 +137,7 @@ const testPurchaseFlow = async ({ admin, studentA, studentB }, ctx) => {
   check('unavailable product is listed as unavailable', catalog.some((p) => p.id === unavailable.id && !p.isAvailable));
 
   await award(admin, studentA, 1000);
+  check('the student is told about the coins', (await bellTypes(studentA)).includes('coins.awarded'));
   await resetCooldown(studentA);
   await resetCooldown(studentB);
   check('empty cart -> 400', (await buy(studentA, [])).status === 400);
@@ -159,6 +163,8 @@ const testPurchaseFlow = async ({ admin, studentA, studentB }, ctx) => {
   check(`right code -> one order, ${CART_TOTAL} coins taken`, done.status === 201 && done.body.balance === before - CART_TOTAL, done.body);
   const again = await call('POST', url, studentA, { code: lastCode() });
   check('same request again -> same order, nothing taken twice', again.status === 200 && again.body.orderId === done.body.orderId && (await balanceOf(studentA)) === before - CART_TOTAL, again.body);
+
+  check('the admin is told about the new order', (await bellTypes(admin)).includes('order.created'));
 
   ctx.orderId = done.body.orderId;
   ctx.product = product;
@@ -187,6 +193,7 @@ const testDelivery = async ({ admin, studentA }, ctx) => {
   const url = `/api/admin/shop/orders/${ctx.orderId}`;
   check('student cannot confirm delivery -> 403', (await call('POST', `${url}/deliver`, studentA)).status === 403);
   check('admin confirms delivery', (await call('POST', `${url}/deliver`, admin)).status === 200);
+  check('the student is told the order was handed over', (await bellTypes(studentA)).includes('order.delivered'));
   check('second confirmation -> ORDER_NOT_PENDING', (await call('POST', `${url}/deliver`, admin)).body.code === 'ORDER_NOT_PENDING');
   check('admin cannot cancel a completed order', (await call('POST', `${url}/cancel`, admin)).status === 409);
   check('student cannot cancel a completed order', (await call('POST', `/api/shop/orders/${ctx.orderId}/cancel`, studentA)).status === 409);
@@ -209,6 +216,7 @@ const testCancel = async ({ admin, studentA, studentB }, ctx) => {
   const url = `/api/shop/orders/${first.body.orderId}/cancel`;
   check('another student cannot cancel it -> 404', (await call('POST', url, studentB)).status === 404);
   check('the owner cancels it', (await call('POST', url, studentA)).status === 200);
+  check('the admin is told the student cancelled', (await bellTypes(admin)).includes('order.cancelled_by_student'));
   check('coins are back', (await balanceOf(studentA)) === before);
   check('ledger has the Refund row', (await ledgerOf(studentA)).some((t) => t.orderId === first.body.orderId && t.type === 'Refund' && t.amount === PRICE));
   check('cancelling twice -> ORDER_NOT_PENDING', (await call('POST', url, studentA)).body.code === 'ORDER_NOT_PENDING');
@@ -218,6 +226,7 @@ const testCancel = async ({ admin, studentA, studentB }, ctx) => {
   const second = await buyAndConfirm(studentA, [line(ctx.product)]);
   const adminUrl = `/api/admin/shop/orders/${second.body.orderId}/cancel`;
   check('admin cancels any Pending order', (await call('POST', adminUrl, admin)).status === 200);
+  check('the student is told the order was cancelled', (await bellTypes(studentA)).includes('order.cancelled'));
   check('coins are back again', (await balanceOf(studentA)) === before);
   const { data } = await supabase.from('orders').select('status, cancelled_by').eq('id', second.body.orderId).single();
   check('who cancelled is saved', data.status === 'Cancelled' && data.cancelled_by === admin.id, data);
@@ -325,6 +334,9 @@ const testLedger = async ({ teacher, studentA, studentB }) => {
 
 const cleanup = async (users, ctx) => {
   const ids = users.map((u) => u.id);
+  // Admin notifications about test students go to every admin, including the real ones: remove them.
+  await supabase.from('notifications').delete().like('data->>studentName', 'ZZ Test%');
+  await supabase.from('notifications').delete().in('user_id', ids);
   await supabase.from('sessions').delete().in('user_id', ids);
   await supabase.from('groups').delete().in('name', GROUP_NAMES);
   await supabase.from('users').update({ status: 'blocked' }).in('id', ids);

@@ -13,4 +13,12 @@ const notify = async (userId, type, data = {}, { link = null, dedupeKey = null }
   if (error) console.error('Notification error:', error.message);
 };
 
-module.exports = { notify };
+// The same notification for every active admin ("a new order came in", "a student cancelled").
+const notifyAdmins = async (type, data = {}, { link = null } = {}) => {
+  const { data: admins, error } = await supabase
+    .from('users').select('id').eq('role', 'Admin').eq('status', 'active');
+  if (error) return console.error('Notification error:', error.message);
+  await Promise.all(admins.map((admin) => notify(admin.id, type, data, { link })));
+};
+
+module.exports = { notify, notifyAdmins };

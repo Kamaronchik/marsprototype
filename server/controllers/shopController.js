@@ -4,7 +4,8 @@ const emailService = require('../services/emailService');
 const { hashCode, generateCode } = require('../utils/codes');
 const { handleDbError, sendRpcError } = require('../utils/apiErrors');
 const { isUuid } = require('../utils/validate');
-const { ORDER_ITEMS_SELECT, toOrderItem, orderAction } = require('../utils/orders');
+const { ORDER_ITEMS_SELECT, toOrderItem, orderAction, tellAboutCancel } = require('../utils/orders');
+const { notifyAdmins } = require('../utils/notify');
 
 const toProduct = (p) => ({
   id: p.id,
@@ -92,6 +93,15 @@ const confirmPurchase = async (req, res) => {
   if (error) return handleDbError(error, res);
   if (!data.success) return sendRpcError(res, data);
 
+  // The admin sees a new order in the bell (a repeated request is not a new order).
+  if (!data.already_done) {
+    const [student, { data: order }] = await Promise.all([
+      db.findUserById(req.user.id),
+      supabase.from('orders').select('total').eq('id', data.order_id).single(),
+    ]);
+    await notifyAdmins('order.created', { studentName: student?.full_name ?? '', total: order?.total ?? 0 }, { link: '/admin/orders' });
+  }
+
   res.status(data.already_done ? 200 : 201).json({ orderId: data.order_id, balance: data.balance });
 };
 
@@ -107,6 +117,6 @@ const listMyOrders = async (req, res) => {
 };
 
 // A student can cancel their own order until the admin has handed it over; the coins come back.
-const cancelMyOrder = orderAction('cancel_order', 'p_actor_id');
+const cancelMyOrder = orderAction('cancel_order', 'p_actor_id', tellAboutCancel);
 
 module.exports = { listProducts, initiatePurchase, confirmPurchase, listMyOrders, cancelMyOrder };
