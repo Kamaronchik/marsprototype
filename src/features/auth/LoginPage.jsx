@@ -6,6 +6,8 @@ import { toast } from 'react-toastify';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Logo from '../../components/Logo';
+import LanguageSwitch from '../../components/LanguageSwitch';
+import { messageText } from '../../lib/api';
 
 const LoginPage = () => {
   const { t } = useTranslation();
@@ -20,7 +22,7 @@ const LoginPage = () => {
     const { username, email, password } = formData;
 
     if (!username.trim() || !password) {
-      toast.error(t('common.please_fill') || 'Please fill in all fields');
+      toast.error(t('common.please_fill'));
       return;
     }
 
@@ -42,24 +44,24 @@ const LoginPage = () => {
 
       if (response.ok) {
         if (data.requires2FA) {
-          toast.info(data.message || 'Verification code sent to your email');
+          toast.info(data.message ? messageText(t, data.message) : t('auth.codeSent'));
           navigate(`/verify-device?userId=${encodeURIComponent(data.userId)}`);
         } else if (data.user) {
           dispatch(loginSuccess(data.user));
-          toast.success(`${t('common.welcome') || 'Welcome back'}, ${data.user.fullName || data.user.username}!`);
+          toast.success(`${t('common.welcome')}, ${data.user.fullName || data.user.username}!`);
           const targetRole = data.user.role?.toLowerCase() || 'student';
           navigate(`/${targetRole}`);
         } else {
-          dispatch(loginFailure('Unexpected server response'));
-          toast.error('Unexpected server response');
+          dispatch(loginFailure(t('auth.unexpected')));
+          toast.error(t('auth.unexpected'));
         }
       } else {
-        const errorMsg = data.message || 'Invalid username or password';
+        const errorMsg = messageText(t, data.message || 'Invalid username or password');
         dispatch(loginFailure(errorMsg));
         toast.error(errorMsg);
       }
     } catch {
-      const connMsg = 'Server connection error. Please try again later.';
+      const connMsg = t('auth.connection');
       dispatch(loginFailure(connMsg));
       toast.error(connMsg);
     }
@@ -73,17 +75,17 @@ const LoginPage = () => {
 
         <div className="max-w-md">
           <h2 className="font-display text-[2.9rem] font-semibold leading-[1.08] tracking-tight">
-            Good to see you again.
+            {t('auth.heroTitle')}
           </h2>
           <p className="mt-5 text-[15px] leading-relaxed text-card/85">
-            Groups, attendance and payments for the whole school, kept in one calm place.
+            {t('auth.heroText')}
           </p>
         </div>
 
         <ul className="space-y-2 border-t border-card/25 pt-6 text-sm text-card/85">
-          <li>Teachers take attendance in a couple of taps.</li>
-          <li>Students see their schedule and courses.</li>
-          <li>Finance sees who has paid and who has not.</li>
+          <li>{t('auth.feature1')}</li>
+          <li>{t('auth.feature2')}</li>
+          <li>{t('auth.feature3')}</li>
         </ul>
 
         {/* Big orbit line, purely decorative */}
@@ -99,19 +101,22 @@ const LoginPage = () => {
       {/* Right: the form */}
       <main className="flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-sm">
-          <Logo className="mb-10 lg:hidden" />
+          <div className="mb-10 flex items-center justify-between">
+            <Logo className="lg:hidden" />
+            <span className="ml-auto"><LanguageSwitch /></span>
+          </div>
 
           <h1 className="font-display text-[2rem] font-semibold tracking-tight text-ink">
-            {t('auth.welcome_back') || 'Welcome back'}
+            {t('auth.welcome_back')}
           </h1>
           <p className="mt-1.5 text-[15px] text-ink-soft">
-            {t('auth.subtitle') || 'Sign in with the account your school gave you.'}
+            {t('auth.subtitle')}
           </p>
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-5">
             <div>
               <label htmlFor="username" className="field-label">
-                {t('auth.username') || 'Username'}
+                {t('auth.username')}
               </label>
               <input
                 id="username"
@@ -126,7 +131,7 @@ const LoginPage = () => {
 
             <div>
               <label htmlFor="email" className="field-label">
-                Email <span className="font-normal text-ink-faint">(admins can skip this)</span>
+                {t('auth.email')} <span className="font-normal text-ink-faint">{t('auth.emailAdminSkip')}</span>
               </label>
               <input
                 id="email"
@@ -141,7 +146,7 @@ const LoginPage = () => {
 
             <div>
               <label htmlFor="password" className="field-label">
-                {t('auth.password') || 'Password'}
+                {t('auth.password')}
               </label>
               <div className="relative">
                 <input
@@ -157,7 +162,7 @@ const LoginPage = () => {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1.5 text-ink-faint hover:text-ink"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  aria-label={showPassword ? t('auth.hidePassword') : t('auth.showPassword')}
                 >
                   {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
                 </button>
@@ -168,16 +173,16 @@ const LoginPage = () => {
               {loading ? (
                 <>
                   <Loader2 className="animate-spin" size={17} />
-                  <span>Signing in...</span>
+                  <span>{t('auth.signingIn')}</span>
                 </>
               ) : (
-                <span>{t('auth.login') || 'Sign in'}</span>
+                <span>{t('auth.login')}</span>
               )}
             </button>
           </form>
 
           <p className="mt-8 text-sm leading-relaxed text-ink-faint">
-            Forgot your password? Ask your administrator to reset it.
+            {t('auth.forgot')}
           </p>
         </div>
       </main>

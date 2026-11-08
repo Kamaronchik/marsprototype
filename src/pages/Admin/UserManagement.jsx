@@ -6,6 +6,8 @@ import { Plus, Search, Pencil, Trash2, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import PageHeader from '../../components/PageHeader';
 import { useFetch } from '../../lib/useFetch';
+import { messageText } from '../../lib/api';
+import { formatDate } from '../../lib/format';
 
 const roleStyle = {
   Admin: 'bg-ink/10 text-ink',
@@ -15,7 +17,7 @@ const roleStyle = {
 };
 
 const UserManagement = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const groupsQuery = useFetch('/api/groups');
   const activeGroups = (groupsQuery.data?.groups ?? []).filter((g) => g.status === 'active');
   const users = useSelector((state) => state.users.list);
@@ -54,11 +56,11 @@ const UserManagement = () => {
     const { fullName, username, password, email, role, groupId } = formData;
     const emailRequired = role !== 'Admin'; // only Admin may have no email
     if (!fullName || !username || (emailRequired && !email) || (!editingUser && !password)) {
-      toast.error('All fields are required');
+      toast.error(t('peoplePage.allRequired'));
       return;
     }
     if (email && !/\S+@\S+\.\S+/.test(email)) {
-      toast.error('Invalid email format');
+      toast.error(t('peoplePage.invalidEmail'));
       return;
     }
 
@@ -67,16 +69,16 @@ const UserManagement = () => {
         const changes = { fullName, username, email, role };
         if (password) changes.password = password; // empty = keep old password
         await dispatch(updateUser({ id: editingUser.id, changes })).unwrap();
-        toast.success('User updated successfully');
+        toast.success(t('peoplePage.updated'));
       } else {
         await dispatch(createUser({ fullName, username, password, email, role, groupId: role === 'Student' && groupId ? groupId : undefined })).unwrap();
         groupsQuery.reload();
-        toast.success('User created successfully');
+        toast.success(t('peoplePage.created'));
       }
       setIsModalOpen(false);
       resetForm();
     } catch (err) {
-      toast.error(err.message);
+      toast.error(messageText(t, err.message));
     }
   };
 
@@ -85,7 +87,7 @@ const UserManagement = () => {
     try {
       await dispatch(updateUser({ id: user.id, changes: { status } })).unwrap();
     } catch (err) {
-      toast.error(err.message);
+      toast.error(messageText(t, err.message));
     }
   };
 
@@ -101,26 +103,26 @@ const UserManagement = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this user?')) return;
+    if (!window.confirm(t('peoplePage.confirmDelete'))) return;
     try {
       await dispatch(deleteUser(id)).unwrap();
-      toast.info('User deleted');
+      toast.info(t('peoplePage.deleted'));
     } catch (err) {
-      toast.error(err.message);
+      toast.error(messageText(t, err.message));
     }
   };
 
   return (
     <>
       <PageHeader
-        title="People"
+        title={t('peoplePage.title')}
         action={
           <button onClick={() => { resetForm(); setIsModalOpen(true); }} className="btn-primary">
-            <Plus size={17} /> Add person
+            <Plus size={17} /> {t('peoplePage.add')}
           </button>
         }
       >
-        Everyone with an account: students, teachers, finance and admins.
+        {t('peoplePage.subtitle')}
       </PageHeader>
 
       <div className="mb-4 flex flex-wrap gap-3">
@@ -128,24 +130,23 @@ const UserManagement = () => {
           <Search className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-faint" size={17} />
           <input
             type="text"
-            placeholder="Search by name or username"
-            aria-label="Search people"
+            placeholder={t('peoplePage.search')}
+            aria-label={t('peoplePage.search')}
             className="field pl-10"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         <select
-          aria-label="Filter by role"
+          aria-label={t('peoplePage.filterRole')}
           className="field w-auto pr-8"
           value={filterRole}
           onChange={(e) => setFilterRole(e.target.value)}
         >
-          <option value="All">All roles</option>
-          <option value="Admin">Admins</option>
-          <option value="Teacher">Teachers</option>
-          <option value="Student">Students</option>
-          <option value="Financier">Finance</option>
+          <option value="All">{t('peoplePage.allRoles')}</option>
+          {['Admin', 'Teacher', 'Student', 'Financier'].map((role) => (
+            <option key={role} value={role}>{t(`rolesPlural.${role}`)}</option>
+          ))}
         </select>
       </div>
 
@@ -153,11 +154,11 @@ const UserManagement = () => {
         <table className="w-full min-w-[640px] border-collapse text-left">
           <thead>
             <tr className="border-b border-line bg-sunken/60 text-xs font-semibold uppercase tracking-wider text-ink-soft">
-              <th className="px-5 py-3">Person</th>
-              <th className="px-5 py-3">Role</th>
-              <th className="px-5 py-3">Status</th>
-              <th className="px-5 py-3">Added</th>
-              <th className="px-5 py-3"><span className="sr-only">Actions</span></th>
+              <th className="px-5 py-3">{t('peoplePage.person')}</th>
+              <th className="px-5 py-3">{t('peoplePage.role')}</th>
+              <th className="px-5 py-3">{t('peoplePage.status')}</th>
+              <th className="px-5 py-3">{t('peoplePage.added')}</th>
+              <th className="px-5 py-3"><span className="sr-only">{t('common.actions')}</span></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-line">
@@ -173,43 +174,43 @@ const UserManagement = () => {
                       <div className="truncate text-xs text-ink-faint">
                         @{user.username}
                         {user.email ? ` · ${user.email}` : ''}
-                        {user.email && !user.emailVerified ? ' · not confirmed' : ''}
+                        {user.email && !user.emailVerified ? ` · ${t('peoplePage.notConfirmed')}` : ''}
                       </div>
                     </div>
                   </div>
                 </td>
                 <td className="px-5 py-3.5">
                   <span className={`rounded-md px-2 py-1 text-xs font-semibold ${roleStyle[user.role] || 'bg-sunken text-ink-soft'}`}>
-                    {user.role}
+                    {t(`roles.${user.role}`)}
                   </span>
                 </td>
                 <td className="px-5 py-3.5">
                   <button
                     onClick={() => toggleStatus(user)}
-                    title={user.status === 'active' ? 'Click to block' : 'Click to unblock'}
+                    title={user.status === 'active' ? t('peoplePage.clickToBlock') : t('peoplePage.clickToUnblock')}
                     className={`inline-flex items-center gap-2 text-sm font-medium ${
                       user.status === 'active' ? 'text-moss' : 'text-brick'
                     }`}
                   >
                     <span className={`h-2 w-2 rounded-full ${user.status === 'active' ? 'bg-moss' : 'bg-brick'}`} />
-                    {user.status === 'active' ? 'Active' : 'Blocked'}
+                    {user.status === 'active' ? t('peoplePage.active') : t('peoplePage.blocked')}
                   </button>
                 </td>
                 <td className="px-5 py-3.5 text-sm text-ink-soft">
-                  {new Date(user.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                  {formatDate(user.createdAt, i18n.language)}
                 </td>
                 <td className="px-5 py-3.5">
                   <div className="flex justify-end gap-1">
                     <button
                       onClick={() => openEditModal(user)}
-                      aria-label={`Edit ${user.fullName}`}
+                      aria-label={t('peoplePage.edit', { name: user.fullName })}
                       className="rounded-lg p-2 text-ink-faint hover:bg-sunken hover:text-ink"
                     >
                       <Pencil size={16} />
                     </button>
                     <button
                       onClick={() => handleDelete(user.id)}
-                      aria-label={`Delete ${user.fullName}`}
+                      aria-label={t('peoplePage.remove', { name: user.fullName })}
                       className="rounded-lg p-2 text-ink-faint hover:bg-brick-tint hover:text-brick"
                     >
                       <Trash2 size={16} />
@@ -221,8 +222,8 @@ const UserManagement = () => {
             {filteredUsers.length === 0 && (
               <tr>
                 <td colSpan="5" className="px-5 py-14 text-center">
-                  <p className="font-display text-lg font-semibold text-ink">No one matches that</p>
-                  <p className="mt-1 text-sm text-ink-soft">Try a different name, or clear the role filter.</p>
+                  <p className="font-display text-lg font-semibold text-ink">{t('peoplePage.noMatch')}</p>
+                  <p className="mt-1 text-sm text-ink-soft">{t('peoplePage.noMatchHint')}</p>
                 </td>
               </tr>
             )}
@@ -235,11 +236,11 @@ const UserManagement = () => {
           <div role="dialog" aria-modal="true" className="w-full max-w-lg rounded-2xl border border-line bg-card shadow-xl">
             <div className="flex items-center justify-between border-b border-line px-6 py-4">
               <h3 className="font-display text-xl font-semibold text-ink">
-                {editingUser ? 'Edit person' : 'Add a person'}
+                {editingUser ? t('peoplePage.editTitle') : t('peoplePage.addTitle')}
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                aria-label="Close"
+                aria-label={t('common.close')}
                 className="rounded-lg p-1.5 text-ink-faint hover:bg-sunken hover:text-ink"
               >
                 <X size={18} />
@@ -249,25 +250,24 @@ const UserManagement = () => {
             <form onSubmit={handleSubmit} className="space-y-4 p-6">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label htmlFor="fullName" className="field-label">Full name</label>
+                  <label htmlFor="fullName" className="field-label">{t('peoplePage.fullName')}</label>
                   <input id="fullName" name="fullName" value={formData.fullName} onChange={handleInputChange} className="field" />
                 </div>
                 <div>
-                  <label htmlFor="role" className="field-label">Role</label>
+                  <label htmlFor="role" className="field-label">{t('peoplePage.role')}</label>
                   <select id="role" name="role" value={formData.role} onChange={handleInputChange} className="field">
-                    <option value="Student">Student</option>
-                    <option value="Teacher">Teacher</option>
-                    <option value="Financier">Finance</option>
-                    <option value="Admin">Admin</option>
+                    {['Student', 'Teacher', 'Financier', 'Admin'].map((role) => (
+                      <option key={role} value={role}>{t(`roles.${role}`)}</option>
+                    ))}
                   </select>
                 </div>
               </div>
               <div>
-                <label htmlFor="username" className="field-label">Username</label>
+                <label htmlFor="username" className="field-label">{t('peoplePage.username')}</label>
                 <input id="username" name="username" value={formData.username} onChange={handleInputChange} className="field" />
               </div>
               <div>
-                <label htmlFor="password" className="field-label">Password</label>
+                <label htmlFor="password" className="field-label">{t('peoplePage.password')}</label>
                 <input
                   id="password"
                   type="password"
@@ -275,12 +275,12 @@ const UserManagement = () => {
                   value={formData.password}
                   onChange={handleInputChange}
                   className="field"
-                  placeholder={editingUser ? 'Leave empty to keep the current one' : 'At least 8 characters'}
+                  placeholder={editingUser ? t('peoplePage.passwordKeep') : t('peoplePage.passwordNew')}
                 />
               </div>
               <div>
                 <label htmlFor="email" className="field-label">
-                  Email{formData.role === 'Admin' && <span className="font-normal text-ink-faint"> (optional for admins)</span>}
+                  {t('auth.email')}{formData.role === 'Admin' && <span className="font-normal text-ink-faint"> {t('peoplePage.emailOptional')}</span>}
                 </label>
                 <input id="email" name="email" value={formData.email} onChange={handleInputChange} className="field" placeholder="name@example.com" />
               </div>
@@ -300,10 +300,10 @@ const UserManagement = () => {
 
               <div className="flex justify-end gap-3 pt-2">
                 <button type="button" onClick={() => setIsModalOpen(false)} className="btn-quiet">
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button type="submit" className="btn-primary">
-                  {editingUser ? 'Save changes' : 'Add person'}
+                  {editingUser ? t('peoplePage.saveChanges') : t('peoplePage.add')}
                 </button>
               </div>
             </form>

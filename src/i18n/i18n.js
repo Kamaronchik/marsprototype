@@ -19,6 +19,8 @@ i18n
     interpolation: {
       escapeValue: false,
     },
+    // Screens redraw when the admin changes a text (addResource).
+    react: { bindI18nStore: 'added' },
   });
 
 export default i18n;

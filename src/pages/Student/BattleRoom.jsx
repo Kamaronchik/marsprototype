@@ -17,8 +17,9 @@ const LETTERS = ['A', 'B', 'C', 'D'];
 // the right answer before the player has answered.
 const BattleRoom = () => {
   const { id } = useParams();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const lang = (i18n.resolvedLanguage || 'ru').slice(0, 2);
 
   const [view, setView] = useState(null);
   const [error, setError] = useState(null);
@@ -32,7 +33,7 @@ const BattleRoom = () => {
 
   useEffect(() => {
     let cancelled = false;
-    api(`/api/battles/${id}`)
+    api(`/api/battles/${id}?lang=${lang}`)
       .then((data) => {
         if (cancelled) return;
         if (data.question) setClockOffset(Date.parse(data.question.now) - Date.now());
@@ -41,7 +42,7 @@ const BattleRoom = () => {
       })
       .catch((e) => { if (!cancelled) setError(e); });
     return () => { cancelled = true; };
-  }, [id, version]);
+  }, [id, version, lang]);
 
   const question = view?.question;
   const waitingForOther = view?.waiting;

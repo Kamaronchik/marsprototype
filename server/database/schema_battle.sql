@@ -1,5 +1,6 @@
 -- =============================================================================
--- MARS SPACE - BATTLE ARENA: question bank, battles, answers, coin rewards.
+-- MARS SPACE - BATTLE ARENA: question bank, battles, answers, coin rewards,
+-- and the translation overrides that the admin edits in Settings.
 -- Run once in Supabase -> SQL Editor, AFTER schema_shop.sql.
 -- Safe to run again: everything uses IF NOT EXISTS / OR REPLACE.
 -- Then fill the bank:  npm run seed-battle
@@ -16,8 +17,13 @@ CREATE TABLE IF NOT EXISTS battle_questions (
   options JSONB NOT NULL CHECK (jsonb_typeof(options) = 'array' AND jsonb_array_length(options) = 4),
   is_active BOOLEAN NOT NULL DEFAULT true,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  -- The same question in other languages: {"uz": {"text": "...", "options": [4 texts, right answer first]}, "en": {...}}
+  i18n JSONB NOT NULL DEFAULT '{}',
   UNIQUE (course, level, text)
 );
+
+-- For a database where the table already exists without that column
+ALTER TABLE battle_questions ADD COLUMN IF NOT EXISTS i18n JSONB NOT NULL DEFAULT '{}';
 
 -- 2. BATTLES
 -- mode 'ai': against the bot, starts at once. mode 'pvp': an open challenge until a second student accepts.
@@ -210,6 +216,21 @@ REVOKE ALL ON FUNCTION public.settle_battle(UUID) FROM PUBLIC, anon, authenticat
 GRANT EXECUTE ON FUNCTION public.settle_battle(UUID) TO service_role;
 
 -- =============================================================================
+-- TRANSLATION OVERRIDES
+-- The texts of the site live in the frontend files (ru, uz, en). When the admin changes a word in
+-- Settings -> Translations, the new text is saved here and wins over the file. Everyone can read
+-- them (the login page needs them too); only an admin can write, through the backend.
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS translations (
+  lang TEXT NOT NULL CHECK (lang IN ('ru', 'uz', 'en')),
+  key TEXT NOT NULL CHECK (char_length(key) <= 200),
+  value TEXT NOT NULL CHECK (char_length(value) <= 2000),
+  updated_by UUID REFERENCES users(id) ON DELETE SET NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  PRIMARY KEY (lang, key)
+);
+
+-- =============================================================================
 -- SECURITY (Row Level Security)
 -- =============================================================================
 
@@ -218,3 +239,4 @@ GRANT EXECUTE ON FUNCTION public.settle_battle(UUID) TO service_role;
 ALTER TABLE battle_questions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE battles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE battle_answers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE translations ENABLE ROW LEVEL SECURITY;

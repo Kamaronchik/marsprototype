@@ -187,7 +187,8 @@ const resendCode = async (req, res) => {
     // A new code can be requested once per minute (prevents email spam).
     const waitMs = 60 * 1000 - (Date.now() - await db.getLastCodeTime(user.id));
     if (waitMs > 0) {
-      return res.status(429).json({ message: `Please wait ${Math.ceil(waitMs / 1000)} seconds before requesting a new code` });
+      const waitSeconds = Math.ceil(waitMs / 1000);
+      return res.status(429).json({ message: 'Please wait before requesting a new code', code: 'TOO_SOON', waitSeconds });
     }
 
     const code = generateCode();

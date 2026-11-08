@@ -4,9 +4,13 @@ import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../../features/auth/authSlice';
 import { toast } from 'react-toastify';
 import { ArrowLeft, Loader2, RefreshCw } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import Logo from '../../components/Logo';
+import LanguageSwitch from '../../components/LanguageSwitch';
+import { messageText } from '../../lib/api';
 
 const DeviceVerificationPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
@@ -71,7 +75,7 @@ const DeviceVerificationPage = () => {
     e.preventDefault();
     const fullCode = code.join('');
     if (fullCode.length !== 6) {
-      toast.error('Please enter the full 6-digit verification code');
+      toast.error(t('verify.enterAll'));
       return;
     }
 
@@ -87,15 +91,15 @@ const DeviceVerificationPage = () => {
       const data = await response.json();
 
       if (response.ok && data.user) {
-        toast.success('Device verified successfully!');
+        toast.success(t('verify.verified'));
         dispatch(loginSuccess(data.user));
         const targetRole = data.user.role?.toLowerCase() || 'student';
         navigate(`/${targetRole}`);
       } else {
-        toast.error(data.message || 'Verification failed');
+        toast.error(data.message ? messageText(t, data.message) : t('verify.failed'));
       }
     } catch {
-      toast.error('Connection error. Please try again.');
+      toast.error(t('verify.connection'));
     } finally {
       setLoading(false);
     }
@@ -116,15 +120,15 @@ const DeviceVerificationPage = () => {
       const data = await response.json();
 
       if (response.ok) {
-        toast.success(data.message || 'New verification code sent to your email');
+        toast.success(data.message ? messageText(t, data.message) : t('verify.resent'));
         setTimer(60);
         setCode(['', '', '', '', '', '']);
         document.getElementById('code-0')?.focus();
       } else {
-        toast.error(data.message || 'Failed to resend code');
+        toast.error(data.message ? messageText(t, data.message) : t('verify.resendFailed'));
       }
     } catch {
-      toast.error('Connection error while resending code');
+      toast.error(t('verify.resendConnection'));
     } finally {
       setResending(false);
     }
@@ -132,19 +136,22 @@ const DeviceVerificationPage = () => {
 
   return (
     <div className="flex min-h-screen flex-col items-center bg-paper px-6 py-10">
-      <Logo />
+      <div className="flex w-full max-w-5xl items-center justify-between">
+        <Logo />
+        <LanguageSwitch />
+      </div>
 
       <div className="my-auto w-full max-w-md py-10">
         <button
           onClick={() => navigate('/login')}
           className="mb-8 inline-flex items-center gap-1.5 text-sm font-medium text-ink-soft hover:text-ink"
         >
-          <ArrowLeft size={16} /> Back to sign in
+          <ArrowLeft size={16} /> {t('verify.back')}
         </button>
 
-        <h1 className="font-display text-[2rem] font-semibold tracking-tight text-ink">Check your email</h1>
+        <h1 className="font-display text-[2rem] font-semibold tracking-tight text-ink">{t('verify.title')}</h1>
         <p className="mt-2 text-[15px] leading-relaxed text-ink-soft">
-          This looks like a new device, so we sent a 6-digit code to the email on your account. Enter it below.
+          {t('verify.text')}
         </p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
@@ -157,7 +164,7 @@ const DeviceVerificationPage = () => {
                 inputMode="numeric"
                 maxLength="1"
                 autoComplete="one-time-code"
-                aria-label={`Digit ${idx + 1}`}
+                aria-label={t('verify.digit', { n: idx + 1 })}
                 className="field h-14 w-full min-w-0 px-0 text-center font-display text-2xl font-semibold"
                 value={digit}
                 onChange={(e) => handleInputChange(idx, e.target.value)}
@@ -170,16 +177,16 @@ const DeviceVerificationPage = () => {
             {loading ? (
               <>
                 <Loader2 className="animate-spin" size={17} />
-                <span>Checking...</span>
+                <span>{t('verify.checking')}</span>
               </>
             ) : (
-              <span>Confirm and continue</span>
+              <span>{t('verify.confirm')}</span>
             )}
           </button>
         </form>
 
         <div className="mt-8 border-t border-line pt-6 text-sm text-ink-soft">
-          <p>Nothing arrived? Look in your spam folder first.</p>
+          <p>{t('verify.noMail')}</p>
           <button
             type="button"
             disabled={timer > 0 || resending}
@@ -189,12 +196,12 @@ const DeviceVerificationPage = () => {
             {resending ? (
               <>
                 <RefreshCw className="animate-spin" size={14} />
-                <span>Sending...</span>
+                <span>{t('verify.sending')}</span>
               </>
             ) : timer > 0 ? (
-              <span>Send a new code in {formatTime(timer)}</span>
+              <span>{t('verify.resendIn', { time: formatTime(timer) })}</span>
             ) : (
-              <span>Send a new code</span>
+              <span>{t('verify.resend')}</span>
             )}
           </button>
         </div>

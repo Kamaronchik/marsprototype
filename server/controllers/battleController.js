@@ -10,6 +10,13 @@ const {
 
 const BATTLE_COLUMNS = `*, creator:users!battles_creator_id_fkey(full_name), opponent:users!battles_opponent_id_fkey(full_name)`;
 const QUESTION_MS = QUESTION_SECONDS * 1000;
+const LANGUAGES = ['ru', 'uz', 'en'];
+
+// ?lang=uz|en|ru from the browser (the interface language). Russian is the original of every question.
+const langOf = (req) => (LANGUAGES.includes(req.query.lang) ? req.query.lang : 'ru');
+
+// A question in the chosen language: { text, options } with the right answer first, like the original.
+const localized = (question, lang) => question.i18n?.[lang] ?? { text: question.text, options: question.options };
 
 const fail = (res, code) => sendRpcError(res, { error: code });
 
@@ -52,12 +59,12 @@ const settle = async (battleId) => {
 };
 
 // The result screen: scores, coins and every question with the right answer.
-const buildResult = async (battle, userId) => {
+const buildResult = async (battle, userId, lang) => {
   const side = sideOf(battle, userId);
   const ids = battle.rounds.map((r) => r.questionId);
 
   const [{ data: questions }, { data: answers }] = await Promise.all([
-    supabase.from('battle_questions').select('id, text, options').in('id', ids),
+    supabase.from('battle_questions').select('id, text, options, i18n').in('id', ids),
     supabase.from('battle_answers').select('round_index, chosen_position, is_correct').eq('battle_id', battle.id).eq('player_id', userId),
   ]);
 
@@ -68,7 +75,7 @@ const buildResult = async (battle, userId) => {
     reward: battle.winner_side === side ? battle.reward : 0,
     total: battle.rounds.length,
     review: battle.rounds.map((round, index) => {
-      const question = questions.find((q) => q.id === round.questionId);
+      const question = localized(questions.find((q) => q.id === round.questionId), lang);
       const mine = answers.find((a) => a.round_index === index);
       return {
         text: question.text,
@@ -98,7 +105,7 @@ const summaryOf = (battle, userId) => {
 
 // Shows the next question to this player and starts their 20 seconds. A question whose time
 // ran out is closed as a wrong answer. Returns null when the player has answered everything.
-const nextQuestion = async (battle, userId) => {
+const nextQuestion = async (battle, userId, lang) => {
   const { data: rows } = await supabase
     .from('battle_answers').select('*').eq('battle_id', battle.id).eq('player_id', userId);
 
@@ -122,7 +129,8 @@ const nextQuestion = async (battle, userId) => {
       index += 1;
     } else {
       const round = battle.rounds[index];
-      const { data: question } = await supabase.from('battle_questions').select('text, options').eq('id', round.questionId).single();
+      const { data: stored } = await supabase.from('battle_questions').select('text, options, i18n').eq('id', round.questionId).single();
+      const question = localized(stored, lang);
       return {
         round: index,
         total: battle.rounds.length,
@@ -258,14 +266,14 @@ const getBattle = async (req, res) => {
   }
 
   const summary = summaryOf(battle, req.user.id);
-  if (battle.status === 'finished') return res.json({ battle: summary, result: await buildResult(battle, req.user.id) });
+  if (battle.status === 'finished') return res.json({ battle: summary, result: await buildResult(battle, req.user.id, langOf(req)) });
   if (battle.status !== 'active') return res.json({ battle: summary });
 
-  const question = await nextQuestion(battle, req.user.id);
+  const question = await nextQuestion(battle, req.user.id, langOf(req));
   if (question) return res.json({ battle: summary, question });
 
   const done = await finishIfReady(battle, req.user.id);
-  if (done) return res.json({ battle: summaryOf(done, req.user.id), result: await buildResult(done, req.user.id) });
+  if (done) return res.json({ battle: summaryOf(done, req.user.id), result: await buildResult(done, req.user.id, langOf(req)) });
   res.json({ battle: summary, waiting: true });
 };
 
@@ -307,7 +315,7 @@ const answerQuestion = async (req, res) => {
   if (answered + 1 === battle.rounds.length) {
     const done = await finishIfReady(battle, req.user.id);
     reply.finished = true;
-    if (done) reply.result = await buildResult(done, req.user.id);
+    if (done) reply.result = await buildResult(done, req.user.id, langOf(req));
   }
   res.json(reply);
 };

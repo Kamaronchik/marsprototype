@@ -31,6 +31,7 @@ import TeacherCoins from './pages/Teacher/Coins';
 import BattleArena from './pages/Student/BattleArena';
 import BattleRoom from './pages/Student/BattleRoom';
 import AdminBattles from './pages/Admin/Battles';
+import Settings from './pages/Admin/Settings';
 import FinancierLayout from './layouts/Financier/FinancierLayout';
 import TeacherLayout from './layouts/Teacher/TeacherLayout';
 import StudentLayout from './layouts/Student/StudentLayout';
@@ -71,7 +72,7 @@ const AppRoutes = () => {
             <Route path="orders" element={<ShopOrders />} />
             <Route path="coins" element={<AdminCoins />} />
             <Route path="battles" element={<AdminBattles />} />
-            <Route path="settings" element={<ComingSoon title="Settings" />} />
+            <Route path="settings" element={<Settings />} />
           </Route>
 
           {/* Financier Routes */}
@@ -114,19 +115,19 @@ const AppRoutes = () => {
               </ProtectedRoute>
             }
           >
-            <Route index element={<ComingSoon title="Home" />} />
+            <Route index element={<ComingSoon title="nav.home" />} />
             <Route path="attendance" element={<StudentAttendance />} />
             <Route path="battle" element={<BattleArena />} />
             <Route path="battle/:id" element={<BattleRoom />} />
             <Route path="shop" element={<Shop />} />
             <Route path="coins" element={<StudentCoins />} />
             <Route path="purchases" element={<Purchases />} />
-            <Route path="profile" element={<ComingSoon title="Profile" />} />
+            <Route path="profile" element={<ComingSoon title="nav.profile" />} />
           </Route>
 
-          <Route path="/forbidden" element={<StatusPage code="403" title="This page is not for your account" text="Your role does not have access here. If you think that is a mistake, ask an administrator." />} />
+          <Route path="/forbidden" element={<StatusPage code="403" title="status.forbiddenTitle" text="status.forbiddenText" />} />
           <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="*" element={<StatusPage code="404" title="We could not find that page" text="The link may be old or mistyped." />} />
+          <Route path="*" element={<StatusPage code="404" title="status.notFoundTitle" text="status.notFoundText" />} />
         </Routes>
     </>
   );
