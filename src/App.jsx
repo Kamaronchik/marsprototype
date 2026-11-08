@@ -2,8 +2,7 @@ import React, { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Provider, useDispatch } from 'react-redux';
 import { restoreSession } from './features/auth/authSlice';
-import { PersistGate } from 'redux-persist/integration/react';
-import { store, persistor } from './app/store';
+import { store } from './app/store';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -16,6 +15,9 @@ import UserManagement from './pages/Admin/UserManagement';
 import Groups from './pages/Admin/Groups';
 import AdminAttendance from './pages/Admin/Attendance';
 import Students from './pages/shared/Students';
+import FinanceOverview from './pages/shared/FinanceOverview';
+import Payments from './pages/shared/Payments';
+import Salaries from './pages/shared/Salaries';
 import TeacherAttendance from './pages/Teacher/Attendance';
 import MyGroups from './pages/Teacher/MyGroups';
 import StudentAttendance from './pages/Student/Attendance';
@@ -52,6 +54,9 @@ const AppRoutes = () => {
             <Route path="students" element={<Students />} />
             <Route path="groups" element={<Groups />} />
             <Route path="attendance" element={<AdminAttendance />} />
+            <Route path="payments" element={<Payments />} />
+            <Route path="salaries" element={<Salaries />} />
+            <Route path="debts" element={<Students debts />} />
             <Route path="settings" element={<ComingSoon title="Settings" />} />
           </Route>
 
@@ -64,9 +69,10 @@ const AppRoutes = () => {
               </ProtectedRoute>
             }
           >
-            <Route index element={<ComingSoon title="Overview" />} />
-            <Route path="payments" element={<ComingSoon title="Payments" />} />
-            <Route path="debts" element={<ComingSoon title="Debts" />} />
+            <Route index element={<FinanceOverview />} />
+            <Route path="payments" element={<Payments />} />
+            <Route path="salaries" element={<Salaries />} />
+            <Route path="debts" element={<Students debts />} />
             <Route path="students" element={<Students />} />
           </Route>
 
@@ -108,9 +114,7 @@ const AppRoutes = () => {
 
 const App = () => (
   <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <AppRoutes />
-    </PersistGate>
+    <AppRoutes />
   </Provider>
 );
 

@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, GraduationCap, Layers, ClipboardCheck, Settings } from 'lucide-react';
+import { LayoutDashboard, Users, GraduationCap, Layers, ClipboardCheck, CreditCard, Wallet, Settings } from 'lucide-react';
 import AppShell from '../../components/AppShell';
 
 const menuItems = [
@@ -7,6 +7,8 @@ const menuItems = [
   { label: 'nav.students', path: '/admin/students', icon: GraduationCap },
   { label: 'nav.groups', path: '/admin/groups', icon: Layers },
   { label: 'nav.attendance', path: '/admin/attendance', icon: ClipboardCheck },
+  { label: 'nav.payments', path: '/admin/payments', icon: CreditCard },
+  { label: 'nav.salaries', path: '/admin/salaries', icon: Wallet },
   { label: 'nav.settings', path: '/admin/settings', icon: Settings },
 ];
 

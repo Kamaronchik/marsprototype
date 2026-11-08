@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Bell } from 'lucide-react';
 import { api } from '../lib/api';
 import { formatDate, formatDateTime } from '../lib/format';
+import { formatMoney } from '../lib/money';
 
 const REFRESH_MS = 60 * 1000;
 
@@ -39,6 +40,7 @@ const NotificationBell = () => {
   const text = (n) => t(`notif.${n.type.replace('.', '_')}`, {
     ...n.data,
     date: n.data.date ? formatDate(n.data.date, i18n.language) : '',
+    amount: n.data.amount != null ? formatMoney(n.data.amount, i18n.language, t) : '',
     defaultValue: t('notif.unknown'),
   });
 

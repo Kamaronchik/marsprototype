@@ -12,6 +12,7 @@
     "create-admin": "node server/scripts/createAdmin.js",
     "test-shop": "node server/scripts/testShop.js",
     "test-platform": "node server/scripts/testPlatform.js",
+    "test-finance": "node server/scripts/testFinance.js",
     "start": "node server/server.js",
     "dev-all": "concurrently \"npm run dev\" \"node server/server.js\""
   },

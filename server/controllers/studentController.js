@@ -1,10 +1,7 @@
 const supabase = require('../config/supabase');
 const { handleDbError } = require('../utils/apiErrors');
 const { isUuid } = require('../utils/validate');
-const { logAction } = require('../utils/audit');
-const { notify } = require('../utils/notify');
-
-const PAYMENT_STATUSES = ['active', 'debtor'];
+const { PAYMENT_STATUSES, changePaymentStatus } = require('../utils/students');
 
 const COLUMNS = `id, username, full_name, email, status, payment_status, created_at,
   memberships:group_students(group:groups(id, name, room, weekdays, start_time, status, teacher:users!groups_teacher_id_fkey(full_name)))`;
@@ -66,17 +63,10 @@ const setPaymentStatus = async (req, res) => {
   if (!isUuid(id)) return res.status(400).json({ message: 'Invalid student id' });
   if (!PAYMENT_STATUSES.includes(paymentStatus)) return res.status(400).json({ message: 'Invalid payment status' });
 
-  const { data: current } = await supabase
-    .from('users').select('id, payment_status').eq('id', id).eq('role', 'Student').maybeSingle();
-  if (!current) return res.status(404).json({ message: 'Student not found' });
-  if (current.payment_status === paymentStatus) return res.json({ paymentStatus });
-
-  const { error } = await supabase.from('users').update({ payment_status: paymentStatus }).eq('id', id);
-  if (error) return handleDbError(error, res);
-
-  await notify(id, paymentStatus === 'debtor' ? 'payment.debtor' : 'payment.cleared', {});
-  await logAction(req.user.id, 'student.payment_status', 'user', id, { paymentStatus });
-  res.json({ paymentStatus });
+  const result = await changePaymentStatus(id, paymentStatus, req.user.id);
+  if (result.error) return handleDbError(result.error, res);
+  if (result.notFound) return res.status(404).json({ message: 'Student not found' });
+  res.json({ paymentStatus: result.paymentStatus });
 };
 
 module.exports = { searchStudents, setPaymentStatus };

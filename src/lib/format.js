@@ -8,12 +8,21 @@ const UZ_WEEKDAYS_SHORT = ['du', 'se', 'ch', 'pa', 'ju', 'sh', 'ya'];
 const isUzbek = (language) => (language || '').startsWith('uz');
 const mondayFirst = (date) => (date.getDay() + 6) % 7; // 0 = Monday
 
+// Today's date and month on the school's own calendar (Tashkent), whatever the computer's clock says.
+const tashkentParts = () => Object.fromEntries(
+  new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Tashkent', year: 'numeric', month: '2-digit', day: '2-digit' })
+    .formatToParts(new Date()).map((p) => [p.type, p.value]),
+);
+export const todayIso = () => { const p = tashkentParts(); return `${p.year}-${p.month}-${p.day}`; };
+export const currentMonth = () => todayIso().slice(0, 7);
+
 export const localeOf = (language) => LOCALES[(language || 'en').slice(0, 2)] || 'en-GB';
 
 const toDate = (value) => new Date(value.length === 10 ? `${value}T00:00:00` : value);
 
 // 'YYYY-MM-DD' or a full timestamp, written in the user's language.
 export const formatDate = (value, language, options = { day: 'numeric', month: 'short', year: 'numeric' }) => {
+  if (!value) return '—';
   const date = toDate(value);
   if (!isUzbek(language)) return date.toLocaleDateString(localeOf(language), options);
 
@@ -28,6 +37,7 @@ export const formatDate = (value, language, options = { day: 'numeric', month: '
 };
 
 export const formatDateTime = (value, language) => {
+  if (!value) return '—';
   const date = new Date(value);
   const time = date.toLocaleTimeString(localeOf(language), { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
   return `${formatDate(value, language, { day: 'numeric', month: 'short' })}, ${time}`;

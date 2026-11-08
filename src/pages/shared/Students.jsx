@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { Search } from 'lucide-react';
+import { Search, BellRing } from 'lucide-react';
 import PageHeader from '../../components/PageHeader';
 import { api, errorText } from '../../lib/api';
 import { useFetch } from '../../lib/useFetch';
@@ -9,13 +9,13 @@ import { weekdaysText } from '../../lib/format';
 
 const SEARCH_DELAY_MS = 300;
 
-// Global student directory for the Admin and the Financier.
+// Global student directory for the Admin and the Financier. With debts it opens on the debtors.
 // One search box finds a student by name, email, group, teacher or room.
-const Students = () => {
+const Students = ({ debts = false }) => {
   const { t, i18n } = useTranslation();
   const [text, setText] = useState('');
   const [query, setQuery] = useState('');
-  const [payment, setPayment] = useState('');
+  const [payment, setPayment] = useState(debts ? 'debtor' : '');
   const [groupId, setGroupId] = useState('');
 
   // Wait until the user stops typing before asking the server.
@@ -49,9 +49,24 @@ const Students = () => {
     }
   };
 
+  const remindAll = async () => {
+    if (!window.confirm(t('finance.remindConfirm'))) return;
+    try {
+      const { debtors } = await api('/api/finance/remind-debtors', { method: 'POST' });
+      toast.success(t('finance.reminded', { count: debtors }));
+    } catch (error) {
+      toast.error(errorText(t, error));
+    }
+  };
+
   return (
     <>
-      <PageHeader title={t('students.title')}>{t('students.subtitle')}</PageHeader>
+      <PageHeader
+        title={debts ? t('finance.debtsTitle') : t('students.title')}
+        action={debts && <button onClick={remindAll} className="btn-primary"><BellRing size={17} /> {t('finance.remind')}</button>}
+      >
+        {debts ? t('finance.debtsSubtitle') : t('students.subtitle')}
+      </PageHeader>
 
       <div className="mb-4 flex flex-wrap gap-3">
         <div className="relative min-w-[260px] flex-1">

@@ -1,16 +1,18 @@
-import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { ArrowUpRight } from 'lucide-react';
-import { fetchUsers } from '../../features/users/usersSlice';
 import PageHeader from '../../components/PageHeader';
+import { useFetch } from '../../lib/useFetch';
+import { formatDate } from '../../lib/format';
+import { formatMoney } from '../../lib/money';
 
-const greeting = () => {
-  const h = new Date().getHours();
-  if (h < 5) return 'Working late';
-  if (h < 12) return 'Good morning';
-  if (h < 18) return 'Good afternoon';
-  return 'Good evening';
+const greetingKey = () => {
+  const hour = new Date().getHours();
+  if (hour < 5) return 'dashboard.greetingNight';
+  if (hour < 12) return 'dashboard.greetingMorning';
+  if (hour < 18) return 'dashboard.greetingAfternoon';
+  return 'dashboard.greetingEvening';
 };
 
 const roleDot = {
@@ -20,48 +22,51 @@ const roleDot = {
   Student: 'bg-mars',
 };
 
+// Admin front page. Every number comes from the server.
 const AdminDashboard = () => {
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(fetchUsers());
-  }, [dispatch]);
-
+  const { t, i18n } = useTranslation();
   const { user } = useSelector((state) => state.auth);
-  const users = useSelector((state) => state.users.list);
-  const groups = useSelector((state) => state.groups.list);
-  const payments = useSelector((state) => state.payments.list);
 
+  const people = useFetch('/api/users');
+  const groups = useFetch('/api/groups');
+  const finance = useFetch('/api/finance/overview');
+  const unmarked = useFetch('/api/attendance/unmarked');
+
+  const users = people.data?.users ?? [];
   const count = (role) => users.filter((u) => u.role === role).length;
-  const revenue = payments.reduce((sum, p) => sum + (p.status === 'Paid' ? Number(p.amount) : 0), 0);
   const blocked = users.filter((u) => u.status === 'blocked').length;
+  const activeGroups = (groups.data?.groups ?? []).filter((g) => g.status === 'active').length;
+  const debtors = finance.data?.debtors ?? 0;
+  const lessonsWithoutMarks = unmarked.data?.lessons.length ?? 0;
   const firstName = (user?.fullName || user?.username || '').split(' ')[0];
 
-  const today = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+  const today = formatDate(new Date().toISOString(), i18n.language, { weekday: 'long', day: 'numeric', month: 'long' });
 
   const stats = [
-    { label: 'Students', value: count('Student') },
-    { label: 'Teachers', value: count('Teacher') },
-    { label: 'Groups', value: groups.length },
-    { label: 'Paid so far', value: `$${revenue.toLocaleString('en-US')}` },
+    { label: t('dashboard.students'), value: count('Student') },
+    { label: t('dashboard.teachers'), value: count('Teacher') },
+    { label: t('dashboard.groups'), value: activeGroups },
+    { label: t('dashboard.debtors'), value: debtors },
+    { label: t('dashboard.paid'), value: finance.data ? formatMoney(finance.data.revenue, i18n.language, t) : '—' },
   ];
 
-  const newest = [...users]
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-    .slice(0, 6);
+  const newest = [...users].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 6);
+
+  const attention = [
+    { show: lessonsWithoutMarks > 0, to: '/admin/attendance', text: t('dashboard.unmarked', { count: lessonsWithoutMarks }) },
+    { show: debtors > 0, to: '/admin/debts', text: t('dashboard.debtorsHint', { count: debtors }) },
+    { show: blocked > 0, to: '/admin/users', text: t('dashboard.blocked', { count: blocked }) },
+  ].filter((item) => item.show);
 
   return (
     <>
-      <PageHeader title={`${greeting()}, ${firstName}`}>{today}</PageHeader>
+      <PageHeader title={`${t(greetingKey())}, ${firstName}`}>{today}</PageHeader>
 
-      {/* Numbers: one ruled strip, not six boxes */}
-      <dl className="grid grid-cols-2 divide-line overflow-hidden rounded-xl border border-line bg-card md:grid-cols-4 md:divide-x">
-        {stats.map((s, i) => (
-          <div
-            key={s.label}
-            className={`px-6 py-5 ${i < 2 ? 'border-b border-line md:border-b-0' : ''} ${i % 2 === 0 ? 'border-r border-line md:border-r-0' : ''}`}
-          >
+      <dl className="grid grid-cols-2 overflow-hidden rounded-xl border border-line bg-card md:grid-cols-3 [&>div]:border-b [&>div]:border-r [&>div]:border-line">
+        {stats.map((s) => (
+          <div key={s.label} className="px-6 py-5">
             <dt className="text-sm text-ink-soft">{s.label}</dt>
-            <dd className="mt-1 font-display text-4xl font-semibold tracking-tight text-ink">{s.value}</dd>
+            <dd className="mt-1 font-display text-2xl font-semibold leading-tight tracking-tight text-ink">{s.value}</dd>
           </div>
         ))}
       </dl>
@@ -69,17 +74,13 @@ const AdminDashboard = () => {
       <div className="mt-8 grid gap-8 lg:grid-cols-[1.6fr_1fr]">
         <section>
           <div className="mb-3 flex items-baseline justify-between">
-            <h2 className="font-display text-xl font-semibold text-ink">Newest people</h2>
-            <Link to="/admin/users" className="text-sm font-medium text-mars hover:text-mars-deep">
-              See everyone
-            </Link>
+            <h2 className="font-display text-xl font-semibold text-ink">{t('dashboard.newest')}</h2>
+            <Link to="/admin/users" className="text-sm font-medium text-mars hover:text-mars-deep">{t('dashboard.seeEveryone')}</Link>
           </div>
 
           <div className="rounded-xl border border-line bg-card">
             {newest.length === 0 ? (
-              <p className="px-6 py-10 text-center text-sm text-ink-soft">
-                No one has been added yet. Start on the People page.
-              </p>
+              <p className="px-6 py-10 text-center text-sm text-ink-soft">{t('dashboard.noOne')}</p>
             ) : (
               <ul className="divide-y divide-line">
                 {newest.map((u) => (
@@ -87,10 +88,10 @@ const AdminDashboard = () => {
                     <span className={`h-2 w-2 shrink-0 rounded-full ${roleDot[u.role] || 'bg-ink-faint'}`} aria-hidden="true" />
                     <span className="min-w-0 flex-1 truncate text-sm text-ink">
                       <span className="font-semibold">{u.fullName}</span>
-                      <span className="text-ink-soft"> joined as {u.role.toLowerCase()}</span>
+                      <span className="text-ink-soft"> {t('dashboard.joinedAs', { role: t(`roles.${u.role}`).toLowerCase() })}</span>
                     </span>
                     <span className="shrink-0 text-xs text-ink-faint">
-                      {new Date(u.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                      {formatDate(u.createdAt, i18n.language, { day: 'numeric', month: 'short' })}
                     </span>
                   </li>
                 ))}
@@ -100,32 +101,23 @@ const AdminDashboard = () => {
         </section>
 
         <section>
-          <h2 className="mb-3 font-display text-xl font-semibold text-ink">Jump to</h2>
+          <h2 className="mb-3 font-display text-xl font-semibold text-ink">{t('dashboard.jump')}</h2>
           <div className="rounded-xl border border-line bg-card">
-            <ul className="divide-y divide-line">
-              {[
-                { to: '/admin/users', title: 'Add or edit people', hint: `${users.length} accounts` },
-                { to: '/admin/groups', title: 'Groups', hint: 'Coming soon' },
-                { to: '/admin/settings', title: 'Settings', hint: 'Coming soon' },
-              ].map((l) => (
-                <li key={l.to}>
-                  <Link to={l.to} className="flex items-center justify-between px-5 py-3.5 hover:bg-sunken/60">
-                    <span>
-                      <span className="block text-sm font-semibold text-ink">{l.title}</span>
-                      <span className="block text-xs text-ink-faint">{l.hint}</span>
-                    </span>
-                    <ArrowUpRight size={17} className="text-ink-faint" />
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            {attention.length === 0 ? (
+              <p className="px-5 py-8 text-center text-sm text-ink-soft">{t('dashboard.allGood')}</p>
+            ) : (
+              <ul className="divide-y divide-line">
+                {attention.map((item) => (
+                  <li key={item.to}>
+                    <Link to={item.to} className="flex items-center justify-between gap-3 px-5 py-3.5 hover:bg-sunken/60">
+                      <span className="text-sm font-medium text-ink">{item.text}</span>
+                      <ArrowUpRight size={17} className="shrink-0 text-ink-faint" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
-
-          {blocked > 0 && (
-            <p className="mt-4 rounded-lg bg-ochre-tint px-4 py-3 text-sm text-ochre">
-              {blocked} {blocked === 1 ? 'account is' : 'accounts are'} blocked right now.
-            </p>
-          )}
         </section>
       </div>
     </>
