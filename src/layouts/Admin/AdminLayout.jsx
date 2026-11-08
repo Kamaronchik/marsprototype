@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, GraduationCap, Layers, ClipboardCheck, CreditCard, Wallet, Gift, PackageCheck, Coins, Settings } from 'lucide-react';
+import { LayoutDashboard, Users, GraduationCap, Layers, ClipboardCheck, CreditCard, Wallet, Gift, PackageCheck, Coins, Trophy, Settings } from 'lucide-react';
 import AppShell from '../../components/AppShell';
 
 const menuItems = [
@@ -12,6 +12,7 @@ const menuItems = [
   { label: 'nav.products', path: '/admin/shop', icon: Gift },
   { label: 'nav.orders', path: '/admin/orders', icon: PackageCheck },
   { label: 'nav.coins', path: '/admin/coins', icon: Coins },
+  { label: 'nav.battles', path: '/admin/battles', icon: Trophy },
   { label: 'nav.settings', path: '/admin/settings', icon: Settings },
 ];
 

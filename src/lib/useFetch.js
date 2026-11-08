@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { api } from './api';
 
 // Loads a URL when the component opens (and again when the URL changes).
@@ -16,5 +16,7 @@ export const useFetch = (url) => {
     return () => { cancelled = true; };
   }, [url, version]);
 
-  return { ...state, reload: () => setVersion((v) => v + 1) };
+  const reload = useCallback(() => setVersion((v) => v + 1), []);
+
+  return { ...state, reload };
 };

@@ -61,7 +61,9 @@
       "coins": "Coins",
       "purchases": "My purchases",
       "products": "Products",
-      "orders": "Orders"
+      "orders": "Orders",
+      "battle": "Battle Arena",
+      "battles": "Battles"
     },
     "bell": {
       "title": "Notifications",
@@ -83,7 +85,9 @@
       "order_created": "{{studentName}} ordered rewards for {{total}} coins",
       "order_delivered": "Your order was handed over. Enjoy!",
       "order_cancelled": "Your order was cancelled. {{total}} coins are back on your balance",
-      "order_cancelled_by_student": "{{studentName}} cancelled an order of {{total}} coins"
+      "order_cancelled_by_student": "{{studentName}} cancelled an order of {{total}} coins",
+      "battle_accepted": "{{opponentName}} accepted your {{courseName}} challenge. Open the battle!",
+      "battle_finished": "Your {{courseName}} battle is over: {{result}}"
     },
     "errors": {
       "ROOM_BUSY": "This room is already taken at that time",
@@ -107,7 +111,15 @@
       "NOT_YOUR_STUDENT": "This student is not in your group",
       "STUDENT_NOT_FOUND": "Student not found",
       "TEACHER_NOT_FOUND": "Teacher not found",
-      "INVALID_AMOUNT": "Enter a whole number of coins above zero"
+      "INVALID_AMOUNT": "Enter a whole number of coins above zero",
+      "NOT_ENOUGH_QUESTIONS": "There are not enough questions for this course and level yet",
+      "ALREADY_OPEN": "You already have an open challenge",
+      "CHALLENGE_TAKEN": "This challenge is no longer open",
+      "BATTLE_NOT_FOUND": "Battle not found",
+      "BATTLE_NOT_ACTIVE": "This battle is not running",
+      "NOT_STARTED": "This question was not opened yet",
+      "ALREADY_ANSWERED": "This question was already answered",
+      "WRONG_ROUND": "Answer the current question first"
     },
     "groups": {
       "title": "Groups",
@@ -418,6 +430,88 @@
       "give": "Give coins",
       "given": "Coins given. Left for this student this month: {{remaining}}",
       "noStudents": "You have no students yet"
+    },
+    "battle": {
+      "title": "Battle Arena",
+      "subtitle": "Quick quizzes against a bot or another student. Win coins.",
+      "courses": {
+        "html": "HTML",
+        "css": "CSS",
+        "js": "JavaScript",
+        "react": "React"
+      },
+      "levels": {
+        "intern": "Intern",
+        "junior": "Junior",
+        "middle": "Middle",
+        "senior": "Senior"
+      },
+      "course": "Course",
+      "level": "Level",
+      "play": "Play",
+      "history": "History",
+      "vsBot": "Play against the bot",
+      "vsBotHint": "Starts at once. Pick a level: a Senior bot rarely makes mistakes.",
+      "vsStudent": "Play against a student",
+      "vsStudentHint": "Create a challenge. Other students see it in the list below and can accept it.",
+      "start": "Start battle",
+      "createChallenge": "Create a challenge",
+      "challenges": "Open challenges",
+      "noChallenges": "No open challenges right now",
+      "accept": "Accept",
+      "yourChallenge": "Your challenge",
+      "cancelChallenge": "Cancel",
+      "openIt": "Open",
+      "waitingOpponent": "Waiting for an opponent...",
+      "waitingOpponentHint": "Stay on this page. The battle starts as soon as another student accepts.",
+      "dailyCoins": "Coins from battles today: {{earned}} of {{limit}}",
+      "dailyFull": "Daily limit reached. You can still play, but a win gives no coins until tomorrow.",
+      "reward": "A win gives {{reward}} coins.",
+      "question": "Question {{n}} of {{total}}",
+      "seconds": "{{seconds}} s",
+      "correct": "Correct!",
+      "wrong": "Not this one",
+      "waitingOther": "You finished! Waiting for the other player...",
+      "win": "Victory!",
+      "loss": "Defeat",
+      "draw": "Draw",
+      "youScored": "You: {{mine}} of {{total}}",
+      "theyScored": "{{name}}: {{theirs}} of {{total}}",
+      "bot": "Bot ({{level}})",
+      "coinsWon": "+{{coins}} coins",
+      "noCoins": "No coins this time",
+      "review": "Questions and answers",
+      "yourAnswer": "Your answer",
+      "rightAnswer": "Right answer",
+      "noAnswer": "no answer",
+      "playAgain": "Play again",
+      "back": "Back to the arena",
+      "noHistory": "No battles yet",
+      "noHistoryHint": "Play your first battle: it takes about two minutes.",
+      "wins": "Wins",
+      "losses": "Defeats",
+      "draws": "Draws",
+      "coinsTotal": "Coins won",
+      "vs": "vs {{name}}"
+    },
+    "battleAdmin": {
+      "title": "Battles",
+      "subtitle": "How students compete, and how big the question bank is.",
+      "total": "Battles",
+      "finished": "Finished",
+      "ai": "Against the bot",
+      "pvp": "Between students",
+      "byCourse": "Battles by course",
+      "bank": "Question bank",
+      "recent": "Recent battles",
+      "players": "Players",
+      "result": "Result",
+      "score": "Score",
+      "coins": "Coins",
+      "winner": "Winner",
+      "bot": "Bot",
+      "draw": "Draw",
+      "empty": "No finished battles yet"
     }
   }
 }

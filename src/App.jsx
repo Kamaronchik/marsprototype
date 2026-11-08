@@ -28,6 +28,9 @@ import ShopProducts from './pages/Admin/ShopProducts';
 import ShopOrders from './pages/Admin/ShopOrders';
 import AdminCoins from './pages/Admin/Coins';
 import TeacherCoins from './pages/Teacher/Coins';
+import BattleArena from './pages/Student/BattleArena';
+import BattleRoom from './pages/Student/BattleRoom';
+import AdminBattles from './pages/Admin/Battles';
 import FinancierLayout from './layouts/Financier/FinancierLayout';
 import TeacherLayout from './layouts/Teacher/TeacherLayout';
 import StudentLayout from './layouts/Student/StudentLayout';
@@ -67,6 +70,7 @@ const AppRoutes = () => {
             <Route path="shop" element={<ShopProducts />} />
             <Route path="orders" element={<ShopOrders />} />
             <Route path="coins" element={<AdminCoins />} />
+            <Route path="battles" element={<AdminBattles />} />
             <Route path="settings" element={<ComingSoon title="Settings" />} />
           </Route>
 
@@ -112,6 +116,8 @@ const AppRoutes = () => {
           >
             <Route index element={<ComingSoon title="Home" />} />
             <Route path="attendance" element={<StudentAttendance />} />
+            <Route path="battle" element={<BattleArena />} />
+            <Route path="battle/:id" element={<BattleRoom />} />
             <Route path="shop" element={<Shop />} />
             <Route path="coins" element={<StudentCoins />} />
             <Route path="purchases" element={<Purchases />} />

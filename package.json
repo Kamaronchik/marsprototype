@@ -13,6 +13,8 @@
     "test-shop": "node server/scripts/testShop.js",
     "test-platform": "node server/scripts/testPlatform.js",
     "test-finance": "node server/scripts/testFinance.js",
+    "seed-battle": "node server/scripts/seedBattleQuestions.js",
+    "test-battle": "node server/scripts/testBattle.js",
     "start": "node server/server.js",
     "dev-all": "concurrently \"npm run dev\" \"node server/server.js\""
   },

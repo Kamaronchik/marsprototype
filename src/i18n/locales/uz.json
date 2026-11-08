@@ -61,7 +61,9 @@
       "coins": "Koinlar",
       "purchases": "Xaridlarim",
       "products": "Mahsulotlar",
-      "orders": "Buyurtmalar"
+      "orders": "Buyurtmalar",
+      "battle": "Battle Arena",
+      "battles": "Bahslar"
     },
     "bell": {
       "title": "Bildirishnomalar",
@@ -83,7 +85,9 @@
       "order_created": "{{studentName}} {{total}} koinlik sovg'a buyurtma qildi",
       "order_delivered": "Buyurtmangiz topshirildi. Yoqimli foydalaning!",
       "order_cancelled": "Buyurtmangiz bekor qilindi. {{total}} koin balansingizga qaytdi",
-      "order_cancelled_by_student": "{{studentName}} {{total}} koinlik buyurtmani bekor qildi"
+      "order_cancelled_by_student": "{{studentName}} {{total}} koinlik buyurtmani bekor qildi",
+      "battle_accepted": "{{opponentName}} {{courseName}} bo'yicha chaqiruvingizni qabul qildi. Bahsni oching!",
+      "battle_finished": "{{courseName}} bo'yicha bahsingiz tugadi: {{result}}"
     },
     "errors": {
       "ROOM_BUSY": "Bu xona shu vaqtda band",
@@ -107,7 +111,15 @@
       "NOT_YOUR_STUDENT": "Bu o'quvchi sizning guruhingizda emas",
       "STUDENT_NOT_FOUND": "O'quvchi topilmadi",
       "TEACHER_NOT_FOUND": "O'qituvchi topilmadi",
-      "INVALID_AMOUNT": "Noldan katta butun koin sonini kiriting"
+      "INVALID_AMOUNT": "Noldan katta butun koin sonini kiriting",
+      "NOT_ENOUGH_QUESTIONS": "Bu kurs va daraja uchun savollar hozircha yetarli emas",
+      "ALREADY_OPEN": "Sizda allaqachon ochiq chaqiruv bor",
+      "CHALLENGE_TAKEN": "Bu chaqiruv endi ochiq emas",
+      "BATTLE_NOT_FOUND": "Bahs topilmadi",
+      "BATTLE_NOT_ACTIVE": "Bu bahs hozir ketmayapti",
+      "NOT_STARTED": "Bu savol hali ochilmagan",
+      "ALREADY_ANSWERED": "Bu savolga allaqachon javob berilgan",
+      "WRONG_ROUND": "Avval joriy savolga javob bering"
     },
     "groups": {
       "title": "Guruhlar",
@@ -418,6 +430,88 @@
       "give": "Koin berish",
       "given": "Koinlar berildi. Bu o'quvchi uchun shu oyda qoldi: {{remaining}}",
       "noStudents": "Sizda hozircha o'quvchilar yo'q"
+    },
+    "battle": {
+      "title": "Battle Arena",
+      "subtitle": "Bot yoki boshqa o'quvchiga qarshi tezkor viktorinalar. Koin yutib oling.",
+      "courses": {
+        "html": "HTML",
+        "css": "CSS",
+        "js": "JavaScript",
+        "react": "React"
+      },
+      "levels": {
+        "intern": "Intern",
+        "junior": "Junior",
+        "middle": "Middle",
+        "senior": "Senior"
+      },
+      "course": "Kurs",
+      "level": "Daraja",
+      "play": "O'ynash",
+      "history": "Tarix",
+      "vsBot": "Botga qarshi o'ynash",
+      "vsBotHint": "Darhol boshlanadi. Darajani tanlang: Senior bot kamdan-kam adashadi.",
+      "vsStudent": "O'quvchiga qarshi o'ynash",
+      "vsStudentHint": "Chaqiruv yarating. Boshqa o'quvchilar uni quyidagi ro'yxatda ko'rib, qabul qila oladi.",
+      "start": "Bahsni boshlash",
+      "createChallenge": "Chaqiruv yaratish",
+      "challenges": "Ochiq chaqiruvlar",
+      "noChallenges": "Hozir ochiq chaqiruvlar yo'q",
+      "accept": "Qabul qilish",
+      "yourChallenge": "Sizning chaqiruvingiz",
+      "cancelChallenge": "Bekor qilish",
+      "openIt": "Ochish",
+      "waitingOpponent": "Raqib kutilmoqda...",
+      "waitingOpponentHint": "Shu sahifada qoling. Boshqa o'quvchi qabul qilishi bilan bahs boshlanadi.",
+      "dailyCoins": "Bugun bahslardan koin: {{earned}} / {{limit}}",
+      "dailyFull": "Kunlik limit tugadi. O'ynashni davom ettirish mumkin, lekin g'alaba ertagacha koin bermaydi.",
+      "reward": "G'alaba {{reward}} koin beradi.",
+      "question": "{{n}}-savol, jami {{total}} ta",
+      "seconds": "{{seconds}} soniya",
+      "correct": "To'g'ri!",
+      "wrong": "Bu emas",
+      "waitingOther": "Siz tugatdingiz! Ikkinchi o'yinchi kutilmoqda...",
+      "win": "G'alaba!",
+      "loss": "Mag'lubiyat",
+      "draw": "Durang",
+      "youScored": "Siz: {{mine}} / {{total}}",
+      "theyScored": "{{name}}: {{theirs}} / {{total}}",
+      "bot": "Bot ({{level}})",
+      "coinsWon": "+{{coins}} koin",
+      "noCoins": "Bu safar koin yo'q",
+      "review": "Savollar va javoblar",
+      "yourAnswer": "Sizning javobingiz",
+      "rightAnswer": "To'g'ri javob",
+      "noAnswer": "javob yo'q",
+      "playAgain": "Yana o'ynash",
+      "back": "Arenaga qaytish",
+      "noHistory": "Hozircha bahslar yo'q",
+      "noHistoryHint": "Birinchi bahsni o'ynang: taxminan ikki daqiqa oladi.",
+      "wins": "G'alabalar",
+      "losses": "Mag'lubiyatlar",
+      "draws": "Duranglar",
+      "coinsTotal": "Yutilgan koinlar",
+      "vs": "{{name}}ga qarshi"
+    },
+    "battleAdmin": {
+      "title": "Bahslar",
+      "subtitle": "O'quvchilar qanday bellashayotgani va savollar banki hajmi.",
+      "total": "Bahslar",
+      "finished": "Tugagan",
+      "ai": "Botga qarshi",
+      "pvp": "O'quvchilar orasida",
+      "byCourse": "Kurslar bo'yicha bahslar",
+      "bank": "Savollar banki",
+      "recent": "So'nggi bahslar",
+      "players": "O'yinchilar",
+      "result": "Natija",
+      "score": "Hisob",
+      "coins": "Koinlar",
+      "winner": "G'olib",
+      "bot": "Bot",
+      "draw": "Durang",
+      "empty": "Tugagan bahslar hozircha yo'q"
     }
   }
 }

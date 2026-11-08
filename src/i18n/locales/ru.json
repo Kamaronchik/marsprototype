@@ -61,7 +61,9 @@
       "coins": "Коины",
       "purchases": "Мои покупки",
       "products": "Товары",
-      "orders": "Заказы"
+      "orders": "Заказы",
+      "battle": "Battle Arena",
+      "battles": "Баттлы"
     },
     "bell": {
       "title": "Уведомления",
@@ -83,7 +85,9 @@
       "order_created": "{{studentName}} заказал награды на {{total}} коинов",
       "order_delivered": "Ваш заказ выдан. Приятного пользования!",
       "order_cancelled": "Ваш заказ отменён. Коины в размере {{total}} вернулись на баланс",
-      "order_cancelled_by_student": "{{studentName}} отменил заказ на {{total}} коинов"
+      "order_cancelled_by_student": "{{studentName}} отменил заказ на {{total}} коинов",
+      "battle_accepted": "{{opponentName}} принял ваш вызов по теме {{courseName}}. Откройте баттл!",
+      "battle_finished": "Ваш баттл по теме {{courseName}} завершён: {{result}}"
     },
     "errors": {
       "ROOM_BUSY": "Этот кабинет в это время уже занят",
@@ -107,7 +111,15 @@
       "NOT_YOUR_STUDENT": "Этот ученик не в вашей группе",
       "STUDENT_NOT_FOUND": "Ученик не найден",
       "TEACHER_NOT_FOUND": "Учитель не найден",
-      "INVALID_AMOUNT": "Введите целое число коинов больше нуля"
+      "INVALID_AMOUNT": "Введите целое число коинов больше нуля",
+      "NOT_ENOUGH_QUESTIONS": "Для этого курса и уровня пока мало вопросов",
+      "ALREADY_OPEN": "У вас уже есть открытый вызов",
+      "CHALLENGE_TAKEN": "Этот вызов уже не открыт",
+      "BATTLE_NOT_FOUND": "Баттл не найден",
+      "BATTLE_NOT_ACTIVE": "Этот баттл сейчас не идёт",
+      "NOT_STARTED": "Этот вопрос ещё не открыт",
+      "ALREADY_ANSWERED": "На этот вопрос уже отвечено",
+      "WRONG_ROUND": "Сначала ответьте на текущий вопрос"
     },
     "groups": {
       "title": "Группы",
@@ -420,6 +432,88 @@
       "give": "Выдать коины",
       "given": "Коины выданы. Этому ученику в этом месяце осталось: {{remaining}}",
       "noStudents": "У вас пока нет учеников"
+    },
+    "battle": {
+      "title": "Battle Arena",
+      "subtitle": "Быстрые викторины против бота или другого ученика. Выигрывайте коины.",
+      "courses": {
+        "html": "HTML",
+        "css": "CSS",
+        "js": "JavaScript",
+        "react": "React"
+      },
+      "levels": {
+        "intern": "Intern",
+        "junior": "Junior",
+        "middle": "Middle",
+        "senior": "Senior"
+      },
+      "course": "Курс",
+      "level": "Уровень",
+      "play": "Играть",
+      "history": "История",
+      "vsBot": "Играть против бота",
+      "vsBotHint": "Начинается сразу. Выберите уровень: бот Senior редко ошибается.",
+      "vsStudent": "Играть против ученика",
+      "vsStudentHint": "Создайте вызов. Другие ученики увидят его в списке ниже и смогут принять.",
+      "start": "Начать баттл",
+      "createChallenge": "Создать вызов",
+      "challenges": "Открытые вызовы",
+      "noChallenges": "Сейчас нет открытых вызовов",
+      "accept": "Принять",
+      "yourChallenge": "Ваш вызов",
+      "cancelChallenge": "Отменить",
+      "openIt": "Открыть",
+      "waitingOpponent": "Ждём соперника...",
+      "waitingOpponentHint": "Оставайтесь на этой странице. Баттл начнётся, как только другой ученик примет вызов.",
+      "dailyCoins": "Коинов из баттлов сегодня: {{earned}} из {{limit}}",
+      "dailyFull": "Дневной лимит исчерпан. Можно играть дальше, но победа не даст коинов до завтра.",
+      "reward": "Победа даёт {{reward}} коинов.",
+      "question": "Вопрос {{n}} из {{total}}",
+      "seconds": "{{seconds}} с",
+      "correct": "Верно!",
+      "wrong": "Не тот ответ",
+      "waitingOther": "Вы закончили! Ждём второго игрока...",
+      "win": "Победа!",
+      "loss": "Поражение",
+      "draw": "Ничья",
+      "youScored": "Вы: {{mine}} из {{total}}",
+      "theyScored": "{{name}}: {{theirs}} из {{total}}",
+      "bot": "Бот ({{level}})",
+      "coinsWon": "+{{coins}} коинов",
+      "noCoins": "В этот раз без коинов",
+      "review": "Вопросы и ответы",
+      "yourAnswer": "Ваш ответ",
+      "rightAnswer": "Верный ответ",
+      "noAnswer": "нет ответа",
+      "playAgain": "Играть ещё",
+      "back": "Назад в арену",
+      "noHistory": "Баттлов пока нет",
+      "noHistoryHint": "Сыграйте первый баттл: это займёт около двух минут.",
+      "wins": "Побед",
+      "losses": "Поражений",
+      "draws": "Ничьих",
+      "coinsTotal": "Выиграно коинов",
+      "vs": "против {{name}}"
+    },
+    "battleAdmin": {
+      "title": "Баттлы",
+      "subtitle": "Как ученики соревнуются и насколько велик банк вопросов.",
+      "total": "Баттлов",
+      "finished": "Завершено",
+      "ai": "Против бота",
+      "pvp": "Между учениками",
+      "byCourse": "Баттлы по курсам",
+      "bank": "Банк вопросов",
+      "recent": "Последние баттлы",
+      "players": "Игроки",
+      "result": "Итог",
+      "score": "Счёт",
+      "coins": "Коины",
+      "winner": "Победитель",
+      "bot": "Бот",
+      "draw": "Ничья",
+      "empty": "Завершённых баттлов пока нет"
     }
   }
 }
