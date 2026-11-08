@@ -3,66 +3,20 @@
 // It uses fixed "zz_test_*" accounts, which are blocked again at the end.
 // Coin transactions and the audit log are append-only, so their test rows stay in the database.
 const crypto = require('crypto');
-const supabase = require('../config/supabase');
-const db = require('../databaseService');
-const emailService = require('../services/emailService');
 const { hashCode } = require('../utils/codes');
+const emailService = require('../services/emailService');
+const {
+  supabase, check, markFailed, ensureUser, openSession, startServer, serverUrl, call, finish, minutesFromNow,
+} = require('./testKit');
 
 // Keep the emailed code instead of sending a real email.
 const sentCodes = [];
 emailService.sendPurchaseCodeEmail = async (email, code) => { sentCodes.push({ email, code }); };
 
-const app = require('../server');
-
 const PRICE = 300;
 const EXTRA_PRICE = 50;
 const CART_TOTAL = PRICE + 2 * EXTRA_PRICE; // the main cart: 1 reward + 2 extras
 const GROUP_NAMES = ['ZZ Test Group', 'ZZ Test Group B'];
-const sha = (text) => crypto.createHash('sha256').update(text).digest('hex');
-const minutesFromNow = (minutes) => new Date(Date.now() + minutes * 60 * 1000).toISOString();
-
-let failed = 0;
-const check = (name, condition, got) => {
-  console.log(`${condition ? 'PASS' : 'FAIL'}  ${name}`);
-  if (!condition) {
-    failed += 1;
-    if (got !== undefined) console.log('      got:', JSON.stringify(got));
-  }
-};
-
-// --- setup helpers ---------------------------------------------------------
-
-const ensureUser = async (key, role) => {
-  const username = `zz_test_${key}`;
-  const existing = await db.findUserByUsername(username);
-  if (existing) return db.updateUserSettings(existing.id, { status: 'active' });
-  return db.createUser({
-    username,
-    full_name: `ZZ Test ${key}`,
-    email: `${username}@example.invalid`,
-    role,
-    status: 'active',
-    password_hash: crypto.randomBytes(32).toString('hex'), // not a bcrypt hash: nobody can log in
-  });
-};
-
-// A real session in the database, so the requests pass the same middleware as the browser.
-const openSession = async (user) => {
-  const sessionToken = crypto.randomBytes(32).toString('hex');
-  const deviceToken = crypto.randomBytes(32).toString('hex');
-  await db.createSession(sha(sessionToken), user.id, sha(deviceToken), new Date(minutesFromNow(60)));
-  return { ...user, cookie: `sessionId=${sessionToken}; deviceId=${deviceToken}` };
-};
-
-let baseUrl;
-const call = async (method, path, who, body) => {
-  const res = await fetch(baseUrl + path, {
-    method,
-    headers: { 'Content-Type': 'application/json', ...(who && { Cookie: who.cookie }) },
-    body: body && JSON.stringify(body),
-  });
-  return { status: res.status, body: await res.json().catch(() => ({})) };
-};
 
 // --- shortcuts -------------------------------------------------------------
 
@@ -329,7 +283,7 @@ const testProducts = async ({ admin, studentA }, ctx) => {
 
 const testImageUpload = async ({ admin }) => {
   console.log('\nImage upload (Supabase Storage)');
-  const upload = (type, body) => fetch(`${baseUrl}/api/admin/shop/products/image`, {
+  const upload = (type, body) => fetch(`${serverUrl()}/api/admin/shop/products/image`, {
     method: 'POST',
     headers: { 'Content-Type': type, Cookie: admin.cookie },
     body,
@@ -384,8 +338,7 @@ const cleanup = async (users, ctx) => {
 };
 
 (async () => {
-  const server = app.listen(0);
-  baseUrl = `http://127.0.0.1:${server.address().port}`;
+  const server = startServer();
   const ctx = { products: [] };
   let users = [];
 
@@ -436,12 +389,10 @@ const cleanup = async (users, ctx) => {
     await testImageUpload(people);
     await testLedger(people);
   } catch (error) {
-    failed += 1;
+    markFailed();
     console.error('\nTest run stopped:', error.message);
   } finally {
     if (users.length) await cleanup(users, ctx);
-    server.close();
-    console.log(failed ? `\n${failed} check(s) FAILED` : '\nAll checks passed');
-    process.exitCode = failed ? 1 : 0;
+    finish(server);
   }
 })();

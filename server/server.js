@@ -15,6 +15,10 @@ const authRoutes = require('./routes/authRoutes');
 const walletRoutes = require('./routes/walletRoutes');
 const shopRoutes = require('./routes/shopRoutes');
 const adminShopRoutes = require('./routes/adminShopRoutes');
+const groupRoutes = require('./routes/groupRoutes');
+const studentRoutes = require('./routes/studentRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
+const attendanceRoutes = require('./routes/attendanceRoutes');
 
 const app = express();
 
@@ -36,6 +40,10 @@ app.use('/api/auth', authRoutes);
 app.use('/api/wallet', walletRoutes);
 app.use('/api/shop', shopRoutes);
 app.use('/api/admin/shop', adminShopRoutes);
+app.use('/api/groups', groupRoutes);
+app.use('/api/students', studentRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/attendance', attendanceRoutes);
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'Mars Space Backend is running' });

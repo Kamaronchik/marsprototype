@@ -1,5 +1,7 @@
 const bcrypt = require('bcryptjs');
 const supabase = require('../config/supabase');
+const { isUuid } = require('../utils/validate');
+const { addStudentToGroup } = require('../utils/groups');
 
 const ROLES = ['Admin', 'Teacher', 'Financier', 'Student'];
 const STATUSES = ['active', 'blocked'];
@@ -58,9 +60,18 @@ const listUsers = async (req, res) => {
 };
 
 const createUser = async (req, res) => {
-  const { username, email, fullName, password, role } = req.body;
+  const { username, email, fullName, password, role, groupId } = req.body;
   const problem = validate({ username, email, fullName, password, role }, { partial: false });
   if (problem) return res.status(400).json({ message: problem });
+
+  // A new student can be placed into an existing group right away.
+  if (groupId !== undefined && groupId !== null && groupId !== '') {
+    if (role !== 'Student') return res.status(400).json({ message: 'Only a student can be placed in a group' });
+    if (!isUuid(groupId)) return res.status(400).json({ message: 'Invalid group' });
+    const { data: group } = await supabase
+      .from('groups').select('id').eq('id', groupId).eq('status', 'active').maybeSingle();
+    if (!group) return res.status(400).json({ message: 'Group not found' });
+  }
 
   const password_hash = await bcrypt.hash(password, 12);
   const { data, error } = await supabase
@@ -77,6 +88,11 @@ const createUser = async (req, res) => {
     .select(COLUMNS)
     .single();
   if (error) return handleDbError(error, res);
+
+  if (groupId) {
+    const result = await addStudentToGroup(groupId, data, req.user.id);
+    if (result.error) return handleDbError(result.error, res);
+  }
   res.status(201).json({ user: toClient(data) });
 };
 
