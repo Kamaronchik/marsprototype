@@ -1,13 +1,15 @@
-import { LayoutDashboard, Users, Settings, Layers } from 'lucide-react';
+import { LayoutDashboard, Users, GraduationCap, Layers, ClipboardCheck, Settings } from 'lucide-react';
 import AppShell from '../../components/AppShell';
 
 const menuItems = [
-  { name: 'Overview', path: '/admin', icon: LayoutDashboard },
-  { name: 'People', path: '/admin/users', icon: Users },
-  { name: 'Groups', path: '/admin/groups', icon: Layers },
-  { name: 'Settings', path: '/admin/settings', icon: Settings },
+  { label: 'nav.overview', path: '/admin', icon: LayoutDashboard },
+  { label: 'nav.people', path: '/admin/users', icon: Users },
+  { label: 'nav.students', path: '/admin/students', icon: GraduationCap },
+  { label: 'nav.groups', path: '/admin/groups', icon: Layers },
+  { label: 'nav.attendance', path: '/admin/attendance', icon: ClipboardCheck },
+  { label: 'nav.settings', path: '/admin/settings', icon: Settings },
 ];
 
-const AdminLayout = () => <AppShell sectionLabel="Administration" menuItems={menuItems} />;
+const AdminLayout = () => <AppShell sectionLabel="nav.administration" menuItems={menuItems} />;
 
 export default AdminLayout;

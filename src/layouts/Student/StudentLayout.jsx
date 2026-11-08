@@ -1,13 +1,12 @@
-import { LayoutDashboard, UserCircle, BookOpen, Calendar } from 'lucide-react';
+import { LayoutDashboard, UserCircle, ClipboardCheck } from 'lucide-react';
 import AppShell from '../../components/AppShell';
 
 const menuItems = [
-  { name: 'Home', path: '/student', icon: LayoutDashboard },
-  { name: 'Courses', path: '/student/courses', icon: BookOpen },
-  { name: 'Schedule', path: '/student/schedule', icon: Calendar },
-  { name: 'Profile', path: '/student/profile', icon: UserCircle },
+  { label: 'nav.home', path: '/student', icon: LayoutDashboard },
+  { label: 'nav.attendance', path: '/student/attendance', icon: ClipboardCheck },
+  { label: 'nav.profile', path: '/student/profile', icon: UserCircle },
 ];
 
-const StudentLayout = () => <AppShell sectionLabel="Learning" menuItems={menuItems} />;
+const StudentLayout = () => <AppShell sectionLabel="nav.learning" menuItems={menuItems} />;
 
 export default StudentLayout;

@@ -19,6 +19,8 @@ const toClient = (g) => ({
   studentCount: g.group_students?.[0]?.count ?? 0,
 });
 
+const byName = (a, b) => a.fullName.localeCompare(b.fullName);
+
 const handleDbError = (error, res) => {
   if (error.message === 'ROOM_BUSY') {
     return res.status(409).json({ message: 'This room is already taken at that time', code: 'ROOM_BUSY' });
@@ -172,12 +174,14 @@ const listGroupStudents = async (req, res) => {
   if (error) return handleDbError(error, res);
 
   res.json({
-    students: data.map((row) => ({
-      id: row.student.id,
-      fullName: row.student.full_name,
-      email: row.student.email,
-      paymentStatus: row.student.payment_status,
-    })),
+    students: data
+      .map((row) => ({
+        id: row.student.id,
+        fullName: row.student.full_name,
+        email: row.student.email,
+        paymentStatus: row.student.payment_status,
+      }))
+      .sort(byName),
   });
 };
 
@@ -220,7 +224,9 @@ const listMyGroups = async (req, res) => {
   res.json({
     groups: data.map((g) => ({
       ...toClient(g),
-      students: g.members.map((m) => ({ id: m.student.id, fullName: m.student.full_name, email: m.student.email })),
+      students: g.members
+        .map((m) => ({ id: m.student.id, fullName: m.student.full_name, email: m.student.email }))
+        .sort(byName),
     })),
   });
 };

@@ -1,13 +1,13 @@
-import { LayoutDashboard, CreditCard, History, Users } from 'lucide-react';
+import { LayoutDashboard, CreditCard, History, GraduationCap } from 'lucide-react';
 import AppShell from '../../components/AppShell';
 
 const menuItems = [
-  { name: 'Overview', path: '/financier', icon: LayoutDashboard },
-  { name: 'Payments', path: '/financier/payments', icon: CreditCard },
-  { name: 'Debts', path: '/financier/debts', icon: History },
-  { name: 'Students', path: '/financier/students', icon: Users },
+  { label: 'nav.overview', path: '/financier', icon: LayoutDashboard },
+  { label: 'nav.payments', path: '/financier/payments', icon: CreditCard },
+  { label: 'nav.debts', path: '/financier/debts', icon: History },
+  { label: 'nav.students', path: '/financier/students', icon: GraduationCap },
 ];
 
-const FinancierLayout = () => <AppShell sectionLabel="Finance" menuItems={menuItems} />;
+const FinancierLayout = () => <AppShell sectionLabel="nav.finance" menuItems={menuItems} />;
 
 export default FinancierLayout;

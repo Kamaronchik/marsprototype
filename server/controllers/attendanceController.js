@@ -10,6 +10,8 @@ const {
 
 const STATUSES = ['present', 'absent'];
 
+const byName = (a, b) => a.fullName.localeCompare(b.fullName);
+
 const COLUMNS = `id, group_id, student_id, lesson_date, status, absence_reason, marked_by, updated_at,
   student:users!attendance_student_id_fkey(full_name),
   group:groups!attendance_group_id_fkey(name, teacher_id)`;
@@ -60,11 +62,13 @@ const getToday = async (req, res) => {
       room: g.room,
       startTime: g.start_time.slice(0, 5),
       endTime: lessonEnd(g),
-      students: g.members.map((m) => ({
-        id: m.student.id,
-        fullName: m.student.full_name,
-        status: records.find((r) => r.group_id === g.id && r.student_id === m.student.id)?.status ?? null,
-      })),
+      students: g.members
+        .map((m) => ({
+          id: m.student.id,
+          fullName: m.student.full_name,
+          status: records.find((r) => r.group_id === g.id && r.student_id === m.student.id)?.status ?? null,
+        }))
+        .sort(byName),
     })),
   });
 };

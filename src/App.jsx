@@ -13,6 +13,12 @@ import ProtectedRoute from './components/ProtectedRoute';
 import AdminLayout from './layouts/Admin/AdminLayout';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import UserManagement from './pages/Admin/UserManagement';
+import Groups from './pages/Admin/Groups';
+import AdminAttendance from './pages/Admin/Attendance';
+import Students from './pages/shared/Students';
+import TeacherAttendance from './pages/Teacher/Attendance';
+import MyGroups from './pages/Teacher/MyGroups';
+import StudentAttendance from './pages/Student/Attendance';
 import FinancierLayout from './layouts/Financier/FinancierLayout';
 import TeacherLayout from './layouts/Teacher/TeacherLayout';
 import StudentLayout from './layouts/Student/StudentLayout';
@@ -43,7 +49,9 @@ const AppRoutes = () => {
           >
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<UserManagement />} />
-            <Route path="groups" element={<ComingSoon title="Groups" />} />
+            <Route path="students" element={<Students />} />
+            <Route path="groups" element={<Groups />} />
+            <Route path="attendance" element={<AdminAttendance />} />
             <Route path="settings" element={<ComingSoon title="Settings" />} />
           </Route>
 
@@ -59,7 +67,7 @@ const AppRoutes = () => {
             <Route index element={<ComingSoon title="Overview" />} />
             <Route path="payments" element={<ComingSoon title="Payments" />} />
             <Route path="debts" element={<ComingSoon title="Debts" />} />
-            <Route path="students" element={<ComingSoon title="Students" />} />
+            <Route path="students" element={<Students />} />
           </Route>
 
           {/* Teacher Routes */}
@@ -71,10 +79,9 @@ const AppRoutes = () => {
               </ProtectedRoute>
             }
           >
-            <Route index element={<ComingSoon title="Today" />} />
-            <Route path="groups" element={<ComingSoon title="My groups" />} />
-            <Route path="schedule" element={<ComingSoon title="Schedule" />} />
-            <Route path="attendance" element={<ComingSoon title="Attendance" />} />
+            <Route index element={<Navigate to="/teacher/attendance" replace />} />
+            <Route path="groups" element={<MyGroups />} />
+            <Route path="attendance" element={<TeacherAttendance />} />
           </Route>
 
           {/* Student Routes */}
@@ -87,9 +94,8 @@ const AppRoutes = () => {
             }
           >
             <Route index element={<ComingSoon title="Home" />} />
+            <Route path="attendance" element={<StudentAttendance />} />
             <Route path="profile" element={<ComingSoon title="Profile" />} />
-            <Route path="courses" element={<ComingSoon title="Courses" />} />
-            <Route path="schedule" element={<ComingSoon title="Schedule" />} />
           </Route>
 
           <Route path="/forbidden" element={<StatusPage code="403" title="This page is not for your account" text="Your role does not have access here. If you think that is a mistake, ask an administrator." />} />

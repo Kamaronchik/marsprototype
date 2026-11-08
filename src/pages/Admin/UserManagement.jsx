@@ -3,7 +3,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { fetchUsers, createUser, deleteUser, updateUser } from '../../features/users/usersSlice';
 import { toast } from 'react-toastify';
 import { Plus, Search, Pencil, Trash2, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import PageHeader from '../../components/PageHeader';
+import { useFetch } from '../../lib/useFetch';
 
 const roleStyle = {
   Admin: 'bg-ink/10 text-ink',
@@ -13,6 +15,9 @@ const roleStyle = {
 };
 
 const UserManagement = () => {
+  const { t } = useTranslation();
+  const groupsQuery = useFetch('/api/groups');
+  const activeGroups = (groupsQuery.data?.groups ?? []).filter((g) => g.status === 'active');
   const users = useSelector((state) => state.users.list);
   const dispatch = useDispatch();
   useEffect(() => {
@@ -29,6 +34,7 @@ const UserManagement = () => {
     password: '',
     email: '',
     role: 'Student',
+    groupId: '',
   });
 
   const filteredUsers = users.filter(user => {
@@ -45,7 +51,7 @@ const UserManagement = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { fullName, username, password, email, role } = formData;
+    const { fullName, username, password, email, role, groupId } = formData;
     const emailRequired = role !== 'Admin'; // only Admin may have no email
     if (!fullName || !username || (emailRequired && !email) || (!editingUser && !password)) {
       toast.error('All fields are required');
@@ -63,7 +69,8 @@ const UserManagement = () => {
         await dispatch(updateUser({ id: editingUser.id, changes })).unwrap();
         toast.success('User updated successfully');
       } else {
-        await dispatch(createUser({ fullName, username, password, email, role })).unwrap();
+        await dispatch(createUser({ fullName, username, password, email, role, groupId: role === 'Student' && groupId ? groupId : undefined })).unwrap();
+        groupsQuery.reload();
         toast.success('User created successfully');
       }
       setIsModalOpen(false);
@@ -83,13 +90,13 @@ const UserManagement = () => {
   };
 
   const resetForm = () => {
-    setFormData({ fullName: '', username: '', password: '', email: '', role: 'Student' });
+    setFormData({ fullName: '', username: '', password: '', email: '', role: 'Student', groupId: '' });
     setEditingUser(null);
   };
 
   const openEditModal = (user) => {
     setEditingUser(user);
-    setFormData({ fullName: user.fullName, username: user.username, email: user.email || '', role: user.role, password: '' });
+    setFormData({ fullName: user.fullName, username: user.username, email: user.email || '', role: user.role, password: '', groupId: '' });
     setIsModalOpen(true);
   };
 
@@ -277,6 +284,19 @@ const UserManagement = () => {
                 </label>
                 <input id="email" name="email" value={formData.email} onChange={handleInputChange} className="field" placeholder="name@example.com" />
               </div>
+
+              {formData.role === 'Student' && !editingUser && (
+                <div>
+                  <label htmlFor="groupId" className="field-label">{t('people.group')}</label>
+                  <select id="groupId" name="groupId" value={formData.groupId} onChange={handleInputChange} className="field">
+                    <option value="">{t('people.noGroupYet')}</option>
+                    {activeGroups.map((g) => (
+                      <option key={g.id} value={g.id}>{g.name} · {g.room} · {g.startTime} · {g.teacherName}</option>
+                    ))}
+                  </select>
+                  <p className="mt-1.5 text-xs text-ink-faint">{t('people.groupHint')}</p>
+                </div>
+              )}
 
               <div className="flex justify-end gap-3 pt-2">
                 <button type="button" onClick={() => setIsModalOpen(false)} className="btn-quiet">
