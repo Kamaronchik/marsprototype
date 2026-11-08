@@ -3,16 +3,7 @@ const bcrypt = require('bcryptjs');
 const emailService = require('../services/emailService');
 const db = require('../databaseService');
 const supabase = require('../config/supabase');
-
-const hashCode = (code) => {
-  if (!process.env.HMAC_SECRET) {
-    throw new Error('HMAC_SECRET is not set in .env');
-  }
-  return crypto
-    .createHmac('sha256', process.env.HMAC_SECRET)
-    .update(code)
-    .digest('hex');
-};
+const { hashCode, generateCode } = require('../utils/codes');
 
 const hashToken = (token) => {
   return crypto.createHash('sha256').update(token).digest('hex');
@@ -89,7 +80,7 @@ const login = async (req, res) => {
     }
 
     // 5. New Device: 2FA Flow
-    const code = crypto.randomInt(100000, 999999).toString();
+    const code = generateCode();
     const codeHash = hashCode(code);
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
 
@@ -199,7 +190,7 @@ const resendCode = async (req, res) => {
       return res.status(429).json({ message: `Please wait ${Math.ceil(waitMs / 1000)} seconds before requesting a new code` });
     }
 
-    const code = crypto.randomInt(100000, 999999).toString();
+    const code = generateCode();
     const codeHash = hashCode(code);
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
 

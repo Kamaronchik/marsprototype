@@ -1,15 +1,7 @@
 const express = require('express');
-const rateLimit = require('express-rate-limit');
 const router = express.Router();
+const { limiter } = require('../utils/rateLimit');
 
-// Brute-force protection (per IP, 15 minutes window).
-const limiter = (max, message) => rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { message },
-});
 const loginLimiter = limiter(10, 'Too many login attempts. Try again in 15 minutes.');
 const codeLimiter = limiter(10, 'Too many code attempts. Try again in 15 minutes.');
 const { login, verifyDevice, resendCode, logout, me, getDevices, revokeDevice } = require('../controllers/authController');

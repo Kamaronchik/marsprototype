@@ -12,6 +12,9 @@ dotenv.config();
 
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
+const walletRoutes = require('./routes/walletRoutes');
+const shopRoutes = require('./routes/shopRoutes');
+const adminShopRoutes = require('./routes/adminShopRoutes');
 
 const app = express();
 
@@ -30,6 +33,9 @@ app.use(express.json());
 // API Routes
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/wallet', walletRoutes);
+app.use('/api/shop', shopRoutes);
+app.use('/api/admin/shop', adminShopRoutes);
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'Mars Space Backend is running' });

@@ -42,6 +42,10 @@ const handleDbError = (error, res) => {
   if (error.code === '23505') {
     return res.status(409).json({ message: 'Username or email already exists' });
   }
+  // Orders and coin transactions are never deleted: such a user can only be blocked.
+  if (error.code === '23503') {
+    return res.status(409).json({ message: 'This user has shop history and cannot be deleted. Block the account instead.' });
+  }
   console.error('User API error:', error);
   return res.status(500).json({ message: 'Database error' });
 };
