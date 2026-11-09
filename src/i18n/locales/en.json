@@ -245,7 +245,13 @@
       "forgot": "Forgot your password? Ask your administrator to reset it.",
       "unexpected": "Unexpected server response",
       "connection": "Server connection error. Please try again later.",
-      "codeSent": "Verification code sent to your email"
+      "codeSent": "Verification code sent to your email",
+      "launchPad": "Launch pad",
+      "systemsNominal": "All systems nominal",
+      "boot1": "mars-core loaded",
+      "boot2": "crew registry online",
+      "boot3": "link to the base established",
+      "boot4": "waiting for your login"
     },
     "admin": {
       "title": "Administration",

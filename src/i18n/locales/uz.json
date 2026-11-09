@@ -245,7 +245,13 @@
       "forgot": "Parolni unutdingizmi? Administratordan uni tiklashni so'rang.",
       "unexpected": "Serverdan kutilmagan javob",
       "connection": "Server bilan aloqa yo'q. Keyinroq urinib ko'ring.",
-      "codeSent": "Tasdiqlash kodi pochtangizga yuborildi"
+      "codeSent": "Tasdiqlash kodi pochtangizga yuborildi",
+      "launchPad": "Start maydoni",
+      "systemsNominal": "Barcha tizimlar me'yorda",
+      "boot1": "mars yadrosi yuklandi",
+      "boot2": "ekipaj reyestri tarmoqda",
+      "boot3": "baza bilan aloqa o'rnatildi",
+      "boot4": "loginingizni kutyapman"
     },
     "admin": {
       "title": "Boshqaruv",
