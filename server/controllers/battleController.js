@@ -103,44 +103,79 @@ const summaryOf = (battle, userId) => {
 
 // --- the questions of a running battle ---------------------------------------
 
+const loadAnswers = async (battleId, userId) => {
+  const { data } = await supabase.from('battle_answers').select('*').eq('battle_id', battleId).eq('player_id', userId);
+  return data;
+};
+
+// Opens a question for a player: the row stores when they saw it (their 20 seconds start there).
+// The time is taken from this server, never from the database clock: the answer time is a difference
+// of two times, and both must come from the same clock. If the row already exists (a reload at the
+// same moment, a second tab), the existing one is used.
+const openRow = async (battleId, userId, index) => {
+  const { data, error } = await supabase
+    .from('battle_answers')
+    .insert({ battle_id: battleId, player_id: userId, round_index: index, started_at: new Date().toISOString() })
+    .select()
+    .single();
+  if (!error) return data;
+  const { data: existing } = await supabase
+    .from('battle_answers').select('*').eq('battle_id', battleId).eq('player_id', userId).eq('round_index', index).single();
+  return existing;
+};
+
+// Questions only change when the bank is seeded again, so each one is read from the database once
+// and kept in memory for a few minutes. This saves a call to the (far away) database per question.
+const QUESTION_CACHE_MS = 10 * 60 * 1000;
+const questionCache = new Map();
+
+const fetchQuestion = async (round) => {
+  const cached = questionCache.get(round.questionId);
+  if (cached && Date.now() - cached.savedAt < QUESTION_CACHE_MS) return { data: cached.data };
+
+  const result = await supabase.from('battle_questions').select('text, options, i18n').eq('id', round.questionId).single();
+  if (result.data) questionCache.set(round.questionId, { data: result.data, savedAt: Date.now() });
+  return result;
+};
+
 // Shows the next question to this player and starts their 20 seconds. A question whose time
 // ran out is closed as a wrong answer. Returns null when the player has answered everything.
-const nextQuestion = async (battle, userId, lang) => {
-  const { data: rows } = await supabase
-    .from('battle_answers').select('*').eq('battle_id', battle.id).eq('player_id', userId);
+// The database is far away (about half a second per call), so independent calls run together.
+const nextQuestion = async (battle, userId, lang, knownRows) => {
+  const rows = knownRows ?? await loadAnswers(battle.id, userId);
 
   let index = rows.filter((r) => r.answered_at).length;
   while (index < battle.rounds.length) {
+    const round = battle.rounds[index];
     let row = rows.find((r) => r.round_index === index);
-    if (!row) {
-      await supabase.from('battle_answers').upsert(
-        { battle_id: battle.id, player_id: userId, round_index: index },
-        { onConflict: 'battle_id,player_id,round_index', ignoreDuplicates: true },
-      );
-      ({ data: row } = await supabase
-        .from('battle_answers').select('*').eq('battle_id', battle.id).eq('player_id', userId).eq('round_index', index).single());
+    let stored;
+
+    if (row) {
+      const endsAt = new Date(row.started_at).getTime() + QUESTION_MS;
+      if (Date.now() > endsAt + GRACE_MS) {
+        await supabase.from('battle_answers')
+          .update({ answered_at: new Date(endsAt).toISOString(), is_correct: false, time_ms: QUESTION_MS })
+          .eq('id', row.id).is('answered_at', null);
+        index += 1;
+        continue;
+      }
+      ({ data: stored } = await fetchQuestion(round));
+    } else {
+      let question;
+      [row, question] = await Promise.all([openRow(battle.id, userId, index), fetchQuestion(round)]);
+      stored = question.data;
     }
 
-    const endsAt = new Date(row.started_at).getTime() + QUESTION_MS;
-    if (Date.now() > endsAt + GRACE_MS) {
-      await supabase.from('battle_answers')
-        .update({ answered_at: new Date(endsAt).toISOString(), is_correct: false, time_ms: QUESTION_MS })
-        .eq('id', row.id).is('answered_at', null);
-      index += 1;
-    } else {
-      const round = battle.rounds[index];
-      const { data: stored } = await supabase.from('battle_questions').select('text, options, i18n').eq('id', round.questionId).single();
-      const question = localized(stored, lang);
-      return {
-        round: index,
-        total: battle.rounds.length,
-        text: question.text,
-        options: round.order.map((optionIndex, position) => ({ position, text: question.options[optionIndex] })),
-        endsAt: new Date(endsAt).toISOString(),
-        // The server's own clock: the browser measures the 20 seconds against it, not against its own.
-        now: new Date().toISOString(),
-      };
-    }
+    const question = localized(stored, lang);
+    return {
+      round: index,
+      total: battle.rounds.length,
+      text: question.text,
+      options: round.order.map((optionIndex, position) => ({ position, text: question.options[optionIndex] })),
+      endsAt: new Date(new Date(row.started_at).getTime() + QUESTION_MS).toISOString(),
+      // The server's own clock: the browser measures the 20 seconds against it, not against its own.
+      now: new Date().toISOString(),
+    };
   }
   return null;
 };
@@ -256,20 +291,21 @@ const acceptChallenge = async (req, res) => {
 const getBattle = async (req, res) => {
   if (!isUuid(req.params.id)) return res.status(400).json({ message: 'Invalid battle id' });
 
-  let battle = await loadBattle(req.params.id);
+  let [battle, rows] = await Promise.all([loadBattle(req.params.id), loadAnswers(req.params.id, req.user.id)]);
   // Someone else's battle looks like a missing one.
   if (!battle || !sideOf(battle, req.user.id)) return fail(res, 'BATTLE_NOT_FOUND');
 
   if (battle.status === 'active' && Date.now() > new Date(battle.deadline_at).getTime()) {
     await settle(battle.id);
     battle = await loadBattle(battle.id);
+    rows = undefined;
   }
 
   const summary = summaryOf(battle, req.user.id);
   if (battle.status === 'finished') return res.json({ battle: summary, result: await buildResult(battle, req.user.id, langOf(req)) });
   if (battle.status !== 'active') return res.json({ battle: summary });
 
-  const question = await nextQuestion(battle, req.user.id, langOf(req));
+  const question = await nextQuestion(battle, req.user.id, langOf(req), rows);
   if (question) return res.json({ battle: summary, question });
 
   const done = await finishIfReady(battle, req.user.id);
@@ -283,12 +319,9 @@ const answerQuestion = async (req, res) => {
     return res.status(400).json({ message: 'Invalid answer' });
   }
 
-  const battle = await loadBattle(req.params.id);
+  const [battle, rows] = await Promise.all([loadBattle(req.params.id), loadAnswers(req.params.id, req.user.id)]);
   if (!battle || !sideOf(battle, req.user.id)) return fail(res, 'BATTLE_NOT_FOUND');
   if (battle.status !== 'active') return fail(res, 'BATTLE_NOT_ACTIVE');
-
-  const { data: rows } = await supabase
-    .from('battle_answers').select('*').eq('battle_id', battle.id).eq('player_id', req.user.id).order('round_index');
   const answered = rows.filter((r) => r.answered_at).length;
   if (round !== answered) return fail(res, 'WRONG_ROUND');
 
@@ -305,7 +338,7 @@ const answerQuestion = async (req, res) => {
       answered_at: new Date().toISOString(),
       chosen_position: late ? null : position,
       is_correct: correct,
-      time_ms: Math.min(elapsed, QUESTION_MS),
+      time_ms: Math.max(0, Math.min(elapsed, QUESTION_MS)),
     })
     .eq('id', row.id).is('answered_at', null).select('id').maybeSingle();
   if (error) return handleDbError(error, res);

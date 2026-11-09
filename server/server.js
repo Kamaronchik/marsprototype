@@ -55,6 +55,14 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'Mars Space Backend is running' });
 });
 
+// Anything that goes wrong inside a handler (for example the database does not answer) is answered
+// in JSON, like every other error, so the site can show a message instead of a broken page.
+// eslint-disable-next-line no-unused-vars -- Express recognises an error handler by its four arguments
+app.use((error, req, res, next) => {
+  console.error('Unhandled error:', error);
+  res.status(500).json({ message: 'Database error' });
+});
+
 // Export app for Vercel Serverless Functions
 module.exports = app;
 

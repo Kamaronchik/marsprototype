@@ -217,7 +217,9 @@ const testChallenges = async ({ studentA, studentB, studentC }) => {
   check('and cannot be accepted', (await call('POST', `/api/battles/challenges/${old}/accept`, studentB)).body.code === 'CHALLENGE_TAKEN');
 
   // An opponent who walks away loses when the deadline passes.
-  const walk = (await call('POST', '/api/battles/challenges', studentB, { course: 'js', level: 'intern' })).body.battleId;
+  const walkChallenge = await call('POST', '/api/battles/challenges', studentB, { course: 'js', level: 'intern' });
+  check('a student opens a challenge to test walking away', walkChallenge.status === 201, walkChallenge.body);
+  const walk = walkChallenge.body.battleId;
   await call('POST', `/api/battles/challenges/${walk}/accept`, studentA);
   await play(studentA, walk, true);
   await supabase.from('battles').update({ deadline_at: minutesFromNow(-1) }).eq('id', walk);
