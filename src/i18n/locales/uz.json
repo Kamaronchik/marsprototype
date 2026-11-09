@@ -822,7 +822,9 @@
       "connect": "Telegramni ulash",
       "connected": "Ulangan",
       "disconnect": "Uzish",
-      "waiting": "Telegram yangi oynada ochildi. U yerda Start tugmasini bosing, bu karta o'zi yangilanadi."
+      "waiting": "Telegram yangi oynada ochildi. U yerda Start tugmasini bosing, bu karta o'zi yangilanadi.",
+      "openApp": "Telegram ilovasida ochish",
+      "openWeb": "Telegram Web ochish"
     },
     "telegramAdmin": {
       "title": "Telegram",

@@ -822,7 +822,9 @@
       "connect": "Connect Telegram",
       "connected": "Connected",
       "disconnect": "Disconnect",
-      "waiting": "Telegram opened in a new tab. Press Start there; this card updates by itself."
+      "waiting": "Telegram opened in a new tab. Press Start there; this card updates by itself.",
+      "openApp": "Open in the Telegram app",
+      "openWeb": "Open Telegram Web"
     },
     "telegramAdmin": {
       "title": "Telegram",

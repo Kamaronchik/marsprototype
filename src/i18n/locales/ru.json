@@ -824,7 +824,9 @@
       "connect": "Подключить Telegram",
       "connected": "Подключено",
       "disconnect": "Отключить",
-      "waiting": "Telegram открылся в новой вкладке. Нажмите там Start, эта карточка обновится сама."
+      "waiting": "Telegram открылся в новой вкладке. Нажмите там Start, эта карточка обновится сама.",
+      "openApp": "Открыть в приложении Telegram",
+      "openWeb": "Открыть Telegram Web"
     },
     "telegramAdmin": {
       "title": "Telegram",

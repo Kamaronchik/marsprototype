@@ -16,6 +16,7 @@ const TelegramConnect = () => {
   const status = useFetch('/api/telegram/status');
   const [waiting, setWaiting] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [links, setLinks] = useState(null);
   const { reload } = status;
   const linked = status.data?.linked;
 
@@ -28,13 +29,21 @@ const TelegramConnect = () => {
   // Once the chat is connected the waiting is over; the card itself changes, so no state is needed.
   const isWaiting = waiting && !linked;
 
+  // The tab is opened at once, while the click still counts: a window opened after the server
+  // has answered is blocked by the browser as a pop-up. The address is put into it afterwards.
   const connect = async () => {
+    const tab = window.open('', '_blank');
     setBusy(true);
     try {
       const { url } = await api('/api/telegram/link', { method: 'POST' });
-      window.open(url, '_blank', 'noopener');
+      const token = new URL(url).searchParams.get('start');
+      const bot = new URL(url).pathname.slice(1);
+      const web = `https://web.telegram.org/k/?tgaddr=${encodeURIComponent(`tg://resolve?domain=${bot}&start=${token}`)}`;
+      setLinks({ app: url, web });
+      if (tab) tab.location.href = url;
       setWaiting(true);
     } catch (error) {
+      tab?.close();
       toast.error(errorText(t, error));
     } finally {
       setBusy(false);
@@ -83,6 +92,12 @@ const TelegramConnect = () => {
                 <Send size={16} /> {t('telegram.connect')}
               </button>
               {isWaiting && <p className="mt-3 text-sm text-ink-soft">{t('telegram.waiting')}</p>}
+              {isWaiting && links && (
+                <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+                  <a href={links.app} target="_blank" rel="noreferrer" className="font-semibold text-mars hover:text-mars-deep">{t('telegram.openApp')}</a>
+                  <a href={links.web} target="_blank" rel="noreferrer" className="font-semibold text-mars hover:text-mars-deep">{t('telegram.openWeb')}</a>
+                </p>
+              )}
             </div>
           )}
         </div>
