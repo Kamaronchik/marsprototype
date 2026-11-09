@@ -99,29 +99,49 @@ const testTeacherPool = async ({ admin, teacher, teacherB, studentA, studentB })
   check('a teacher without coins cannot give any', (await award(teacherB, studentB, 1)).body.code === 'INSUFFICIENT_POOL');
 };
 
-const testTeacherAwards = async ({ teacher, studentA, studentB }) => {
-  console.log('\nTeacher awards (50 coins per student per month)');
+const testTeacherAwards = async ({ admin, teacher, studentA, studentB }) => {
+  console.log('\nTeacher awards (no cap on one student, only the pool itself limits it)');
   const poolOf = async () => (await call('GET', '/api/wallet/pool', teacher)).body.balance;
-  const poolBefore = await poolOf();
-  let given = 0;
 
   check('student outside own group -> 403', (await award(teacher, studentB, 1)).body.code === 'NOT_YOUR_STUDENT');
   check('amount 0 -> 400', (await award(teacher, studentA, 0)).status === 400);
   check('amount 1.5 -> 400', (await award(teacher, studentA, 1.5)).status === 400);
 
-  // Earlier runs may have used part of the limit, so read what is left.
-  const first = await award(teacher, studentA, 1);
-  if (first.status === 200) given += 1;
-  const { remaining } = first.body;
-  const over = await award(teacher, studentA, remaining + 1);
-  check('more than the limit -> LIMIT_EXCEEDED', over.status === 400 && over.body.code === 'LIMIT_EXCEEDED', over.body);
-  if (remaining > 0) {
-    const rest = await award(teacher, studentA, remaining);
-    given += remaining;
-    check('the rest of the limit is allowed', rest.status === 200 && rest.body.remaining === 0, rest.body);
-    check('one more coin -> LIMIT_EXCEEDED', (await award(teacher, studentA, 1)).body.code === 'LIMIT_EXCEEDED');
-  }
-  check('awarded coins came out of the teacher pool', (await poolOf()) === poolBefore - given, { poolBefore, given });
+  // A fresh, generous top-up right before acting: the pool is shared and other activity on the
+  // real site can move it between our calls, so every step below reads its own balance right
+  // before acting on it instead of trusting a number read earlier.
+  await call('POST', '/api/wallet/grant', admin, { teacherId: teacher.id, amount: 1000 });
+
+  // Well past the old 50-coin cap: now only the pool itself can stop it.
+  const poolBefore = await poolOf();
+  const big = await award(teacher, studentA, 70);
+  check('more than 50 to one student is allowed', big.status === 200 && big.body.poolBalance === poolBefore - 70, big.body);
+
+  const poolNow = await poolOf();
+  const whole = await award(teacher, studentA, poolNow);
+  check('emptying the rest of the pool on the same student is allowed', whole.status === 200 && whole.body.poolBalance === 0, whole.body);
+  check('one more coin -> INSUFFICIENT_POOL, not a per-student limit', (await award(teacher, studentA, 1)).body.code === 'INSUFFICIENT_POOL');
+};
+
+// The top-up affects every real active teacher in the database at once (not scoped to zz_test_*
+// accounts), so this test never actually runs it: that is a deliberate action for the admin alone,
+// from the confirm dialog in Admin > Coins. Only access control and the preview's shape are checked.
+const testPoolTopup = async ({ admin, teacher, teacherB }) => {
+  console.log('\nMonthly pool top-up (read-only check: the real run is the admin\'s call, never a test)');
+
+  check('teacher cannot preview the top-up -> 403', (await call('GET', '/api/wallet/pool-topup', teacher)).status === 403);
+  check('teacher cannot run the top-up -> 403', (await call('POST', '/api/wallet/pool-topup', teacher)).status === 403);
+  check('student cannot preview the top-up -> 403', (await call('GET', '/api/wallet/pool-topup', teacher)).status === 403);
+
+  const preview = await call('GET', '/api/wallet/pool-topup', admin);
+  check('the preview answers with a month, a total and a teacher list', preview.status === 200 && typeof preview.body.month === 'string' && typeof preview.body.totalCoins === 'number' && Array.isArray(preview.body.teachers), preview.body);
+  // Other test suites share these fixture accounts and may leave their own groups behind, so the
+  // exact student count can vary: only that this teacher is listed, with at least our 1 student,
+  // and that coins = 50 x students (the formula, not a fixed number).
+  const row = preview.body.teachers.find((t) => t.teacherId === teacher.id);
+  check('the preview lists this teacher, with at least our student, coins = 50 x students', row && row.students >= 1 && row.coins === row.students * 50, row);
+  const rowB = preview.body.teachers.find((t) => t.teacherId === teacherB.id);
+  check('the preview lists teacherB the same way', rowB && rowB.students >= 1 && rowB.coins === rowB.students * 50, rowB);
 };
 
 const testPurchaseFlow = async ({ admin, studentA, studentB }, ctx) => {
@@ -391,6 +411,7 @@ const cleanup = async (users, ctx) => {
     await testAccess(people);
     await testTeacherPool(people);
     await testTeacherAwards(people);
+    await testPoolTopup(people);
     await testPurchaseFlow(people, ctx);
     await testOrderLists(people, ctx);
     await testDelivery(people, ctx);

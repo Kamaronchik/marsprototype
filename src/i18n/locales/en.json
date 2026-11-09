@@ -443,7 +443,16 @@
       "reason": "Reason",
       "awardButton": "Give coins",
       "awarded": "Coins given",
-      "noTeachers": "No teachers yet"
+      "noTeachers": "No teachers yet",
+      "topupTitle": "Monthly top-up",
+      "topupHint": "+{{coins}} coins per active student, added once a month to every teacher's pool.",
+      "topupButton": "Top up all pools (+{{count}})",
+      "topupNoOne": "No teacher has students in an active group right now.",
+      "topupDoneAlready": "Already done this month, on {{date}}",
+      "topupConfirmTitle": "Top up every teacher's pool?",
+      "topupConfirmText": "{{teachers}} teachers will get coins added to their pool, {{coins}} coins in total. This can only be done once this month.",
+      "topupConfirmButton": "Top up now",
+      "topupDone": "Done: {{teachers}} teachers, {{coins}} coins added."
     },
     "teacherCoins": {
       "title": "Coins",
@@ -745,7 +754,8 @@
       "isarchived_must_be_true_or_false": "isArchived must be true or false",
       "isavailable_must_be_true_or_false": "isAvailable must be true or false",
       "invalid_student": "Invalid student",
-      "too_many_connection_attempts_please_wait": "Too many connection attempts. Please wait."
+      "too_many_connection_attempts_please_wait": "Too many connection attempts. Please wait.",
+      "this_months_top_up_was_already_run": "This month's top-up was already run"
     },
     "theme": {
       "label": "Style",

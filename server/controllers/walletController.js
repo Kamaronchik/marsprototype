@@ -30,8 +30,8 @@ const listTransactions = async (req, res) => {
   res.json({ transactions: data.map(toClient) });
 };
 
-// Teacher (own students, 50 coins per student per month) or Admin (no limit).
-// All rules are checked inside the SQL function.
+// Teacher (own students, out of their own pool) or Admin (no limit).
+// No cap on how much one student can get: the pool itself is the only limit.
 const awardCoins = async (req, res) => {
   const { studentId, amount, description } = req.body;
   if (!isUuid(studentId)) return res.status(400).json({ message: 'Student is required' });
@@ -49,7 +49,36 @@ const awardCoins = async (req, res) => {
   if (!data.success) return sendRpcError(res, data);
 
   await notify(studentId, 'coins.awarded', { coins: amount, reason: note }, { link: '/student/coins' });
-  res.json({ balance: data.balance, remaining: data.remaining, poolBalance: data.pool_balance });
+  res.json({ balance: data.balance, poolBalance: data.pool_balance });
+};
+
+const DEFAULT_COINS_PER_STUDENT = 50;
+
+// Admin: what the monthly top-up would do, without changing anything.
+const previewPoolTopup = async (req, res) => {
+  const { data, error } = await supabase.rpc('preview_teacher_pool_topup', {
+    p_coins_per_student: DEFAULT_COINS_PER_STUDENT,
+  });
+  if (error) return handleDbError(error, res);
+  res.json({
+    month: data.month,
+    coinsPerStudent: data.coinsPerStudent,
+    alreadyDone: data.alreadyDone,
+    doneAt: data.doneAt,
+    totalCoins: data.totalCoins,
+    teachers: data.teachers.map((t) => ({ teacherId: t.teacherId, teacherName: t.teacherName, students: t.students, coins: t.coins })),
+  });
+};
+
+// Admin: +50 coins per active student into every active teacher's pool. Once per month.
+const runPoolTopup = async (req, res) => {
+  const { data, error } = await supabase.rpc('top_up_teacher_pools', {
+    p_admin_id: req.user.id,
+    p_coins_per_student: DEFAULT_COINS_PER_STUDENT,
+  });
+  if (error) return handleDbError(error, res);
+  if (!data.success) return sendRpcError(res, data);
+  res.json({ month: data.month, teacherCount: data.teacherCount, totalCoins: data.totalCoins });
 };
 
 // How many coins the logged-in teacher can still hand out.
@@ -97,4 +126,7 @@ const grantTeacherCoins = async (req, res) => {
   res.json({ balance: data.pool_balance });
 };
 
-module.exports = { getWallet, listTransactions, awardCoins, getTeacherPool, listTeacherPools, grantTeacherCoins };
+module.exports = {
+  getWallet, listTransactions, awardCoins, getTeacherPool, listTeacherPools, grantTeacherCoins,
+  previewPoolTopup, runPoolTopup,
+};

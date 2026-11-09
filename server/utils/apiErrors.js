@@ -6,7 +6,7 @@ const RPC_ERRORS = {
   TEACHER_NOT_FOUND: [404, 'Teacher not found'],
   INSUFFICIENT_POOL: [400, 'Not enough coins in your pool. Ask an administrator for more.'],
   NOT_YOUR_STUDENT: [403, 'This student is not in your group'],
-  LIMIT_EXCEEDED: [400, 'Monthly coin limit for this student is reached'],
+  ALREADY_DONE: [409, 'This month\'s top-up was already run'],
   INVALID_ITEMS: [400, 'Cart is empty or invalid'],
   PRODUCT_UNAVAILABLE: [409, 'A product in your cart is not available'],
   INSUFFICIENT_COINS: [400, 'Not enough coins'],

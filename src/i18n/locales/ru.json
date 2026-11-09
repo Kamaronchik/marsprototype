@@ -445,7 +445,16 @@
       "reason": "Причина",
       "awardButton": "Выдать коины",
       "awarded": "Коины выданы",
-      "noTeachers": "Учителей пока нет"
+      "noTeachers": "Учителей пока нет",
+      "topupTitle": "Ежемесячное пополнение",
+      "topupHint": "+{{coins}} коинов за каждого ученика, раз в месяц, в пул каждого учителя.",
+      "topupButton": "Пополнить все пулы (+{{count}})",
+      "topupNoOne": "Сейчас ни у одного учителя нет учеников в активной группе.",
+      "topupDoneAlready": "Уже сделано в этом месяце, {{date}}",
+      "topupConfirmTitle": "Пополнить пул каждого учителя?",
+      "topupConfirmText": "{{teachers}} учителей получат коины в пул, всего {{coins}} коинов. В этом месяце это можно сделать только один раз.",
+      "topupConfirmButton": "Пополнить сейчас",
+      "topupDone": "Готово: {{teachers}} учителей, добавлено {{coins}} коинов."
     },
     "teacherCoins": {
       "title": "Коины",
@@ -747,7 +756,8 @@
       "isarchived_must_be_true_or_false": "Значение «в архиве» должно быть да или нет",
       "isavailable_must_be_true_or_false": "Значение «в продаже» должно быть да или нет",
       "invalid_student": "Некорректный ученик",
-      "too_many_connection_attempts_please_wait": "Слишком много попыток подключения. Подождите."
+      "too_many_connection_attempts_please_wait": "Слишком много попыток подключения. Подождите.",
+      "this_months_top_up_was_already_run": "Пополнение в этом месяце уже было сделано"
     },
     "theme": {
       "label": "Стиль",

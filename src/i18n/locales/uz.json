@@ -443,7 +443,16 @@
       "reason": "Sabab",
       "awardButton": "Koin berish",
       "awarded": "Koinlar berildi",
-      "noTeachers": "Hozircha o'qituvchilar yo'q"
+      "noTeachers": "Hozircha o'qituvchilar yo'q",
+      "topupTitle": "Oylik to'ldirish",
+      "topupHint": "Har bir faol o'quvchi uchun +{{coins}} koin, oyiga bir marta, har bir o'qituvchi puliga qo'shiladi.",
+      "topupButton": "Barcha pullarni to'ldirish (+{{count}})",
+      "topupNoOne": "Hozircha hech bir o'qituvchida faol guruhda o'quvchi yo'q.",
+      "topupDoneAlready": "Bu oyda allaqachon bajarilgan, {{date}}",
+      "topupConfirmTitle": "Har bir o'qituvchining puli to'ldirilsinmi?",
+      "topupConfirmText": "{{teachers}} ta o'qituvchi puliga koin qo'shiladi, jami {{coins}} koin. Buni bu oyda faqat bir marta qilish mumkin.",
+      "topupConfirmButton": "Hozir to'ldirish",
+      "topupDone": "Tayyor: {{teachers}} o'qituvchi, {{coins}} koin qo'shildi."
     },
     "teacherCoins": {
       "title": "Koinlar",
@@ -745,7 +754,8 @@
       "isarchived_must_be_true_or_false": "«Arxivda» qiymati ha yoki yo'q bo'lishi kerak",
       "isavailable_must_be_true_or_false": "«Sotuvda» qiymati ha yoki yo'q bo'lishi kerak",
       "invalid_student": "Noto'g'ri o'quvchi",
-      "too_many_connection_attempts_please_wait": "Ulanish urinishlari juda ko'p. Biroz kuting."
+      "too_many_connection_attempts_please_wait": "Ulanish urinishlari juda ko'p. Biroz kuting.",
+      "this_months_top_up_was_already_run": "Bu oyda to'ldirish allaqachon bajarilgan"
     },
     "theme": {
       "label": "Uslub",
