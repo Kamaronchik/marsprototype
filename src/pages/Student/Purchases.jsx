@@ -6,6 +6,7 @@ import CoinAmount from '../../components/CoinAmount';
 import OrderStatus from '../../components/OrderStatus';
 import { api, errorText } from '../../lib/api';
 import { useFetch } from '../../lib/useFetch';
+import { SkeletonCard } from '../../components/Skeleton';
 import { formatDateTime, formatDate } from '../../lib/format';
 
 // Student: own orders. A student can cancel an order until the admin has handed it over.
@@ -37,7 +38,8 @@ const Purchases = () => {
       )}
 
       <div className="space-y-4">
-        {orders.map((order) => (
+        {loading && Array.from({ length: 2 }, (_, i) => <SkeletonCard key={i} lines={2} />)}
+        {!loading && orders.map((order) => (
           <section key={order.id} className="rounded-xl border border-line bg-card">
             <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-3.5">
               <div className="flex items-center gap-3">

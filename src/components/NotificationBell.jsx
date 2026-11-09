@@ -5,6 +5,7 @@ import { Bell } from 'lucide-react';
 import { api } from '../lib/api';
 import { formatDate, formatDateTime } from '../lib/format';
 import { formatMoney } from '../lib/money';
+import { SkeletonRow } from './Skeleton';
 
 const REFRESH_MS = 60 * 1000;
 
@@ -16,12 +17,14 @@ const NotificationBell = ({ align = 'sidebar' }) => {
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState([]);
   const [unread, setUnread] = useState(0);
+  const [loading, setLoading] = useState(true);
   const box = useRef(null);
 
   const load = useCallback(() => {
     api('/api/notifications')
       .then((data) => { setItems(data.notifications); setUnread(data.unreadCount); })
-      .catch(() => {}); // the bell must never break the page
+      .catch(() => {}) // the bell must never break the page
+      .finally(() => setLoading(false));
   }, []);
 
   useEffect(() => {
@@ -94,7 +97,8 @@ const NotificationBell = ({ align = 'sidebar' }) => {
             )}
           </div>
           <ul className="max-h-96 divide-y divide-line overflow-y-auto">
-            {items.map((n) => (
+            {loading && Array.from({ length: 3 }, (_, i) => <SkeletonRow key={i} trailing={false} />)}
+            {!loading && items.map((n) => (
               <li key={n.id}>
                 <button
                   onClick={() => openItem(n)}
@@ -108,7 +112,7 @@ const NotificationBell = ({ align = 'sidebar' }) => {
                 </button>
               </li>
             ))}
-            {items.length === 0 && (
+            {!loading && items.length === 0 && (
               <li className="px-4 py-10 text-center text-sm text-ink-soft">{t('bell.empty')}</li>
             )}
           </ul>

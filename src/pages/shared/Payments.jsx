@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { Plus, Download } from 'lucide-react';
@@ -6,6 +6,7 @@ import PageHeader from '../../components/PageHeader';
 import Modal from '../../components/Modal';
 import { api, errorText } from '../../lib/api';
 import { useFetch } from '../../lib/useFetch';
+import { SkeletonText } from '../../components/Skeleton';
 import { currentMonth, formatDate, todayIso } from '../../lib/format';
 import { formatMoney } from '../../lib/money';
 
@@ -36,8 +37,11 @@ const Payments = () => {
   const list = useFetch(`/api/finance/payments?${params}`);
   const students = useFetch('/api/students');
 
-  const payments = list.data?.payments ?? [];
-  const total = payments.reduce((sum, p) => sum + p.amount, 0);
+  // list.data stays the same object between renders until reloaded, so keying both memos on it
+  // (not on a freshly-built `?? []` array) lets them actually skip work.
+  const payments = useMemo(() => list.data?.payments ?? [], [list.data]);
+  // Re-summed only when the list itself changes, not on every keystroke of the "add payment" form.
+  const total = useMemo(() => payments.reduce((sum, p) => sum + p.amount, 0), [payments]);
   const money = (amount) => formatMoney(amount, i18n.language, t);
 
   const submit = async (event) => {
@@ -97,7 +101,10 @@ const Payments = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-line">
-            {payments.map((p) => (
+            {list.loading && Array.from({ length: 6 }, (_, i) => (
+              <tr key={i}>{Array.from({ length: 6 }, (_, j) => <td key={j} className="px-5 py-3"><SkeletonText width="80%" /></td>)}</tr>
+            ))}
+            {!list.loading && payments.map((p) => (
               <tr key={p.id} className="hover:bg-sunken/40">
                 <td className="px-5 py-3 text-sm text-ink-soft">{formatDate(p.paidAt, i18n.language)}</td>
                 <td className="px-5 py-3 text-sm font-semibold text-ink">{p.studentName}</td>
@@ -107,7 +114,7 @@ const Payments = () => {
                 <td className="px-5 py-3 text-right text-sm font-semibold text-ink">{money(p.amount)}</td>
               </tr>
             ))}
-            {payments.length === 0 && !list.loading && (
+            {!list.loading && payments.length === 0 && (
               <tr><td colSpan="6" className="px-5 py-14 text-center text-sm text-ink-soft">{t('finance.noPayments')}</td></tr>
             )}
           </tbody>

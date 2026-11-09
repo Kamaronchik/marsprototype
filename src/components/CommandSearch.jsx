@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Search } from 'lucide-react';
 import { api } from '../lib/api';
+import { SkeletonRow } from './Skeleton';
 
 const MIN_CHARS = 2;
 const DELAY_MS = 250;
@@ -17,6 +18,7 @@ const CommandSearch = () => {
   const input = useRef(null);
   const [text, setText] = useState('');
   const [results, setResults] = useState(null); // null = nothing asked yet
+  const [pending, setPending] = useState(false);
   const [open, setOpen] = useState(false);
 
   const query = text.trim();
@@ -26,9 +28,12 @@ const CommandSearch = () => {
     if (query.length < MIN_CHARS) return undefined;
     let cancelled = false;
     const timer = setTimeout(() => {
+      if (cancelled) return;
+      setPending(true);
       api(`/api/students?q=${encodeURIComponent(query)}`)
         .then((data) => { if (!cancelled) setResults(data.students.slice(0, MAX_RESULTS)); })
-        .catch(() => { if (!cancelled) setResults([]); });
+        .catch(() => { if (!cancelled) setResults([]); })
+        .finally(() => { if (!cancelled) setPending(false); });
     }, DELAY_MS);
     return () => { cancelled = true; clearTimeout(timer); };
   }, [query]);
@@ -79,7 +84,8 @@ const CommandSearch = () => {
       {open && shown && (
         <div className="absolute left-0 right-0 top-12 z-40 overflow-hidden rounded-xl border border-line bg-card shadow-xl">
           <ul className="divide-y divide-line">
-            {shown.map((student) => (
+            {pending && results === null && Array.from({ length: 3 }, (_, i) => <SkeletonRow key={i} avatar trailing={false} />)}
+            {(!pending || results !== null) && shown.map((student) => (
               <li key={student.id}>
                 <button onClick={() => openList(student.fullName)} className="flex w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-sunken/60">
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sunken font-display text-sm font-semibold text-ink-soft">{student.fullName.charAt(0)}</span>

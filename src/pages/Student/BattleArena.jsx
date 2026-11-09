@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
@@ -7,6 +7,7 @@ import PageHeader from '../../components/PageHeader';
 import CoinAmount from '../../components/CoinAmount';
 import { api, errorText } from '../../lib/api';
 import { useFetch } from '../../lib/useFetch';
+import { SkeletonRow, SkeletonStat } from '../../components/Skeleton';
 import { formatDateTime } from '../../lib/format';
 
 const CHALLENGES_REFRESH_MS = 5000;
@@ -42,9 +43,12 @@ const BattleArena = () => {
   }, [reload]);
 
   const config = options.data;
-  const open = challenges.data?.challenges ?? [];
-  const mine = open.find((c) => c.mine);
-  const others = open.filter((c) => !c.mine);
+  // Re-split only when the challenge list itself changes (every 5s at most), not on every render
+  // this component does in between, such as picking a course or level.
+  const { mine, others } = useMemo(() => {
+    const open = challenges.data?.challenges ?? [];
+    return { mine: open.find((c) => c.mine), others: open.filter((c) => !c.mine) };
+  }, [challenges.data]);
 
   const go = async (request, nextPath) => {
     setBusy(true);
@@ -154,7 +158,8 @@ const BattleArena = () => {
           <h2 className="mb-3 mt-8 font-display text-xl font-semibold text-ink">{t('battle.challenges')}</h2>
           <div className="overflow-hidden rounded-xl border border-line bg-card">
             <ul className="divide-y divide-line">
-              {others.map((c) => (
+              {challenges.loading && Array.from({ length: 2 }, (_, i) => <SkeletonRow key={i} />)}
+              {!challenges.loading && others.map((c) => (
                 <li key={c.id} className="flex items-center gap-4 px-5 py-3.5">
                   <div className="min-w-0 flex-1">
                     <div className="truncate text-sm font-semibold text-ink">{c.creatorName}</div>
@@ -165,7 +170,7 @@ const BattleArena = () => {
                   <button onClick={() => accept(c)} disabled={busy} className="btn-primary !px-4 !py-2 text-sm">{t('battle.accept')}</button>
                 </li>
               ))}
-              {others.length === 0 && <li className="px-5 py-10 text-center text-sm text-ink-soft">{t('battle.noChallenges')}</li>}
+              {!challenges.loading && others.length === 0 && <li className="px-5 py-10 text-center text-sm text-ink-soft">{t('battle.noChallenges')}</li>}
             </ul>
           </div>
         </>
@@ -173,6 +178,11 @@ const BattleArena = () => {
 
       {tab === 'history' && (
         <>
+          {history.loading && (
+            <dl className="mb-6 grid grid-cols-2 overflow-hidden rounded-xl border border-line bg-card md:grid-cols-4 [&>div]:border-b [&>div]:border-r [&>div]:border-line">
+              {Array.from({ length: 4 }, (_, i) => <SkeletonStat key={i} />)}
+            </dl>
+          )}
           {stats && (
             <dl className="mb-6 grid grid-cols-2 overflow-hidden rounded-xl border border-line bg-card md:grid-cols-4 [&>div]:border-b [&>div]:border-r [&>div]:border-line">
               <div className="px-5 py-4"><dt className="text-xs font-semibold uppercase tracking-wider text-ink-faint">{t('battle.wins')}</dt><dd className="mt-1 font-display text-3xl font-semibold text-moss">{stats.wins}</dd></div>
@@ -183,7 +193,8 @@ const BattleArena = () => {
           )}
           <div className="overflow-hidden rounded-xl border border-line bg-card">
             <ul className="divide-y divide-line">
-              {played.map((b) => (
+              {history.loading && Array.from({ length: 4 }, (_, i) => <SkeletonRow key={i} />)}
+              {!history.loading && played.map((b) => (
                 <li key={b.id} className="flex items-center gap-4 px-5 py-3.5">
                   <span className={`w-24 shrink-0 rounded-md px-2 py-1 text-center text-xs font-semibold ${OUTCOME_STYLE[b.outcome]}`}>{t(`battle.${b.outcome}`)}</span>
                   <div className="min-w-0 flex-1">

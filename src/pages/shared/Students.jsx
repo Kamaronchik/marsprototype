@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
@@ -7,6 +7,7 @@ import PageHeader from '../../components/PageHeader';
 import { api, errorText } from '../../lib/api';
 import { useFetch } from '../../lib/useFetch';
 import { weekdaysText } from '../../lib/format';
+import { SkeletonAvatar, SkeletonText } from '../../components/Skeleton';
 
 const SEARCH_DELAY_MS = 300;
 
@@ -36,9 +37,13 @@ const Students = ({ debts = false }) => {
   const results = useFetch(`/api/students?${params}`);
 
   const students = results.data?.students ?? [];
-  const groupOptions = [...new Map(
-    (everyone.data?.students ?? []).flatMap((s) => s.groups).map((g) => [g.id, g]),
-  ).values()].sort((a, b) => a.name.localeCompare(b.name));
+  // Rebuilding this (flatMap + a Map + a sort over every student's groups) on every keystroke would
+  // be wasted work: it only actually changes when the full roster is reloaded.
+  const groupOptions = useMemo(
+    () => [...new Map((everyone.data?.students ?? []).flatMap((s) => s.groups).map((g) => [g.id, g])).values()]
+      .sort((a, b) => a.name.localeCompare(b.name)),
+    [everyone.data],
+  );
 
   const setPaymentStatus = async (student) => {
     const paymentStatus = student.paymentStatus === 'debtor' ? 'active' : 'debtor';
@@ -105,7 +110,15 @@ const Students = ({ debts = false }) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-line">
-            {students.map((s) => (
+            {results.loading && Array.from({ length: 6 }, (_, i) => (
+              <tr key={i}>
+                <td className="px-5 py-3.5"><div className="flex items-center gap-3"><SkeletonAvatar size="2.25rem" /><div className="space-y-2"><SkeletonText width="9rem" /><SkeletonText width="7rem" height="0.7rem" /></div></div></td>
+                <td className="px-5 py-3.5"><SkeletonText width="10rem" /></td>
+                <td className="px-5 py-3.5"><SkeletonText width="5rem" height="1.5rem" /></td>
+                <td className="px-5 py-3.5"><SkeletonText width="5rem" height="1.8rem" className="ml-auto" /></td>
+              </tr>
+            ))}
+            {!results.loading && students.map((s) => (
               <tr key={s.id} className="align-top hover:bg-sunken/40">
                 <td className="px-5 py-3.5">
                   <div className="flex items-center gap-3">

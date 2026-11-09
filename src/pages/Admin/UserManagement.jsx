@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchUsers, createUser, deleteUser, updateUser } from '../../features/users/usersSlice';
 import { toast } from 'react-toastify';
@@ -8,6 +8,7 @@ import PageHeader from '../../components/PageHeader';
 import { useFetch } from '../../lib/useFetch';
 import { messageText } from '../../lib/api';
 import { formatDate } from '../../lib/format';
+import { SkeletonAvatar, SkeletonText } from '../../components/Skeleton';
 
 const roleStyle = {
   Admin: 'bg-ink/10 text-ink',
@@ -21,6 +22,7 @@ const UserManagement = () => {
   const groupsQuery = useFetch('/api/groups');
   const activeGroups = (groupsQuery.data?.groups ?? []).filter((g) => g.status === 'active');
   const users = useSelector((state) => state.users.list);
+  const usersLoading = useSelector((state) => state.users.loading);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(fetchUsers());
@@ -39,12 +41,14 @@ const UserManagement = () => {
     groupId: '',
   });
 
-  const filteredUsers = users.filter(user => {
+  // Filtering the whole roster on every keystroke is the one real cost on this page; useMemo skips
+  // it unless the roster, the search text or the role filter actually changed.
+  const filteredUsers = useMemo(() => users.filter((user) => {
     const matchesSearch = user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           user.username.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = filterRole === 'All' || user.role === filterRole;
     return matchesSearch && matchesRole;
-  });
+  }), [users, searchTerm, filterRole]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -162,7 +166,16 @@ const UserManagement = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-line">
-            {filteredUsers.map((user) => (
+            {usersLoading && Array.from({ length: 6 }, (_, i) => (
+              <tr key={i}>
+                <td className="px-5 py-3.5"><div className="flex items-center gap-3"><SkeletonAvatar size="2.25rem" /><div className="space-y-2"><SkeletonText width="9rem" /><SkeletonText width="7rem" height="0.7rem" /></div></div></td>
+                <td className="px-5 py-3.5"><SkeletonText width="4rem" height="1.4rem" /></td>
+                <td className="px-5 py-3.5"><SkeletonText width="4.5rem" /></td>
+                <td className="px-5 py-3.5"><SkeletonText width="5rem" /></td>
+                <td className="px-5 py-3.5" />
+              </tr>
+            ))}
+            {!usersLoading && filteredUsers.map((user) => (
               <tr key={user.id} className="hover:bg-sunken/40">
                 <td className="px-5 py-3.5">
                   <div className="flex items-center gap-3">
@@ -219,7 +232,7 @@ const UserManagement = () => {
                 </td>
               </tr>
             ))}
-            {filteredUsers.length === 0 && (
+            {!usersLoading && filteredUsers.length === 0 && (
               <tr>
                 <td colSpan="5" className="px-5 py-14 text-center">
                   <p className="font-display text-lg font-semibold text-ink">{t('peoplePage.noMatch')}</p>

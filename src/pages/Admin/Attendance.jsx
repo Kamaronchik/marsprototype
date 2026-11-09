@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import PageHeader from '../../components/PageHeader';
 import AttendanceMark from '../../components/AttendanceMark';
 import { useFetch } from '../../lib/useFetch';
+import { SkeletonText } from '../../components/Skeleton';
 import { formatDate } from '../../lib/format';
 
 const Stat = ({ label, value }) => (
@@ -27,6 +28,7 @@ const Attendance = () => {
   const stats = marks.data?.stats;
   const lessons = unmarked.data?.lessons ?? [];
   const setFilter = (key) => (event) => setFilters({ ...filters, [key]: event.target.value });
+  const activeGroups = useMemo(() => (groups.data?.groups ?? []).filter((g) => g.status === 'active'), [groups.data]);
 
   const tabClass = (name) => `border-b-2 px-1 pb-3 text-sm font-semibold ${
     tab === name ? 'border-mars text-ink' : 'border-transparent text-ink-faint hover:text-ink'
@@ -59,7 +61,7 @@ const Attendance = () => {
               <label htmlFor="att-group" className="field-label">{t('attendance.group')}</label>
               <select id="att-group" value={filters.groupId} onChange={setFilter('groupId')} className="field pr-8">
                 <option value="">{t('attendance.allGroups')}</option>
-                {(groups.data?.groups ?? []).filter((g) => g.status === 'active').map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
+                {activeGroups.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
               </select>
             </div>
             <div>
@@ -96,7 +98,10 @@ const Attendance = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-line">
-                {records.map((r) => (
+                {marks.loading && Array.from({ length: 6 }, (_, i) => (
+                  <tr key={i}>{Array.from({ length: 5 }, (_, j) => <td key={j} className="px-5 py-3"><SkeletonText width="80%" /></td>)}</tr>
+                ))}
+                {!marks.loading && records.map((r) => (
                   <tr key={r.id} className="hover:bg-sunken/40">
                     <td className="px-5 py-3 text-sm text-ink-soft">{formatDate(r.date, i18n.language)}</td>
                     <td className="px-5 py-3 text-sm font-semibold text-ink">{r.studentName}</td>
@@ -105,7 +110,7 @@ const Attendance = () => {
                     <td className="px-5 py-3 text-sm text-ink-soft">{r.status === 'absent' ? (r.absenceReason || t('attendance.noReason')) : ''}</td>
                   </tr>
                 ))}
-                {records.length === 0 && !marks.loading && (
+                {!marks.loading && records.length === 0 && (
                   <tr><td colSpan="5" className="px-5 py-14 text-center text-sm text-ink-soft">{t('attendance.noMarks')}</td></tr>
                 )}
               </tbody>
@@ -127,7 +132,10 @@ const Attendance = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
-              {lessons.map((l) => (
+              {unmarked.loading && Array.from({ length: 5 }, (_, i) => (
+                <tr key={i}>{Array.from({ length: 5 }, (_, j) => <td key={j} className="px-5 py-3"><SkeletonText width="80%" /></td>)}</tr>
+              ))}
+              {!unmarked.loading && lessons.map((l) => (
                 <tr key={`${l.groupId}-${l.date}`} className="hover:bg-sunken/40">
                   <td className="px-5 py-3 text-sm text-ink-soft">{formatDate(l.date, i18n.language)}</td>
                   <td className="px-5 py-3 text-sm font-semibold text-ink">{l.groupName}</td>
@@ -136,7 +144,7 @@ const Attendance = () => {
                   <td className="px-5 py-3 text-sm font-medium text-brick">{t('attendance.unmarkedOf', { count: l.unmarkedCount, total: l.studentCount })}</td>
                 </tr>
               ))}
-              {lessons.length === 0 && !unmarked.loading && (
+              {!unmarked.loading && lessons.length === 0 && (
                 <tr><td colSpan="5" className="px-5 py-14 text-center text-sm text-ink-soft">{t('attendance.noUnmarked')}</td></tr>
               )}
             </tbody>

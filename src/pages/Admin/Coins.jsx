@@ -7,6 +7,7 @@ import Modal from '../../components/Modal';
 import CoinAmount from '../../components/CoinAmount';
 import { api, errorText } from '../../lib/api';
 import { useFetch } from '../../lib/useFetch';
+import { SkeletonRow } from '../../components/Skeleton';
 
 const EMPTY_AWARD = { studentId: '', amount: '', description: '' };
 
@@ -55,7 +56,8 @@ const Coins = () => {
           <h2 className="mb-3 font-display text-xl font-semibold text-ink">{t('coinsAdmin.teachers')}</h2>
           <div className="overflow-hidden rounded-xl border border-line bg-card">
             <ul className="divide-y divide-line">
-              {list.map((teacher) => (
+              {teachers.loading && Array.from({ length: 4 }, (_, i) => <SkeletonRow key={i} />)}
+              {!teachers.loading && list.map((teacher) => (
                 <li key={teacher.id} className="flex items-center gap-4 px-5 py-3.5">
                   <div className="min-w-0 flex-1">
                     <div className="truncate text-sm font-semibold text-ink">{teacher.fullName}</div>

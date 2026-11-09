@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { formatDate } from '../../lib/format';
 import { launchWhen } from '../../lib/launch';
+import { Skeleton, SkeletonText } from '../../components/Skeleton';
 import { useStudentHome } from './homeContext';
 
 const BAR_WIDTH = 20;
@@ -21,13 +22,30 @@ const Row = ({ name, children }) => (
   <p className="flex flex-wrap gap-x-4"><span className="w-28 shrink-0 text-ink-faint">{name}</span><span className="min-w-0 text-ink">{children}</span></p>
 );
 
+// The console home, before the numbers arrive: the same terminal window, its output lines replaced
+// by dashed placeholder bars (the terminal theme already draws .skeleton dashed and green).
+const ConsoleHomeSkeleton = () => (
+  <>
+    <header className="mb-6"><SkeletonText width="8rem" height="0.65rem" className="mb-2" /><SkeletonText width="12rem" height="1.6rem" /></header>
+    <section className="rounded-lg border border-line bg-card font-mono text-[13px] leading-relaxed">
+      <div className="flex items-center gap-1.5 border-b border-line bg-sunken px-4 py-2">
+        <span className="h-2.5 w-2.5 rounded-full bg-brick" /><span className="h-2.5 w-2.5 rounded-full bg-ochre" /><span className="h-2.5 w-2.5 rounded-full bg-moss" />
+        <span className="ml-3 text-xs text-ink-faint">mars-space — bash</span>
+      </div>
+      <div className="space-y-2.5 p-5">
+        {Array.from({ length: 5 }, (_, i) => <Skeleton key={i} width={`${85 - i * 10}%`} height="0.85rem" />)}
+      </div>
+    </section>
+  </>
+);
+
 // STUDENT DESIGN 3, home: a terminal. The numbers are printed as the output of commands.
 const ConsoleHome = () => {
   const { t, i18n } = useTranslation();
   const { user } = useSelector((state) => state.auth);
   const { data } = useStudentHome();
 
-  if (!data) return null;
+  if (!data) return <ConsoleHomeSkeleton />;
   const { nextLaunch: launch, rank, readiness, battles, coins } = data;
   const toNext = rank.xpForNext ? Math.round((rank.xpIntoRank / rank.xpForNext) * 100) : 100;
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { Suspense, lazy, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Provider, useDispatch } from 'react-redux';
 import { restoreSession } from './features/auth/authSlice';
@@ -7,39 +7,47 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import LoginPage from './features/auth/LoginPage';
-import DeviceVerificationPage from './pages/auth/DeviceVerificationPage';
 import ProtectedRoute from './components/ProtectedRoute';
-import AdminLayout from './layouts/Admin/AdminLayout';
-import AdminDashboard from './pages/Admin/AdminDashboard';
-import UserManagement from './pages/Admin/UserManagement';
-import Groups from './pages/Admin/Groups';
-import AdminAttendance from './pages/Admin/Attendance';
-import Students from './pages/shared/Students';
-import FinanceOverview from './pages/shared/FinanceOverview';
-import Payments from './pages/shared/Payments';
-import Salaries from './pages/shared/Salaries';
-import TeacherAttendance from './pages/Teacher/Attendance';
-import MyGroups from './pages/Teacher/MyGroups';
-import StudentAttendance from './pages/Student/Attendance';
-import Shop from './pages/Student/Shop';
-import StudentCoins from './pages/Student/Coins';
-import Purchases from './pages/Student/Purchases';
-import ShopProducts from './pages/Admin/ShopProducts';
-import ShopOrders from './pages/Admin/ShopOrders';
-import AdminCoins from './pages/Admin/Coins';
-import TeacherCoins from './pages/Teacher/Coins';
-import BattleArena from './pages/Student/BattleArena';
-import BattleRoom from './pages/Student/BattleRoom';
-import AdminBattles from './pages/Admin/Battles';
-import Settings from './pages/Admin/Settings';
-import AdminTelegram from './pages/Admin/Telegram';
-import StudentProfile from './pages/Student/Profile';
-import StudentHome from './features/student/StudentHome';
-import TeacherHome from './features/teacher/TeacherHome';
-import FinancierLayout from './layouts/Financier/FinancierLayout';
-import TeacherLayout from './layouts/Teacher/TeacherLayout';
-import StudentLayout from './layouts/Student/StudentLayout';
 import StatusPage from './components/StatusPage';
+import PageSkeleton from './components/PageSkeleton';
+
+// Every page is its own chunk: the browser downloads a role's screens only once that role signs
+// in, instead of all four roles' worth of code on the very first visit (the login screen).
+const DeviceVerificationPage = lazy(() => import('./pages/auth/DeviceVerificationPage'));
+
+const AdminLayout = lazy(() => import('./layouts/Admin/AdminLayout'));
+const AdminDashboard = lazy(() => import('./pages/Admin/AdminDashboard'));
+const UserManagement = lazy(() => import('./pages/Admin/UserManagement'));
+const Groups = lazy(() => import('./pages/Admin/Groups'));
+const AdminAttendance = lazy(() => import('./pages/Admin/Attendance'));
+const Students = lazy(() => import('./pages/shared/Students'));
+const Payments = lazy(() => import('./pages/shared/Payments'));
+const Salaries = lazy(() => import('./pages/shared/Salaries'));
+const ShopProducts = lazy(() => import('./pages/Admin/ShopProducts'));
+const ShopOrders = lazy(() => import('./pages/Admin/ShopOrders'));
+const AdminCoins = lazy(() => import('./pages/Admin/Coins'));
+const AdminBattles = lazy(() => import('./pages/Admin/Battles'));
+const AdminTelegram = lazy(() => import('./pages/Admin/Telegram'));
+const Settings = lazy(() => import('./pages/Admin/Settings'));
+
+const FinancierLayout = lazy(() => import('./layouts/Financier/FinancierLayout'));
+const FinanceOverview = lazy(() => import('./pages/shared/FinanceOverview'));
+
+const TeacherLayout = lazy(() => import('./layouts/Teacher/TeacherLayout'));
+const TeacherHome = lazy(() => import('./features/teacher/TeacherHome'));
+const TeacherAttendance = lazy(() => import('./pages/Teacher/Attendance'));
+const MyGroups = lazy(() => import('./pages/Teacher/MyGroups'));
+const TeacherCoins = lazy(() => import('./pages/Teacher/Coins'));
+
+const StudentLayout = lazy(() => import('./layouts/Student/StudentLayout'));
+const StudentHome = lazy(() => import('./features/student/StudentHome'));
+const StudentAttendance = lazy(() => import('./pages/Student/Attendance'));
+const BattleArena = lazy(() => import('./pages/Student/BattleArena'));
+const BattleRoom = lazy(() => import('./pages/Student/BattleRoom'));
+const Shop = lazy(() => import('./pages/Student/Shop'));
+const StudentCoins = lazy(() => import('./pages/Student/Coins'));
+const Purchases = lazy(() => import('./pages/Student/Purchases'));
+const StudentProfile = lazy(() => import('./pages/Student/Profile'));
 
 const AppRoutes = () => {
   const dispatch = useDispatch();
@@ -50,6 +58,7 @@ const AppRoutes = () => {
   return (
     <>
         <ToastContainer position="bottom-right" theme="light" />
+        <Suspense fallback={<PageSkeleton />}>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/verify-device" element={<DeviceVerificationPage />} />
@@ -133,6 +142,7 @@ const AppRoutes = () => {
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="*" element={<StatusPage code="404" title="status.notFoundTitle" text="status.notFoundText" />} />
         </Routes>
+        </Suspense>
     </>
   );
 };

@@ -4,6 +4,7 @@ import { Check, X, Lock } from 'lucide-react';
 import PageHeader from '../../components/PageHeader';
 import { api, errorText } from '../../lib/api';
 import { useFetch } from '../../lib/useFetch';
+import { Skeleton, SkeletonAvatar, SkeletonText } from '../../components/Skeleton';
 import { formatDate } from '../../lib/format';
 
 // Teacher: today's lessons. One tick or one cross per student, only during opening hours.
@@ -51,8 +52,26 @@ const Attendance = () => {
         </div>
       )}
 
+      {loading && (
+        <div className="space-y-5">
+          {Array.from({ length: 2 }, (_, i) => (
+            <section key={i} className="overflow-hidden rounded-xl border border-line bg-card">
+              <header className="border-b border-line bg-sunken/60 px-5 py-3.5"><SkeletonText width="12rem" height="1.3rem" /></header>
+              <ul className="divide-y divide-line">
+                {Array.from({ length: 3 }, (_, j) => (
+                  <li key={j} className="flex items-center justify-between gap-3 px-5 py-3">
+                    <span className="flex items-center gap-3"><SkeletonAvatar size="2rem" /><SkeletonText width="8rem" /></span>
+                    <span className="flex gap-2"><Skeleton width="2.5rem" height="2.5rem" className="!rounded-lg" /><Skeleton width="2.5rem" height="2.5rem" className="!rounded-lg" /></span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
+      )}
+
       <div className="space-y-5">
-        {lessons.map((lesson) => (
+        {!loading && lessons.map((lesson) => (
           <section key={lesson.groupId} className="overflow-hidden rounded-xl border border-line bg-card">
             <header className="flex flex-wrap items-center justify-between gap-2 border-b border-line bg-sunken/60 px-5 py-3.5">
               <h2 className="font-display text-lg font-semibold text-ink">{lesson.groupName}</h2>

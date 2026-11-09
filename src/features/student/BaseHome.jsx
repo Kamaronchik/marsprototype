@@ -5,6 +5,7 @@ import { CalendarClock, Coins, Swords, Users } from 'lucide-react';
 import Horizon from '../../components/Horizon';
 import RankBadge from '../../components/RankBadge';
 import MissionLog from '../../components/MissionLog';
+import { SkeletonCard } from '../../components/Skeleton';
 import { greetingKey, firstNameOf } from '../../lib/greeting';
 import { launchWhen } from '../../lib/launch';
 import { weekdaysText } from '../../lib/format';
@@ -35,6 +36,19 @@ const Module = ({ icon: Icon, title, children, className = '' }) => (
   </section>
 );
 
+// The base home, before the numbers arrive: the landscape banner shows at once (it needs no data),
+// the modules below are placeholders shaped like the six cards they will become.
+const BaseHomeSkeleton = () => (
+  <>
+    <section className="relative mb-6 overflow-hidden rounded-[2rem] shadow-lg">
+      <Horizon className="h-[14rem] w-full sm:h-[16rem]" />
+    </section>
+    <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+      {Array.from({ length: 6 }, (_, i) => <SkeletonCard key={i} lines={2} />)}
+    </div>
+  </>
+);
+
 // STUDENT DESIGN 2, home: Mars Base. A landscape banner with a greeting, then soft "habitat
 // modules": launch, readiness as dunes, coins, battles, the crew and the log.
 const BaseHome = () => {
@@ -42,7 +56,7 @@ const BaseHome = () => {
   const { user } = useSelector((state) => state.auth);
   const { data } = useStudentHome();
 
-  if (!data) return null;
+  if (!data) return <BaseHomeSkeleton />;
   const { nextLaunch: launch, rank, readiness, battles, coins, crews } = data;
 
   return (

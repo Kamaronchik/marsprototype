@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { Coins as CoinsIcon } from 'lucide-react';
@@ -6,6 +6,7 @@ import PageHeader from '../../components/PageHeader';
 import CoinAmount from '../../components/CoinAmount';
 import { api, errorText } from '../../lib/api';
 import { useFetch } from '../../lib/useFetch';
+import { SkeletonText } from '../../components/Skeleton';
 
 const EMPTY_FORM = { studentId: '', amount: '', description: '' };
 
@@ -16,9 +17,12 @@ const Coins = () => {
   const groups = useFetch('/api/groups/mine');
   const [form, setForm] = useState(EMPTY_FORM);
 
-  const students = [...new Map(
-    (groups.data?.groups ?? []).flatMap((g) => g.students.map((s) => [s.id, s])),
-  ).values()].sort((a, b) => a.fullName.localeCompare(b.fullName));
+  // Recomputed only when the groups list actually changes, not on every keystroke in the form.
+  const students = useMemo(
+    () => [...new Map((groups.data?.groups ?? []).flatMap((g) => g.students.map((s) => [s.id, s]))).values()]
+      .sort((a, b) => a.fullName.localeCompare(b.fullName)),
+    [groups.data],
+  );
 
   const give = async (event) => {
     event.preventDefault();
@@ -41,7 +45,11 @@ const Coins = () => {
 
       <div className="mb-8 rounded-xl border border-line bg-card px-6 py-5">
         <p className="text-sm text-ink-soft">{t('teacherCoins.pool')}</p>
-        <p className="mt-1 text-4xl">{pool.data ? <CoinAmount amount={pool.data.balance} className="font-display text-ink" /> : '—'}</p>
+        <p className="mt-1 text-4xl">
+          {pool.data && <CoinAmount amount={pool.data.balance} className="font-display text-ink" />}
+          {!pool.data && pool.loading && <SkeletonText width="5rem" height="2rem" />}
+          {!pool.data && !pool.loading && '—'}
+        </p>
         <p className="mt-2 text-xs text-ink-faint">{t('teacherCoins.poolHint')}</p>
       </div>
 

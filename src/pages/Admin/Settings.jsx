@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import PageHeader from '../../components/PageHeader';
 import { api, errorText } from '../../lib/api';
 import { useFetch } from '../../lib/useFetch';
+import { SkeletonText } from '../../components/Skeleton';
 import i18n from '../../i18n/i18n';
 import { LANGUAGES } from '../../i18n/overrides';
 import ru from '../../i18n/locales/ru.json';
@@ -31,15 +32,23 @@ const Settings = () => {
   const [onlyChanged, setOnlyChanged] = useState(false);
   const [drafts, setDrafts] = useState({}); // 'ru:groups.title' -> text typed but not saved yet
 
-  const { data, reload } = useFetch(`/api/i18n/${lang}`);
-  const overrides = data?.overrides ?? {};
+  const { data, loading, reload } = useFetch(`/api/i18n/${lang}`);
+  // data stays the same object between renders until reloaded, so keying this on it (not on a
+  // freshly-built `?? {}` object) lets the useMemo below actually skip work.
+  const overrides = useMemo(() => data?.overrides ?? {}, [data]);
   const original = BUNDLED[lang];
 
   const needle = search.trim().toLowerCase();
-  const matching = Object.keys(original)
-    .filter((key) => !onlyChanged || key in overrides)
-    .filter((key) => !needle || [key, original[key], overrides[key] ?? ''].some((text) => text.toLowerCase().includes(needle)))
-    .sort();
+  // ~250 keys filtered and sorted. Typing a draft into one row's textarea re-renders every row
+  // (drafts is one shared object), so without useMemo this whole scan would redo on every keystroke
+  // typed anywhere on the page, not just in the search box.
+  const matching = useMemo(
+    () => Object.keys(original)
+      .filter((key) => !onlyChanged || key in overrides)
+      .filter((key) => !needle || [key, original[key], overrides[key] ?? ''].some((text) => text.toLowerCase().includes(needle)))
+      .sort(),
+    [original, overrides, onlyChanged, needle],
+  );
   const rows = matching.slice(0, MAX_ROWS);
 
   const draftKey = (key) => `${lang}:${key}`;
@@ -109,7 +118,14 @@ const Settings = () => {
 
       <div className="overflow-hidden rounded-xl border border-line bg-card">
         <ul className="divide-y divide-line">
-          {rows.map((key) => {
+          {loading && Array.from({ length: 6 }, (_, i) => (
+            <li key={i} className="grid gap-3 px-5 py-4 lg:grid-cols-[1fr_1.4fr_auto]">
+              <div><SkeletonText width="10rem" height="0.7rem" className="mb-2" /><SkeletonText width="14rem" /></div>
+              <SkeletonText width="100%" height="2.5rem" />
+              <SkeletonText width="4rem" height="1.8rem" />
+            </li>
+          ))}
+          {!loading && rows.map((key) => {
             const changed = key in overrides;
             const draft = drafts[draftKey(key)];
             return (
@@ -137,7 +153,7 @@ const Settings = () => {
               </li>
             );
           })}
-          {rows.length === 0 && <li className="px-5 py-14 text-center text-sm text-ink-soft">{t('settings.noMatch')}</li>}
+          {!loading && rows.length === 0 && <li className="px-5 py-14 text-center text-sm text-ink-soft">{t('settings.noMatch')}</li>}
         </ul>
       </div>
 

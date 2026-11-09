@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { Loader2 } from 'lucide-react';
 import PageHeader from '../../components/PageHeader';
 import CoinAmount from '../../components/CoinAmount';
+import { Skeleton, SkeletonText } from '../../components/Skeleton';
 import { api, errorText } from '../../lib/api';
 
 const POLL_MS = 2000;
@@ -104,7 +105,14 @@ const BattleRoom = () => {
     );
   }
   if (!view) {
-    return <div className="flex justify-center py-20 text-ink-faint"><Loader2 className="animate-spin" /></div>;
+    return (
+      <div className="mx-auto max-w-2xl">
+        <SkeletonText width="12rem" height="1.6rem" className="mb-6" />
+        <SkeletonText width="100%" height="0.4rem" className="mb-6" />
+        <SkeletonText width="80%" height="1.8rem" className="mb-5" />
+        <div className="space-y-3">{Array.from({ length: 4 }, (_, i) => <Skeleton key={i} height="3.4rem" className="!rounded-xl" />)}</div>
+      </div>
+    );
   }
 
   const { battle } = view;

@@ -6,6 +6,7 @@ import PageHeader from '../../components/PageHeader';
 import Modal from '../../components/Modal';
 import { api, errorText } from '../../lib/api';
 import { useFetch } from '../../lib/useFetch';
+import { SkeletonText } from '../../components/Skeleton';
 import { currentMonth, formatDate } from '../../lib/format';
 import { formatMoney } from '../../lib/money';
 
@@ -55,7 +56,10 @@ const Salaries = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-line">
-            {salaries.map((s) => (
+            {list.loading && Array.from({ length: 6 }, (_, i) => (
+              <tr key={i}>{Array.from({ length: 5 }, (_, j) => <td key={j} className="px-5 py-3"><SkeletonText width="80%" /></td>)}</tr>
+            ))}
+            {!list.loading && salaries.map((s) => (
               <tr key={s.id} className="hover:bg-sunken/40">
                 <td className="px-5 py-3 text-sm text-ink-soft">{formatDate(s.paidAt, i18n.language)}</td>
                 <td className="px-5 py-3 text-sm font-semibold text-ink">{s.teacherName}</td>
@@ -64,7 +68,7 @@ const Salaries = () => {
                 <td className="px-5 py-3 text-right text-sm font-semibold text-ink">{money(s.amount)}</td>
               </tr>
             ))}
-            {salaries.length === 0 && !list.loading && (
+            {!list.loading && salaries.length === 0 && (
               <tr><td colSpan="5" className="px-5 py-14 text-center text-sm text-ink-soft">{t('finance.noSalaries')}</td></tr>
             )}
           </tbody>

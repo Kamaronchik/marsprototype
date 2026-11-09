@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import PageHeader from '../../components/PageHeader';
 import CoinAmount from '../../components/CoinAmount';
+import { Skeleton, SkeletonStat, SkeletonList } from '../../components/Skeleton';
 import { useFetch } from '../../lib/useFetch';
 import { formatDateTime } from '../../lib/format';
 
@@ -18,7 +19,18 @@ const Battles = () => {
   const { t, i18n } = useTranslation();
   const { data } = useFetch('/api/battles/stats');
 
-  if (!data) return <PageHeader title={t('battleAdmin.title')}>{t('battleAdmin.subtitle')}</PageHeader>;
+  if (!data) {
+    return (
+      <>
+        <PageHeader title={t('battleAdmin.title')}>{t('battleAdmin.subtitle')}</PageHeader>
+        <dl className="grid grid-cols-2 overflow-hidden rounded-xl border border-line bg-card md:grid-cols-4 [&>div]:border-b [&>div]:border-r [&>div]:border-line">
+          {Array.from({ length: 4 }, (_, i) => <SkeletonStat key={i} />)}
+        </dl>
+        <div className="mt-8 grid gap-8 lg:grid-cols-2"><SkeletonList rows={4} /><Skeleton height="10rem" className="!rounded-xl" /></div>
+        <div className="mt-8"><SkeletonList rows={5} /></div>
+      </>
+    );
+  }
 
   const winner = (b) => {
     if (b.winnerSide === 'draw') return t('battleAdmin.draw');

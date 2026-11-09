@@ -1,10 +1,16 @@
+import { lazy, Suspense } from 'react';
 import { LayoutDashboard, UserCircle, ClipboardCheck, Gift, Coins, Receipt, Swords } from 'lucide-react';
 import { useDesign } from '../../lib/useDesign';
 import { useRoleLook } from '../../lib/useRoleLook';
 import StudentHomeProvider from '../../features/student/StudentHomeProvider';
-import DockShell from '../../shells/DockShell';
-import RailShell from '../../shells/RailShell';
-import ExplorerShell from '../../shells/ExplorerShell';
+import PageSkeleton from '../../components/PageSkeleton';
+
+// Three designs of the same student area: the cockpit (dock), the base (rail), the console (explorer).
+// Only the shell of the chosen design is downloaded.
+const DockShell = lazy(() => import('../../shells/DockShell'));
+const RailShell = lazy(() => import('../../shells/RailShell'));
+const ExplorerShell = lazy(() => import('../../shells/ExplorerShell'));
+const SHELLS = { cockpit: DockShell, base: RailShell, console: ExplorerShell };
 
 const menuItems = [
   { label: 'nav.home', path: '/student', icon: LayoutDashboard },
@@ -16,16 +22,15 @@ const menuItems = [
   { label: 'nav.profile', path: '/student/profile', icon: UserCircle },
 ];
 
-// Three designs of the same student area: the cockpit (dock), the base (rail), the console (explorer).
-const SHELLS = { cockpit: DockShell, base: RailShell, console: ExplorerShell };
-
 const StudentLayout = () => {
   useRoleLook('Student');
   const Shell = SHELLS[useDesign()];
 
   return (
     <StudentHomeProvider>
-      <Shell menuItems={menuItems} />
+      <Suspense fallback={<PageSkeleton />}>
+        <Shell menuItems={menuItems} />
+      </Suspense>
     </StudentHomeProvider>
   );
 };

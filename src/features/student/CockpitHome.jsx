@@ -5,10 +5,40 @@ import { ArrowRight, Swords, Trophy, Coins } from 'lucide-react';
 import Eyebrow from '../../components/Eyebrow';
 import Gauge from '../../components/Gauge';
 import MissionLog from '../../components/MissionLog';
+import { Skeleton, SkeletonText } from '../../components/Skeleton';
 import { greetingKey, firstNameOf } from '../../lib/greeting';
 import { launchWhen, launchProgress } from '../../lib/launch';
 import { weekdaysText } from '../../lib/format';
 import { useStudentHome } from './homeContext';
+
+// The cockpit home, before the numbers arrive: the same two cards, filled with placeholders shaped
+// like the gauges and text they will hold.
+const CockpitHomeSkeleton = () => (
+  <>
+    <header className="mb-8"><SkeletonText width="10rem" height="0.7rem" className="mb-3" /><SkeletonText width="16rem" height="2.2rem" /></header>
+    <div className="grid gap-5 lg:grid-cols-[1.5fr_1fr]">
+      <section className="flex flex-col items-center gap-6 rounded-3xl border border-line bg-card p-6 sm:flex-row sm:p-8">
+        <Skeleton width={176} height={176} className="!rounded-full shrink-0" />
+        <div className="w-full space-y-2.5 text-center sm:text-left"><SkeletonText width="60%" height="1.5rem" /><SkeletonText width="80%" /></div>
+      </section>
+      <section className="grid grid-cols-3 gap-3">
+        {Array.from({ length: 3 }, (_, i) => (
+          <div key={i} className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-line bg-card px-2 py-5">
+            <Skeleton width={78} height={78} className="!rounded-full" />
+            <SkeletonText width="70%" height="0.6rem" />
+          </div>
+        ))}
+      </section>
+    </div>
+    <div className="mt-5 grid gap-5 lg:grid-cols-[1.5fr_1fr]">
+      <section className="overflow-hidden rounded-3xl border border-line bg-card">
+        <div className="border-b border-line px-5 py-3.5"><SkeletonText width="8rem" /></div>
+        <div className="space-y-3 p-5">{Array.from({ length: 3 }, (_, i) => <SkeletonText key={i} width={`${70 - i * 10}%`} />)}</div>
+      </section>
+      <Skeleton height="100%" className="min-h-[10rem] !rounded-3xl" />
+    </div>
+  </>
+);
 
 // STUDENT DESIGN 1, home: the cockpit. A big countdown ring for the next launch, three gauges,
 // the mission log and one big way into the simulator.
@@ -17,7 +47,7 @@ const CockpitHome = () => {
   const { user } = useSelector((state) => state.auth);
   const { data } = useStudentHome();
 
-  if (!data) return null;
+  if (!data) return <CockpitHomeSkeleton />;
   const { nextLaunch: launch, rank, readiness, battles, coins, crews } = data;
   const toNext = rank.xpForNext ? Math.round((rank.xpIntoRank / rank.xpForNext) * 100) : 100;
 

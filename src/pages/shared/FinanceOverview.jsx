@@ -4,6 +4,7 @@ import PageHeader from '../../components/PageHeader';
 import { useFetch } from '../../lib/useFetch';
 import { formatMoney } from '../../lib/money';
 import { formatDate } from '../../lib/format';
+import { Skeleton, SkeletonStat } from '../../components/Skeleton';
 
 const Stat = ({ label, value, accent }) => (
   <div className="px-6 py-5">
@@ -19,7 +20,17 @@ const FinanceOverview = () => {
   const base = pathname.startsWith('/admin') ? '/admin' : '/financier';
   const { data } = useFetch('/api/finance/overview');
 
-  if (!data) return <PageHeader title={t('finance.overviewTitle')}>{t('finance.overviewSubtitle')}</PageHeader>;
+  if (!data) {
+    return (
+      <>
+        <PageHeader title={t('finance.overviewTitle')}>{t('finance.overviewSubtitle')}</PageHeader>
+        <dl className="grid grid-cols-2 overflow-hidden rounded-xl border border-line bg-card md:grid-cols-3 [&>div]:border-b [&>div]:border-r [&>div]:border-line">
+          {Array.from({ length: 5 }, (_, i) => <SkeletonStat key={i} />)}
+        </dl>
+        <Skeleton height="16rem" className="mt-8 !rounded-xl" />
+      </>
+    );
+  }
 
   const money = (amount) => formatMoney(amount, i18n.language, t);
   const peak = Math.max(1, ...data.history.flatMap((h) => [h.revenue, h.salaries]));

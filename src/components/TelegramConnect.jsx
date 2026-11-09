@@ -5,6 +5,7 @@ import { Send, Link2Off } from 'lucide-react';
 import { api, errorText } from '../lib/api';
 import { useFetch } from '../lib/useFetch';
 import { formatDate } from '../lib/format';
+import { SkeletonText } from './Skeleton';
 
 const POLL_MS = 4 * 1000;
 const LANGUAGE_NAMES = { ru: 'Русский', uz: "O'zbekcha", en: 'English' };
@@ -83,7 +84,7 @@ const TelegramConnect = () => {
             </div>
           )}
 
-          {status.loading && <p className="mt-4 text-sm text-ink-faint">...</p>}
+          {status.loading && <SkeletonText width="10rem" height="2.3rem" className="mt-4" />}
 
           {(status.error || (status.data && !linked)) && (
             <div className="mt-4">

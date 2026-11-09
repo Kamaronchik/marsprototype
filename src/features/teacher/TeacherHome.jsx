@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { ClipboardCheck, Coins, Users } from 'lucide-react';
 import Eyebrow from '../../components/Eyebrow';
 import CoinAmount from '../../components/CoinAmount';
+import { SkeletonText } from '../../components/Skeleton';
 import { useFetch } from '../../lib/useFetch';
 import { greetingKey, firstNameOf } from '../../lib/greeting';
 import { formatDate, tashkentNow, timeToMinutes } from '../../lib/format';
@@ -36,10 +37,16 @@ const TeacherHome = () => {
     return () => clearInterval(timer);
   }, []);
 
-  const lessons = today.data?.lessons ?? [];
+  // today.data stays the same object between renders until the list is reloaded, so keying the memo
+  // on it (not on a freshly-built `?? []` array) actually skips the work most of the time.
+  const lessons = useMemo(() => today.data?.lessons ?? [], [today.data]);
   const marked = (lesson) => lesson.students.filter((s) => s.status !== null).length;
-  const isForgotten = (lesson) => stateOf(lesson, minutes).key === 'done' && lesson.students.length - marked(lesson) > 0;
-  const forgotten = lessons.filter(isForgotten);
+  // Recomputed only when the lessons change or the clock crosses into a new state (not on every
+  // render): which lessons are already over with someone still unmarked.
+  const forgotten = useMemo(
+    () => lessons.filter((lesson) => stateOf(lesson, minutes).key === 'done' && lesson.students.length - marked(lesson) > 0),
+    [lessons, minutes],
+  );
 
   return (
     <>
@@ -59,6 +66,18 @@ const TeacherHome = () => {
       <div className="grid gap-6 lg:grid-cols-[1.7fr_1fr]">
         <section>
           <h2 className="mb-4 font-display text-xl font-semibold text-ink">{t('teacherHome.timeline')}</h2>
+
+          {today.loading && (
+            <div className="space-y-4">
+              {Array.from({ length: 2 }, (_, i) => (
+                <div key={i} className="rounded-2xl border border-line bg-card p-5">
+                  <SkeletonText width="40%" height="0.7rem" className="mb-2" />
+                  <SkeletonText width="60%" height="1.3rem" className="mb-4" />
+                  <SkeletonText width="100%" height="0.5rem" />
+                </div>
+              ))}
+            </div>
+          )}
 
           {lessons.length === 0 && !today.loading && (
             <div className="rounded-2xl border border-dashed border-ink-faint/40 bg-card px-6 py-12 text-center">
@@ -114,7 +133,11 @@ const TeacherHome = () => {
         <aside className="space-y-5">
           <section className="rounded-2xl border border-line bg-card p-5">
             <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-faint"><Coins size={15} className="text-mars" /> {t('teacherCoins.pool')}</h2>
-            <p className="mt-3 text-3xl">{pool.data ? <CoinAmount amount={pool.data.balance} className="font-display text-ink" /> : '—'}</p>
+            <p className="mt-3 text-3xl">
+              {pool.data && <CoinAmount amount={pool.data.balance} className="font-display text-ink" />}
+              {!pool.data && pool.loading && <SkeletonText width="4rem" height="1.6rem" />}
+              {!pool.data && !pool.loading && '—'}
+            </p>
             <Link to="/teacher/coins" className="mt-3 inline-flex text-sm font-semibold text-mars hover:text-mars-deep">{t('teacherHome.giveCoins')} →</Link>
           </section>
           <Link to="/teacher/groups" className="flex items-center justify-between rounded-2xl border border-line bg-card p-5 hover:border-mars">

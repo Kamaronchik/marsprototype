@@ -567,3 +567,52 @@ body {
     to { opacity: 1; transform: none; }
   }
 }
+
+/* ---------------------------------------------------------------------------
+   SKELETONS: a grey placeholder shaped like the content it stands in for,
+   while a page is loading. Colours come from the theme tokens, so every
+   design gets its own look for free; a few themes add their own touch.
+   --------------------------------------------------------------------------- */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--r-md);
+  background: rgb(var(--sunken));
+}
+@media (prefers-reduced-motion: no-preference) {
+  .skeleton::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgb(var(--ink) / 0.06), transparent);
+    animation: skeleton-sweep 1.6s ease-in-out infinite;
+  }
+}
+@keyframes skeleton-sweep {
+  100% { transform: translateX(100%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    opacity: 0.6;
+  }
+}
+
+/* Orbit: the sweep glows like the rest of the glass UI. */
+[data-theme='orbit'] .skeleton {
+  background: rgb(var(--card) / 0.6);
+  border: 1px solid rgb(var(--line) / 0.6);
+}
+[data-theme='orbit'] .skeleton::after {
+  background: linear-gradient(90deg, transparent, rgb(var(--mars) / 0.22), transparent);
+}
+
+/* Terminal: a dashed, monospace-flavoured block instead of a smooth one. */
+[data-theme='terminal'] .skeleton {
+  border-radius: 0;
+  border: 1px dashed rgb(var(--line));
+  background: rgb(var(--sunken) / 0.5);
+}
+[data-theme='terminal'] .skeleton::after {
+  background: linear-gradient(90deg, transparent, rgb(var(--mars) / 0.18), transparent);
+}

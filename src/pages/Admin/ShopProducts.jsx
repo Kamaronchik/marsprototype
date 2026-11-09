@@ -7,6 +7,7 @@ import Modal from '../../components/Modal';
 import CoinAmount from '../../components/CoinAmount';
 import { api, errorText } from '../../lib/api';
 import { useFetch } from '../../lib/useFetch';
+import { Skeleton, SkeletonText } from '../../components/Skeleton';
 
 const EMPTY_FORM = { name: '', description: '', price: '', imageUrl: '', isAvailable: true };
 const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
@@ -109,7 +110,15 @@ const ShopProducts = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-line">
-            {products.map((p) => (
+            {loading && Array.from({ length: 5 }, (_, i) => (
+              <tr key={i}>
+                <td className="px-5 py-3"><div className="flex items-center gap-3"><Skeleton width="3rem" height="3rem" className="!rounded-lg" /><div className="space-y-2"><SkeletonText width="9rem" /><SkeletonText width="12rem" height="0.7rem" /></div></div></td>
+                <td className="px-5 py-3"><SkeletonText width="4rem" /></td>
+                <td className="px-5 py-3"><SkeletonText width="4.5rem" height="1.4rem" /></td>
+                <td className="px-5 py-3" />
+              </tr>
+            ))}
+            {!loading && products.map((p) => (
               <tr key={p.id} className={p.isArchived ? 'opacity-60' : 'hover:bg-sunken/40'}>
                 <td className="px-5 py-3">
                   <div className="flex items-center gap-3">
@@ -155,7 +164,7 @@ const ShopProducts = () => {
                 </td>
               </tr>
             ))}
-            {products.length === 0 && !loading && (
+            {!loading && products.length === 0 && (
               <tr>
                 <td colSpan="4" className="px-5 py-14 text-center">
                   <p className="font-display text-lg font-semibold text-ink">{t('products.empty')}</p>

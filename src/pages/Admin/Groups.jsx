@@ -1,9 +1,10 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { Plus, Pencil, Archive, ChevronDown, ChevronRight, UserPlus, X } from 'lucide-react';
 import PageHeader from '../../components/PageHeader';
 import Modal from '../../components/Modal';
+import { SkeletonText } from '../../components/Skeleton';
 import { api, errorText } from '../../lib/api';
 import { useFetch } from '../../lib/useFetch';
 import { weekdayName, weekdaysText } from '../../lib/format';
@@ -91,9 +92,13 @@ const Groups = () => {
   const [form, setForm] = useState(EMPTY_FORM);
   const [opened, setOpened] = useState(null);
 
-  const groups = (groupsQuery.data?.groups ?? []).filter((g) => g.status === 'active');
+  // Recomputed only when the underlying request answers again, not on every keystroke in the modal.
+  const groups = useMemo(() => (groupsQuery.data?.groups ?? []).filter((g) => g.status === 'active'), [groupsQuery.data]);
   const options = optionsQuery.data;
-  const teachers = (usersQuery.data?.users ?? []).filter((u) => u.role === 'Teacher' && u.status === 'active');
+  const teachers = useMemo(
+    () => (usersQuery.data?.users ?? []).filter((u) => u.role === 'Teacher' && u.status === 'active'),
+    [usersQuery.data],
+  );
   const allStudents = studentsQuery.data?.students ?? [];
 
   // Another active group that overlaps the form on at least one weekday.
@@ -174,7 +179,13 @@ const Groups = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-line">
-            {groups.map((g) => (
+            {groupsQuery.loading && Array.from({ length: 5 }, (_, i) => (
+              <tr key={i}>
+                {Array.from({ length: 6 }, (_, j) => <td key={j} className="px-5 py-3.5"><SkeletonText width="80%" /></td>)}
+                <td className="px-4 py-3.5" />
+              </tr>
+            ))}
+            {!groupsQuery.loading && groups.map((g) => (
               <Fragment key={g.id}>
                 <tr className="hover:bg-sunken/40">
                   <td className="px-5 py-3.5 text-sm font-semibold text-ink">{g.name}</td>

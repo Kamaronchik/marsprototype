@@ -6,6 +6,7 @@ import CoinAmount from '../../components/CoinAmount';
 import OrderStatus from '../../components/OrderStatus';
 import { api, errorText } from '../../lib/api';
 import { useFetch } from '../../lib/useFetch';
+import { SkeletonText } from '../../components/Skeleton';
 import { formatDateTime, formatDate } from '../../lib/format';
 
 const FILTERS = ['', 'Pending', 'Completed', 'Cancelled'];
@@ -60,7 +61,13 @@ const ShopOrders = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-line">
-            {orders.map((order) => (
+            {loading && Array.from({ length: 5 }, (_, i) => (
+              <tr key={i}>
+                {Array.from({ length: 5 }, (_, j) => <td key={j} className="px-5 py-3.5"><SkeletonText width="80%" /></td>)}
+                <td className="px-5 py-3.5" />
+              </tr>
+            ))}
+            {!loading && orders.map((order) => (
               <tr key={order.id} className="align-top hover:bg-sunken/40">
                 <td className="whitespace-nowrap px-5 py-3.5 text-sm text-ink-soft">{formatDateTime(order.purchasedAt, i18n.language)}</td>
                 <td className="px-5 py-3.5">
@@ -89,7 +96,7 @@ const ShopOrders = () => {
                 </td>
               </tr>
             ))}
-            {orders.length === 0 && !loading && (
+            {!loading && orders.length === 0 && (
               <tr><td colSpan="6" className="px-5 py-14 text-center text-sm text-ink-soft">{t('orders.empty')}</td></tr>
             )}
           </tbody>

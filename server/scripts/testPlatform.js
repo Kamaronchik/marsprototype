@@ -14,14 +14,14 @@ const GROUP_NAMES = ['ZZ Plat A', 'ZZ Plat B', 'ZZ Plat C'];
 const notificationsOf = async (who) => (await call('GET', '/api/notifications', who)).body;
 const hasNotification = async (who, type) => (await notificationsOf(who)).notifications.some((n) => n.type === type);
 
-// A room and a lesson time that no active group uses yet, so the test cannot clash with real groups.
+// A lesson time with at least two free rooms, so the test cannot clash with real groups. otherRoom is
+// a second room free at the same time: picking "any room but the first" would risk a real group's room.
 const findFreeSlot = async (admin) => {
   const { groups } = (await call('GET', '/api/groups', admin)).body;
   const busy = (room, start) => groups.some((g) => g.status === 'active' && g.room === room && g.startTime === start);
   for (const start of SLOTS) {
-    for (const room of ROOMS) {
-      if (!busy(room, start)) return { room, start };
-    }
+    const free = ROOMS.filter((room) => !busy(room, start));
+    if (free.length >= 2) return { room: free[0], otherRoom: free[1], start };
   }
   throw new Error('No free room and time left for the test');
 };
@@ -64,7 +64,7 @@ const testGroups = async ({ admin, teacher, teacherB, studentA }, ctx) => {
   const sameRoom = await call('POST', '/api/groups', admin, { ...base, name: GROUP_NAMES[1], teacherId: teacherB.id });
   check('same room at the same time -> ROOM_BUSY', sameRoom.status === 409 && sameRoom.body.code === 'ROOM_BUSY', sameRoom.body);
 
-  const otherRoom = ROOMS.find((room) => room !== free.room);
+  const { otherRoom } = free;
   const sameTeacher = await call('POST', '/api/groups', admin, { ...base, name: GROUP_NAMES[1], room: otherRoom });
   check('same teacher at the same time -> TEACHER_BUSY', sameTeacher.status === 409 && sameTeacher.body.code === 'TEACHER_BUSY', sameTeacher.body);
 

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Bot, MessageCircle } from 'lucide-react';
 import PageHeader from '../../components/PageHeader';
 import { useFetch } from '../../lib/useFetch';
+import { SkeletonRow, SkeletonText } from '../../components/Skeleton';
 import { formatDate, formatDateTime } from '../../lib/format';
 
 const KIND_STYLE = {
@@ -30,7 +31,9 @@ const Telegram = () => {
 
       <h2 className="mb-3 font-display text-xl font-semibold text-ink">{t('telegramAdmin.absences')}</h2>
       <div className="mb-8 overflow-hidden rounded-xl border border-line bg-card">
-        {absences.length === 0 ? (
+        {overview.loading ? (
+          <ul className="divide-y divide-line">{Array.from({ length: 3 }, (_, i) => <SkeletonRow key={i} trailing={false} />)}</ul>
+        ) : absences.length === 0 ? (
           <p className="px-6 py-10 text-center text-sm text-ink-soft">{t('telegramAdmin.noAbsences')}</p>
         ) : (
           <ul className="divide-y divide-line">
@@ -50,7 +53,12 @@ const Telegram = () => {
       </div>
 
       <h2 className="mb-3 font-display text-xl font-semibold text-ink">{t('telegramAdmin.conversations')}</h2>
-      {chats.length === 0 ? (
+      {overview.loading ? (
+        <div className="grid gap-4 md:grid-cols-[16rem_1fr]">
+          <ul className="divide-y divide-line overflow-hidden rounded-xl border border-line bg-card">{Array.from({ length: 4 }, (_, i) => <SkeletonRow key={i} avatar trailing={false} />)}</ul>
+          <div className="rounded-xl border border-line bg-card p-5 space-y-3">{Array.from({ length: 3 }, (_, i) => <SkeletonText key={i} width={`${70 - i * 12}%`} />)}</div>
+        </div>
+      ) : chats.length === 0 ? (
         <div className="rounded-xl border border-dashed border-ink-faint/40 bg-card px-6 py-12 text-center">
           <p className="font-display text-lg font-semibold text-ink">{t('telegramAdmin.noChats')}</p>
           <p className="mt-1 text-sm text-ink-soft">{t('telegramAdmin.noChatsHint')}</p>
@@ -78,8 +86,11 @@ const Telegram = () => {
           <div className="flex max-h-[32rem] flex-col rounded-xl border border-line bg-card">
             <p className="border-b border-line px-5 py-3 text-sm font-semibold text-ink">{selectedName}</p>
             <ul className="flex-1 space-y-3 overflow-y-auto p-5">
+              {chat.loading && Array.from({ length: 4 }, (_, i) => (
+                <li key={i} className={`flex ${i % 2 ? 'justify-end' : 'justify-start'}`}><SkeletonText width="55%" height="2.2rem" /></li>
+              ))}
               {messages.length === 0 && !chat.loading && <li className="py-8 text-center text-sm text-ink-soft">{t('telegramAdmin.noMessages')}</li>}
-              {messages.map((m) => (
+              {!chat.loading && messages.map((m) => (
                 <li key={m.id} className={`flex ${m.direction === 'in' ? 'justify-end' : 'justify-start'}`}>
                   <div className={`max-w-[80%] rounded-xl border px-3.5 py-2 text-sm ${KIND_STYLE[m.kind] ?? 'border-line bg-sunken/60'}`}>
                     <p className="whitespace-pre-wrap text-ink">{m.body}</p>

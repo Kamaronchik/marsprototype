@@ -3,6 +3,7 @@ import { ArrowDownLeft, ArrowUpRight, Undo2 } from 'lucide-react';
 import PageHeader from '../../components/PageHeader';
 import CoinAmount from '../../components/CoinAmount';
 import { useFetch } from '../../lib/useFetch';
+import { SkeletonRow, SkeletonText } from '../../components/Skeleton';
 import { formatDateTime } from '../../lib/format';
 
 const TYPE_STYLE = {
@@ -26,14 +27,17 @@ const Coins = () => {
       <div className="mb-8 rounded-xl border border-line bg-card px-6 py-5">
         <p className="text-sm text-ink-soft">{t('coinsPage.balance')}</p>
         <p className="mt-1 text-4xl">
-          {wallet.data ? <CoinAmount amount={wallet.data.balance} className="font-display text-ink" /> : '—'}
+          {wallet.data && <CoinAmount amount={wallet.data.balance} className="font-display text-ink" />}
+          {!wallet.data && wallet.loading && <SkeletonText width="5rem" height="2rem" />}
+          {!wallet.data && !wallet.loading && '—'}
         </p>
       </div>
 
       <h2 className="mb-3 font-display text-xl font-semibold text-ink">{t('coinsPage.history')}</h2>
       <div className="overflow-hidden rounded-xl border border-line bg-card">
         <ul className="divide-y divide-line">
-          {transactions.map((tx) => {
+          {history.loading && Array.from({ length: 5 }, (_, i) => <SkeletonRow key={i} avatar />)}
+          {!history.loading && transactions.map((tx) => {
             const { icon: Icon, tone } = TYPE_STYLE[tx.type];
             return (
               <li key={tx.id} className="flex items-center gap-4 px-5 py-3.5">

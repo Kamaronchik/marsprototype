@@ -1,8 +1,10 @@
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { ArrowUpRight } from 'lucide-react';
 import Eyebrow from '../../components/Eyebrow';
+import { Skeleton, SkeletonText, SkeletonStat } from '../../components/Skeleton';
 import { useFetch } from '../../lib/useFetch';
 import { greetingKey, firstNameOf } from '../../lib/greeting';
 import { formatDate, tashkentNow, timeToMinutes } from '../../lib/format';
@@ -21,6 +23,23 @@ const Tile = ({ label, value, alert = false }) => (
   </div>
 );
 
+// The status board, before the four requests answer: the same tiles, list and chart shapes in grey.
+const DashboardSkeleton = () => (
+  <>
+    <header className="mb-7 flex flex-wrap items-end justify-between gap-4">
+      <div><SkeletonText width="8rem" height="0.7rem" className="mb-3" /><SkeletonText width="18rem" height="2rem" /></div>
+    </header>
+    <dl className="grid grid-cols-2 overflow-hidden rounded-xl border border-line bg-card md:grid-cols-5 [&>div]:border-b [&>div]:border-r [&>div]:border-line">
+      {Array.from({ length: 5 }, (_, i) => <SkeletonStat key={i} />)}
+    </dl>
+    <div className="mt-6 grid gap-6 lg:grid-cols-[1.5fr_1fr]">
+      <Skeleton height="16rem" className="!rounded-xl" />
+      <div className="space-y-6"><Skeleton height="8rem" className="!rounded-xl" /><Skeleton height="8rem" className="!rounded-xl" /></div>
+    </div>
+    <Skeleton height="12rem" className="mt-6 !rounded-xl" />
+  </>
+);
+
 // ADMIN home, Mission Control: a status board with live numbers, today's launches in time order,
 // what needs attention, the last six months of payments and the newest people.
 const AdminDashboard = () => {
@@ -32,31 +51,45 @@ const AdminDashboard = () => {
   const finance = useFetch('/api/finance/overview');
   const unmarked = useFetch('/api/attendance/unmarked');
 
-  const users = people.data?.users ?? [];
-  const count = (role) => users.filter((u) => u.role === role).length;
-  const blocked = users.filter((u) => u.status === 'blocked').length;
-  const active = (groups.data?.groups ?? []).filter((g) => g.status === 'active');
-  const debtors = finance.data?.debtors ?? 0;
+  // people.data stays the same object between renders until the request is reloaded, so keying the
+  // memo on it (not on a freshly-built `?? []` array) actually skips the work most of the time.
+  const users = useMemo(() => people.data?.users ?? [], [people.data]);
+  const allGroups = useMemo(() => groups.data?.groups ?? [], [groups.data]);
+  const history = useMemo(() => finance.data?.history ?? [], [finance.data]);
   const lessonsWithoutMarks = unmarked.data?.lessons.length ?? 0;
+  const debtors = finance.data?.debtors ?? 0;
+
+  // These all re-scan the people/groups lists; without useMemo every one would be redone on every
+  // render, including the render after the teacher-attendance clock ticks elsewhere on the page.
+  const { count, blocked, active, newest } = useMemo(() => {
+    const byRole = (role) => users.filter((u) => u.role === role).length;
+    return {
+      count: byRole,
+      blocked: users.filter((u) => u.status === 'blocked').length,
+      active: allGroups.filter((g) => g.status === 'active'),
+      newest: [...users].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5),
+    };
+  }, [users, allGroups]);
 
   const { weekday, minutes } = tashkentNow();
-  const launches = active
-    .filter((g) => g.weekdays.includes(weekday))
-    .sort((a, b) => a.startTime.localeCompare(b.startTime));
+  const launches = useMemo(
+    () => active.filter((g) => g.weekdays.includes(weekday)).sort((a, b) => a.startTime.localeCompare(b.startTime)),
+    [active, weekday],
+  );
   const since = (g) => minutes - timeToMinutes(g.startTime);
   const over = (g) => since(g) >= LESSON_MINUTES;
   const started = (g) => since(g) >= 0;
   const live = (g) => started(g) && !over(g);
 
-  const history = finance.data?.history ?? [];
-  const peak = Math.max(1, ...history.map((h) => h.revenue));
-  const newest = [...users].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
+  const peak = useMemo(() => Math.max(1, ...history.map((h) => h.revenue)), [history]);
 
   const attention = [
     { show: lessonsWithoutMarks > 0, to: '/admin/attendance', text: t('dashboard.unmarked', { count: lessonsWithoutMarks }) },
     { show: debtors > 0, to: '/admin/debts', text: t('dashboard.debtorsHint', { count: debtors }) },
     { show: blocked > 0, to: '/admin/users', text: t('dashboard.blocked', { count: blocked }) },
   ].filter((item) => item.show);
+
+  if (people.loading || groups.loading || finance.loading) return <DashboardSkeleton />;
 
   return (
     <>

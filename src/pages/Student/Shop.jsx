@@ -6,6 +6,7 @@ import PageHeader from '../../components/PageHeader';
 import CartModal from '../../components/CartModal';
 import CoinAmount from '../../components/CoinAmount';
 import { useFetch } from '../../lib/useFetch';
+import { Skeleton, SkeletonText } from '../../components/Skeleton';
 import { addItem, selectCartItems, selectCartCount } from '../../features/cart/cartSlice';
 
 // Student: the rewards shop. Products go into the cart; the cart is paid with an email code.
@@ -49,7 +50,17 @@ const Shop = () => {
       )}
 
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {list.map((product) => {
+        {products.loading && Array.from({ length: 6 }, (_, i) => (
+          <article key={i} className="flex flex-col overflow-hidden rounded-xl border border-line bg-card">
+            <Skeleton height="100%" className="aspect-[4/3] !rounded-none" />
+            <div className="space-y-3 p-5">
+              <SkeletonText width="60%" height="1.2rem" />
+              <SkeletonText width="90%" />
+              <div className="mt-4 flex items-center justify-between"><SkeletonText width="4rem" /><SkeletonText width="4.5rem" height="2rem" /></div>
+            </div>
+          </article>
+        ))}
+        {!products.loading && list.map((product) => {
           const inCart = cartItems.find((item) => item.productId === product.id)?.quantity ?? 0;
           return (
             <article key={product.id} className="flex flex-col overflow-hidden rounded-xl border border-line bg-card">

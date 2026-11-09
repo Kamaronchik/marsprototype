@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import PageHeader from '../../components/PageHeader';
 import { useFetch } from '../../lib/useFetch';
+import { SkeletonCard } from '../../components/Skeleton';
 import { weekdaysText } from '../../lib/format';
 
 // Teacher: only the groups where this teacher is the head, with their students.
@@ -20,7 +21,8 @@ const MyGroups = () => {
       )}
 
       <div className="grid gap-4 md:grid-cols-2">
-        {groups.map((g) => (
+        {loading && Array.from({ length: 2 }, (_, i) => <SkeletonCard key={i} lines={3} />)}
+        {!loading && groups.map((g) => (
           <section key={g.id} className="rounded-xl border border-line bg-card p-5">
             <div className="flex items-start justify-between gap-3">
               <h2 className="font-display text-xl font-semibold text-ink">{g.name}</h2>
