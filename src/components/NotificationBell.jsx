@@ -10,7 +10,7 @@ const REFRESH_MS = 60 * 1000;
 
 // The bell of every role: unread counter and the latest notifications.
 // The server sends a type and some data; the text is built here, in the user's language.
-const NotificationBell = () => {
+const NotificationBell = ({ align = 'sidebar' }) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -84,7 +84,7 @@ const NotificationBell = () => {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-11 z-40 w-[22rem] max-w-[calc(100vw-2rem)] overflow-hidden rounded-xl border border-line bg-card shadow-xl md:left-0 md:right-auto">
+        <div className={`absolute top-11 z-40 w-[22rem] max-w-[calc(100vw-2rem)] overflow-hidden rounded-xl border border-line bg-card shadow-xl ${align === 'sidebar' ? 'right-0 md:left-0 md:right-auto' : 'right-0'}`}>
           <div className="flex items-center justify-between border-b border-line px-4 py-3">
             <h2 className="font-display text-base font-semibold text-ink">{t('bell.title')}</h2>
             {unread > 0 && (

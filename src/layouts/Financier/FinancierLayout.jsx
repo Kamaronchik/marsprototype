@@ -1,5 +1,6 @@
 import { LayoutDashboard, CreditCard, Wallet, History, GraduationCap } from 'lucide-react';
-import AppShell from '../../components/AppShell';
+import LedgerShell from '../../shells/LedgerShell';
+import { useRoleLook } from '../../lib/useRoleLook';
 
 const menuItems = [
   { label: 'nav.overview', path: '/financier', icon: LayoutDashboard },
@@ -9,6 +10,9 @@ const menuItems = [
   { label: 'nav.students', path: '/financier/students', icon: GraduationCap },
 ];
 
-const FinancierLayout = () => <AppShell sectionLabel="nav.finance" menuItems={menuItems} />;
+const FinancierLayout = () => {
+  useRoleLook('Financier');
+  return <LedgerShell menuItems={menuItems} />;
+};
 
 export default FinancierLayout;

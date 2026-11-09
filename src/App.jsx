@@ -32,6 +32,8 @@ import BattleArena from './pages/Student/BattleArena';
 import BattleRoom from './pages/Student/BattleRoom';
 import AdminBattles from './pages/Admin/Battles';
 import Settings from './pages/Admin/Settings';
+import StudentHome from './features/student/StudentHome';
+import TeacherHome from './features/teacher/TeacherHome';
 import FinancierLayout from './layouts/Financier/FinancierLayout';
 import TeacherLayout from './layouts/Teacher/TeacherLayout';
 import StudentLayout from './layouts/Student/StudentLayout';
@@ -100,7 +102,7 @@ const AppRoutes = () => {
               </ProtectedRoute>
             }
           >
-            <Route index element={<Navigate to="/teacher/attendance" replace />} />
+            <Route index element={<TeacherHome />} />
             <Route path="groups" element={<MyGroups />} />
             <Route path="attendance" element={<TeacherAttendance />} />
             <Route path="coins" element={<TeacherCoins />} />
@@ -115,7 +117,7 @@ const AppRoutes = () => {
               </ProtectedRoute>
             }
           >
-            <Route index element={<ComingSoon title="nav.home" />} />
+            <Route index element={<StudentHome />} />
             <Route path="attendance" element={<StudentAttendance />} />
             <Route path="battle" element={<BattleArena />} />
             <Route path="battle/:id" element={<BattleRoom />} />

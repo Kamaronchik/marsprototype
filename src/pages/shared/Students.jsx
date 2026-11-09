@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { Search, BellRing } from 'lucide-react';
@@ -13,8 +14,10 @@ const SEARCH_DELAY_MS = 300;
 // One search box finds a student by name, email, group, teacher or room.
 const Students = ({ debts = false }) => {
   const { t, i18n } = useTranslation();
-  const [text, setText] = useState('');
-  const [query, setQuery] = useState('');
+  const [searchParams] = useSearchParams();
+  const fromBar = searchParams.get('q') ?? '';
+  const [text, setText] = useState(fromBar);
+  const [query, setQuery] = useState(fromBar.trim());
   const [payment, setPayment] = useState(debts ? 'debtor' : '');
   const [groupId, setGroupId] = useState('');
 

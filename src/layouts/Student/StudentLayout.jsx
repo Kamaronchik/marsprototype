@@ -1,5 +1,10 @@
 import { LayoutDashboard, UserCircle, ClipboardCheck, Gift, Coins, Receipt, Swords } from 'lucide-react';
-import AppShell from '../../components/AppShell';
+import { useDesign } from '../../lib/useDesign';
+import { useRoleLook } from '../../lib/useRoleLook';
+import StudentHomeProvider from '../../features/student/StudentHomeProvider';
+import DockShell from '../../shells/DockShell';
+import RailShell from '../../shells/RailShell';
+import ExplorerShell from '../../shells/ExplorerShell';
 
 const menuItems = [
   { label: 'nav.home', path: '/student', icon: LayoutDashboard },
@@ -11,6 +16,18 @@ const menuItems = [
   { label: 'nav.profile', path: '/student/profile', icon: UserCircle },
 ];
 
-const StudentLayout = () => <AppShell sectionLabel="nav.learning" menuItems={menuItems} />;
+// Three designs of the same student area: the cockpit (dock), the base (rail), the console (explorer).
+const SHELLS = { cockpit: DockShell, base: RailShell, console: ExplorerShell };
+
+const StudentLayout = () => {
+  useRoleLook('Student');
+  const Shell = SHELLS[useDesign()];
+
+  return (
+    <StudentHomeProvider>
+      <Shell menuItems={menuItems} />
+    </StudentHomeProvider>
+  );
+};
 
 export default StudentLayout;

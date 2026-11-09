@@ -32,7 +32,7 @@
   --brick-tint: 245 222 218;
   --sky: 47 93 134;
   --sky-tint: 222 233 243;
-  --font-sans: 'Instrument Sans';
+  --font-sans: 'Inter';
   --font-display: 'Fraunces';
   --r-md: 0.375rem;
   --r-lg: 0.5rem;
@@ -63,7 +63,7 @@
   --brick-tint: 70 27 40;
   --sky: 96 205 255;
   --sky-tint: 18 50 74;
-  --font-sans: 'Instrument Sans';
+  --font-sans: 'Inter';
   --font-display: 'Exo 2';
   --r-md: 0.5rem;
   --r-lg: 0.75rem;
@@ -94,7 +94,7 @@
   --brick-tint: 66 25 25;
   --sky: 92 176 255;
   --sky-tint: 17 44 70;
-  --font-sans: 'Instrument Sans';
+  --font-sans: 'Inter';
   --font-display: 'JetBrains Mono';
   --r-md: 2px;
   --r-lg: 3px;
@@ -102,6 +102,101 @@
   --r-2xl: 6px;
   --shadow-xl: 0 0 0 1px rgb(70 255 120 / 0.35), 0 0 32px -4px rgb(70 255 120 / 0.25);
   --selection: 30 120 60;
+}
+
+/* ---- Staff looks: one each, no choice ---- */
+
+/* Admin: Mission Control. A dim control room with amber signals. */
+[data-theme='control'] {
+  color-scheme: dark;
+  --paper: 14 17 23;
+  --card: 23 28 38;
+  --sunken: 10 13 18;
+  --line: 45 53 68;
+  --ink: 230 235 243;
+  --ink-soft: 162 172 188;
+  --ink-faint: 114 124 142;
+  --mars: 255 176 32;
+  --mars-deep: 255 199 84;
+  --mars-tint: 58 44 12;
+  --on-accent: 24 16 0;
+  --moss: 80 214 152;
+  --moss-tint: 16 52 40;
+  --ochre: 255 205 100;
+  --ochre-tint: 58 46 16;
+  --brick: 255 104 114;
+  --brick-tint: 66 26 32;
+  --sky: 96 172 255;
+  --sky-tint: 18 46 80;
+  --font-display: 'IBM Plex Sans';
+  --r-md: 0.25rem;
+  --r-lg: 0.375rem;
+  --r-xl: 0.5rem;
+  --r-2xl: 0.75rem;
+  --shadow-xl: 0 18px 50px -10px rgb(0 0 0 / 0.65), 0 0 0 1px rgb(255 176 32 / 0.18);
+  --selection: 120 85 10;
+}
+
+/* Teacher: Commander's Station. Bright and calm, with a teal accent. */
+[data-theme='station'] {
+  color-scheme: light;
+  --paper: 241 246 246;
+  --card: 255 255 255;
+  --sunken: 231 239 240;
+  --line: 213 225 227;
+  --ink: 17 38 42;
+  --ink-soft: 66 96 102;
+  --ink-faint: 116 142 147;
+  --mars: 13 133 140;
+  --mars-deep: 9 101 107;
+  --mars-tint: 217 240 241;
+  --on-accent: 255 255 255;
+  --moss: 30 140 88;
+  --moss-tint: 222 243 232;
+  --ochre: 170 116 8;
+  --ochre-tint: 249 237 205;
+  --brick: 188 54 62;
+  --brick-tint: 248 225 226;
+  --sky: 38 96 170;
+  --sky-tint: 224 234 248;
+  --font-display: 'Manrope';
+  --r-md: 0.5rem;
+  --r-lg: 0.75rem;
+  --r-xl: 1rem;
+  --r-2xl: 1.25rem;
+  --shadow-xl: 0 20px 40px -12px rgb(17 38 42 / 0.18);
+  --selection: 170 225 228;
+}
+
+/* Finance: Logistics Bay. Cool ledger paper with emerald, numbers set in columns. */
+[data-theme='bay'] {
+  color-scheme: light;
+  --paper: 238 242 247;
+  --card: 255 255 255;
+  --sunken: 228 234 242;
+  --line: 208 218 231;
+  --ink: 19 30 48;
+  --ink-soft: 70 87 112;
+  --ink-faint: 118 133 156;
+  --mars: 4 120 87;
+  --mars-deep: 4 94 69;
+  --mars-tint: 218 241 231;
+  --on-accent: 255 255 255;
+  --moss: 22 128 74;
+  --moss-tint: 220 244 230;
+  --ochre: 170 116 8;
+  --ochre-tint: 249 237 205;
+  --brick: 186 50 60;
+  --brick-tint: 248 224 226;
+  --sky: 36 99 200;
+  --sky-tint: 222 233 250;
+  --font-display: 'Roboto Slab';
+  --r-md: 0.25rem;
+  --r-lg: 0.375rem;
+  --r-xl: 0.5rem;
+  --r-2xl: 0.75rem;
+  --shadow-xl: 0 18px 36px -12px rgb(19 30 48 / 0.2);
+  --selection: 170 225 205;
 }
 
 body {
@@ -281,5 +376,88 @@ body {
 @keyframes caret-blink {
   50% {
     opacity: 0;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   CONTROL (admin): a faint grid and an amber edge, like a status wall
+   --------------------------------------------------------------------------- */
+[data-theme='control'] body {
+  background-image:
+    linear-gradient(rgb(255 176 32 / 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 176 32 / 0.035) 1px, transparent 1px),
+    radial-gradient(50rem 24rem at 100% -10%, rgb(255 176 32 / 0.08), transparent 65%);
+  background-size: 32px 32px, 32px 32px, auto;
+  background-attachment: fixed;
+}
+[data-theme='control'] h1 {
+  letter-spacing: -0.01em;
+  text-transform: none;
+}
+[data-theme='control'] .btn-primary {
+  box-shadow: 0 0 0 1px rgb(255 176 32 / 0.35), 0 6px 18px -8px rgb(255 176 32 / 0.6);
+}
+
+/* ---------------------------------------------------------------------------
+   STATION (teacher): a soft teal wash from the top
+   --------------------------------------------------------------------------- */
+[data-theme='station'] body {
+  background-image:
+    radial-gradient(56rem 22rem at 12% -14%, rgb(13 133 140 / 0.11), transparent 65%),
+    radial-gradient(40rem 20rem at 100% 0%, rgb(38 96 170 / 0.06), transparent 60%);
+  background-attachment: fixed;
+}
+
+/* ---------------------------------------------------------------------------
+   BAY (finance): ledger paper. Tabular figures, thin rules
+   --------------------------------------------------------------------------- */
+[data-theme='bay'] body {
+  font-variant-numeric: tabular-nums;
+  background-image: repeating-linear-gradient(to bottom, transparent 0 31px, rgb(19 30 48 / 0.035) 31px 32px);
+  background-attachment: fixed;
+}
+[data-theme='bay'] h1 {
+  letter-spacing: -0.015em;
+}
+
+/* ---------------------------------------------------------------------------
+   Small motions. All of them stop for people who ask for less motion.
+   --------------------------------------------------------------------------- */
+.gauge-arc {
+  animation: gauge-fill 1.1s ease-out;
+}
+@keyframes gauge-fill {
+  from {
+    stroke-dashoffset: var(--gauge-full);
+  }
+}
+
+.horizon-rover {
+  animation: rover-drive 90s linear infinite;
+}
+@keyframes rover-drive {
+  from {
+    transform: translate(-140px, 214px);
+  }
+  to {
+    transform: translate(1260px, 214px);
+  }
+}
+
+.live-dot {
+  animation: live-pulse 1.6s ease-in-out infinite;
+}
+@keyframes live-pulse {
+  50% {
+    opacity: 0.35;
+    transform: scale(1.35);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gauge-arc,
+  .horizon-rover,
+  .live-dot {
+    animation: none;
   }
 }

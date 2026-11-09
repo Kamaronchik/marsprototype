@@ -34,7 +34,42 @@ const tashkentNow = (now = new Date()) => {
   };
 };
 
+// The next lesson of a student (or teacher) from this moment, looking a week ahead.
+// groups: [{ id, name, room, weekdays, start_time }]. A lesson that is running right now counts as "live".
+// Returns null when there is none; minutesUntil is 0 for a live lesson.
+const nextLaunch = (groups, now = tashkentNow()) => {
+  let best = null;
+
+  for (let ahead = 0; ahead <= 7; ahead += 1) {
+    const weekday = ((now.weekday - 1 + ahead) % 7) + 1;
+
+    for (const group of groups) {
+      if (!group.weekdays.includes(weekday)) continue;
+
+      const start = toMinutes(group.start_time);
+      const live = ahead === 0 && start <= now.minutes && now.minutes < start + LESSON_MINUTES;
+      if (ahead === 0 && start + LESSON_MINUTES <= now.minutes) continue; // already over today
+
+      const minutesUntil = live ? 0 : ahead * 24 * 60 + start - now.minutes;
+      if (!best || minutesUntil < best.minutesUntil) {
+        best = {
+          groupId: group.id,
+          groupName: group.name,
+          room: group.room,
+          startTime: toTime(start),
+          endTime: toTime(start + LESSON_MINUTES),
+          dayOffset: ahead,
+          weekday,
+          live,
+          minutesUntil,
+        };
+      }
+    }
+  }
+  return best;
+};
+
 module.exports = {
   TIMEZONE, DAY_OPEN, DAY_CLOSE, LESSON_MINUTES, BREAK_MINUTES,
-  ROOMS, WEEKDAYS, SLOTS, toTime, toMinutes, tashkentNow,
+  ROOMS, WEEKDAYS, SLOTS, toTime, toMinutes, tashkentNow, nextLaunch,
 };

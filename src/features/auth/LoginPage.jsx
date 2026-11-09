@@ -7,11 +7,13 @@ import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Logo from '../../components/Logo';
 import LanguageSwitch from '../../components/LanguageSwitch';
-import ThemeSwitch from '../../components/ThemeSwitch';
+import DesignSwitch from '../../components/DesignSwitch';
 import { messageText } from '../../lib/api';
+import { useRoleLook } from '../../lib/useRoleLook';
 
 const LoginPage = () => {
   const { t } = useTranslation();
+  useRoleLook(null);
   const [formData, setFormData] = useState({ username: '', email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
@@ -104,7 +106,7 @@ const LoginPage = () => {
         <div className="w-full max-w-sm">
           <div className="mb-10 flex items-center justify-between">
             <Logo className="lg:hidden" />
-            <span className="ml-auto flex items-center gap-4"><ThemeSwitch /><LanguageSwitch /></span>
+            <span className="ml-auto flex items-center gap-4"><DesignSwitch /><LanguageSwitch /></span>
           </div>
 
           <h1 className="font-display text-[2rem] font-semibold tracking-tight text-ink">

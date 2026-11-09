@@ -50,3 +50,17 @@ export const weekdayName = (day, language, style = 'short') => {
 };
 
 export const weekdaysText = (days, language) => days.map((d) => weekdayName(d, language)).join(', ');
+
+// The school's own clock: weekday (1 = Monday) and minutes since midnight in Tashkent.
+export const tashkentNow = (now = new Date()) => {
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Tashkent', hour: '2-digit', minute: '2-digit', hourCycle: 'h23', weekday: 'short' })
+      .formatToParts(now).map((p) => [p.type, p.value]),
+  );
+  return {
+    weekday: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].indexOf(parts.weekday) + 1,
+    minutes: Number(parts.hour) * 60 + Number(parts.minute),
+  };
+};
+
+export const timeToMinutes = (time) => Number(time.slice(0, 2)) * 60 + Number(time.slice(3, 5));

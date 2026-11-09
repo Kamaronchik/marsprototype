@@ -16,6 +16,7 @@
     "seed-battle": "node server/scripts/seedBattleQuestions.js",
     "check-i18n": "node server/scripts/checkI18n.js",
     "test-i18n": "node server/scripts/testI18n.js",
+    "test-home": "node server/scripts/testHome.js",
     "test-battle": "node server/scripts/testBattle.js",
     "start": "node server/server.js",
     "dev-all": "concurrently \"npm run dev\" \"node server/server.js\""

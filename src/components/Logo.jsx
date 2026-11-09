@@ -1,5 +1,5 @@
 // Wordmark: a small planet (circle with an orbit ring) + the name set in a serif.
-const Logo = ({ className = '', inverted = false }) => (
+const Logo = ({ className = '', inverted = false, compact = false }) => (
   <span className={`inline-flex items-center gap-2.5 ${className}`}>
     <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true">
       <circle cx="13" cy="13" r="8" className={inverted ? 'fill-on-accent' : 'fill-mars'} />
@@ -10,9 +10,11 @@ const Logo = ({ className = '', inverted = false }) => (
         strokeWidth="1.4"
       />
     </svg>
-    <span className={`font-display text-[1.35rem] font-semibold leading-none tracking-tight ${inverted ? 'text-on-accent' : 'text-ink'}`}>
-      Mars Space
-    </span>
+    {!compact && (
+      <span className={`font-display text-[1.35rem] font-semibold leading-none tracking-tight ${inverted ? 'text-on-accent' : 'text-ink'}`}>
+        Mars Space
+      </span>
+    )}
   </span>
 );
 

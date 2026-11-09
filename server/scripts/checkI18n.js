@@ -17,8 +17,9 @@ const PLURAL_SUFFIX = /_(one|few|many|other)$/;
 
 // Files where a name that is the same in every language is written directly.
 const ALLOWED_LITERALS = new Set(['Logo.jsx']);
-// Texts that are not words: translation keys given as props, example values, language codes, symbols.
-const ALLOWED_TEXT = [/^[a-z]+(\.[A-Za-z]+)+$/, /^name@\w+\.\w+$/, /^[A-Z]{2,3}$/, /^[^A-Za-z]+$/];
+// Texts that are not words: translation keys given as props, example values, language codes, symbols,
+// shell commands and the product name ("mars status", "Mars Space").
+const ALLOWED_TEXT = [/^mars[\w\s.—-]*$/i, /^[a-z]+(\.[A-Za-z]+)+$/, /^name@\w+\.\w+$/, /^[A-Z]{2,3}$/, /^[^A-Za-z]+$/, /^Ctrl K$/, /^UTC[+-]\d+$/];
 
 const problems = [];
 const report = (area, text) => problems.push(`[${area}] ${text}`);

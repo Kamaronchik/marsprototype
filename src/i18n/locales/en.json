@@ -63,7 +63,13 @@
       "products": "Products",
       "orders": "Orders",
       "battle": "Battle Arena",
-      "battles": "Battles"
+      "battles": "Battles",
+      "today": "Today",
+      "sectionMain": "Main",
+      "sectionCrew": "Crew",
+      "sectionOperations": "Operations",
+      "sectionMoney": "Money",
+      "sectionSystem": "System"
     },
     "bell": {
       "title": "Notifications",
@@ -737,6 +743,69 @@
       "mars": "Mars: warm paper",
       "orbit": "Orbit: deep space",
       "terminal": "Terminal: code editor"
+    },
+    "ranks": {
+      "cadet": "Cadet",
+      "pilot": "Pilot",
+      "navigator": "Navigator",
+      "commander": "Commander"
+    },
+    "eyebrow": {
+      "student": "Crew deck",
+      "admin": "Mission Control",
+      "teacher": "Commander's station",
+      "finance": "Logistics bay"
+    },
+    "design": {
+      "label": "Design",
+      "cockpit": "Cockpit: a HUD and a dock",
+      "base": "Mars Base: a rail and a landscape",
+      "console": "Console: a code editor"
+    },
+    "console": {
+      "explorer": "Explorer",
+      "rank": "rank"
+    },
+    "home": {
+      "navigation": "Main navigation",
+      "xpValue": "{{xp}} XP",
+      "nextLaunch": "Next launch",
+      "live": "Live now",
+      "inMinutes": "in {{m}} min",
+      "inHours": "in {{h}} h {{m}} min",
+      "tomorrowAt": "Tomorrow at {{time}}",
+      "onDayAt": "{{day}} at {{time}}",
+      "noLaunch": "No launch planned",
+      "noLaunchHint": "Ask an admin to put you in a crew.",
+      "room": "Room {{room}}",
+      "readiness": "Mission readiness",
+      "readinessLine": "Came {{came}}, missed {{missed}}",
+      "coins": "Mars Coins",
+      "wins": "Battles won",
+      "log": "Mission log",
+      "logEmpty": "Entries appear here after your first lesson.",
+      "simulator": "Enter the simulator",
+      "simulatorHint": "Win a battle: 5 coins and 25 XP.",
+      "crew": "Your crew",
+      "toShop": "Open the shop"
+    },
+    "command": {
+      "placeholder": "Search students, groups, rooms"
+    },
+    "board": {
+      "attention": "{{count}} need attention",
+      "allClear": "All systems normal",
+      "today": "Today's launches",
+      "upcoming": "Upcoming",
+      "paidHistory": "Payments, last 6 months"
+    },
+    "teacherHome": {
+      "timeline": "Today's lessons",
+      "forgotten": "{{count}} finished lessons still have unmarked students",
+      "markNow": "Mark attendance",
+      "finished": "Finished",
+      "marked": "Marked {{done}} of {{total}}",
+      "giveCoins": "Give coins"
     }
   }
 }

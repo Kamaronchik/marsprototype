@@ -63,7 +63,13 @@
       "products": "Mahsulotlar",
       "orders": "Buyurtmalar",
       "battle": "Battle Arena",
-      "battles": "Bahslar"
+      "battles": "Bahslar",
+      "today": "Bugun",
+      "sectionMain": "Asosiy",
+      "sectionCrew": "Ekipaj",
+      "sectionOperations": "Operatsiyalar",
+      "sectionMoney": "Pul",
+      "sectionSystem": "Tizim"
     },
     "bell": {
       "title": "Bildirishnomalar",
@@ -737,6 +743,69 @@
       "mars": "Mars: iliq qog'oz",
       "orbit": "Orbit: chuqur kosmos",
       "terminal": "Terminal: kod muharriri"
+    },
+    "ranks": {
+      "cadet": "Kursant",
+      "pilot": "Uchuvchi",
+      "navigator": "Navigator",
+      "commander": "Komandir"
+    },
+    "eyebrow": {
+      "student": "Ekipaj palubasi",
+      "admin": "Boshqaruv markazi",
+      "teacher": "Komandir stansiyasi",
+      "finance": "Logistika bo'limi"
+    },
+    "design": {
+      "label": "Dizayn",
+      "cockpit": "Kabina: panel va dok",
+      "base": "Mars bazasi: yon panel va manzara",
+      "console": "Konsol: kod muharriri"
+    },
+    "console": {
+      "explorer": "Tadqiqotchi",
+      "rank": "unvon"
+    },
+    "home": {
+      "navigation": "Asosiy navigatsiya",
+      "xpValue": "{{xp}} XP",
+      "nextLaunch": "Keyingi start",
+      "live": "Hozir ketmoqda",
+      "inMinutes": "{{m}} daqiqadan keyin",
+      "inHours": "{{h}} soat {{m}} daqiqadan keyin",
+      "tomorrowAt": "Ertaga soat {{time}} da",
+      "onDayAt": "{{day}}, soat {{time}} da",
+      "noLaunch": "Startlar hozircha yo'q",
+      "noLaunchHint": "Admindan sizni ekipajga qo'shishni so'rang.",
+      "room": "{{room}}-xona",
+      "readiness": "Missiyaga tayyorlik",
+      "readinessLine": "Keldi: {{came}}, qoldirdi: {{missed}}",
+      "coins": "Mars Coins",
+      "wins": "Bahslardagi g'alabalar",
+      "log": "Bort jurnali",
+      "logEmpty": "Yozuvlar birinchi darsdan keyin paydo bo'ladi.",
+      "simulator": "Simulyatorga kirish",
+      "simulatorHint": "Bahsda g'alaba qozoning: 5 koin va 25 XP.",
+      "crew": "Sizning ekipajingiz",
+      "toShop": "Do'konni ochish"
+    },
+    "command": {
+      "placeholder": "O'quvchi, guruh yoki xonani qidiring"
+    },
+    "board": {
+      "attention": "E'tibor kerak: {{count}}",
+      "allClear": "Barcha tizimlar me'yorda",
+      "today": "Bugungi uchirishlar",
+      "upcoming": "Tez orada",
+      "paidHistory": "So'nggi 6 oydagi to'lovlar"
+    },
+    "teacherHome": {
+      "timeline": "Bugungi darslar",
+      "forgotten": "Belgilanmagan o'quvchilari bor tugagan darslar: {{count}}",
+      "markNow": "Davomatni belgilash",
+      "finished": "Tugadi",
+      "marked": "{{total}} tadan {{done}} tasi belgilandi",
+      "giveCoins": "Koin berish"
     }
   }
 }

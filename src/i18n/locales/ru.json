@@ -63,7 +63,13 @@
       "products": "Товары",
       "orders": "Заказы",
       "battle": "Battle Arena",
-      "battles": "Баттлы"
+      "battles": "Баттлы",
+      "today": "Сегодня",
+      "sectionMain": "Главное",
+      "sectionCrew": "Экипаж",
+      "sectionOperations": "Операции",
+      "sectionMoney": "Деньги",
+      "sectionSystem": "Система"
     },
     "bell": {
       "title": "Уведомления",
@@ -739,6 +745,69 @@
       "mars": "Mars: тёплая бумага",
       "orbit": "Orbit: глубокий космос",
       "terminal": "Terminal: редактор кода"
+    },
+    "ranks": {
+      "cadet": "Кадет",
+      "pilot": "Пилот",
+      "navigator": "Штурман",
+      "commander": "Командир"
+    },
+    "eyebrow": {
+      "student": "Палуба экипажа",
+      "admin": "Центр управления",
+      "teacher": "Станция командира",
+      "finance": "Логистический отсек"
+    },
+    "design": {
+      "label": "Дизайн",
+      "cockpit": "Кабина: панель и док",
+      "base": "База Марс: рейка и пейзаж",
+      "console": "Консоль: редактор кода"
+    },
+    "console": {
+      "explorer": "Проводник",
+      "rank": "звание"
+    },
+    "home": {
+      "navigation": "Главная навигация",
+      "xpValue": "{{xp}} XP",
+      "nextLaunch": "Следующий старт",
+      "live": "Идёт сейчас",
+      "inMinutes": "через {{m}} мин",
+      "inHours": "через {{h}} ч {{m}} мин",
+      "tomorrowAt": "Завтра в {{time}}",
+      "onDayAt": "{{day}} в {{time}}",
+      "noLaunch": "Стартов пока нет",
+      "noLaunchHint": "Попросите админа добавить вас в экипаж.",
+      "room": "Кабинет {{room}}",
+      "readiness": "Готовность к миссии",
+      "readinessLine": "Был: {{came}}, пропустил: {{missed}}",
+      "coins": "Mars Coins",
+      "wins": "Побед в баттлах",
+      "log": "Бортовой журнал",
+      "logEmpty": "Записи появятся после первого занятия.",
+      "simulator": "В симулятор",
+      "simulatorHint": "Выиграйте баттл: 5 коинов и 25 XP.",
+      "crew": "Ваш экипаж",
+      "toShop": "Открыть магазин"
+    },
+    "command": {
+      "placeholder": "Поиск учеников, групп, кабинетов"
+    },
+    "board": {
+      "attention": "Требуют внимания: {{count}}",
+      "allClear": "Все системы в норме",
+      "today": "Сегодняшние запуски",
+      "upcoming": "Скоро",
+      "paidHistory": "Оплаты за 6 месяцев"
+    },
+    "teacherHome": {
+      "timeline": "Уроки на сегодня",
+      "forgotten": "Завершённых уроков с неотмеченными учениками: {{count}}",
+      "markNow": "Отметить посещаемость",
+      "finished": "Завершён",
+      "marked": "Отмечено {{done}} из {{total}}",
+      "giveCoins": "Выдать коины"
     }
   }
 }
