@@ -74,8 +74,11 @@ const TelegramConnect = () => {
             </div>
           )}
 
-          {status.data && !linked && (
+          {status.loading && <p className="mt-4 text-sm text-ink-faint">...</p>}
+
+          {(status.error || (status.data && !linked)) && (
             <div className="mt-4">
+              {status.error && <p className="mb-3 text-sm text-brick">{errorText(t, status.error)}</p>}
               <button type="button" onClick={connect} disabled={busy} className="btn-primary">
                 <Send size={16} /> {t('telegram.connect')}
               </button>
