@@ -23,6 +23,8 @@ const financeRoutes = require('./routes/financeRoutes');
 const battleRoutes = require('./routes/battleRoutes');
 const translationRoutes = require('./routes/translationRoutes');
 const homeRoutes = require('./routes/homeRoutes');
+const telegramRoutes = require('./routes/telegramRoutes');
+const adminTelegramRoutes = require('./routes/adminTelegramRoutes');
 
 const app = express();
 
@@ -52,6 +54,8 @@ app.use('/api/finance', financeRoutes);
 app.use('/api/battles', battleRoutes);
 app.use('/api/i18n', translationRoutes);
 app.use('/api/home', homeRoutes);
+app.use('/api/telegram', telegramRoutes);
+app.use('/api/admin/telegram', adminTelegramRoutes);
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'Mars Space Backend is running' });

@@ -32,12 +32,13 @@ import BattleArena from './pages/Student/BattleArena';
 import BattleRoom from './pages/Student/BattleRoom';
 import AdminBattles from './pages/Admin/Battles';
 import Settings from './pages/Admin/Settings';
+import AdminTelegram from './pages/Admin/Telegram';
+import StudentProfile from './pages/Student/Profile';
 import StudentHome from './features/student/StudentHome';
 import TeacherHome from './features/teacher/TeacherHome';
 import FinancierLayout from './layouts/Financier/FinancierLayout';
 import TeacherLayout from './layouts/Teacher/TeacherLayout';
 import StudentLayout from './layouts/Student/StudentLayout';
-import ComingSoon from './components/ComingSoon';
 import StatusPage from './components/StatusPage';
 
 const AppRoutes = () => {
@@ -74,6 +75,7 @@ const AppRoutes = () => {
             <Route path="orders" element={<ShopOrders />} />
             <Route path="coins" element={<AdminCoins />} />
             <Route path="battles" element={<AdminBattles />} />
+            <Route path="telegram" element={<AdminTelegram />} />
             <Route path="settings" element={<Settings />} />
           </Route>
 
@@ -124,7 +126,7 @@ const AppRoutes = () => {
             <Route path="shop" element={<Shop />} />
             <Route path="coins" element={<StudentCoins />} />
             <Route path="purchases" element={<Purchases />} />
-            <Route path="profile" element={<ComingSoon title="nav.profile" />} />
+            <Route path="profile" element={<StudentProfile />} />
           </Route>
 
           <Route path="/forbidden" element={<StatusPage code="403" title="status.forbiddenTitle" text="status.forbiddenText" />} />

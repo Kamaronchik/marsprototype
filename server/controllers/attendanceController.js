@@ -3,6 +3,7 @@ const { handleDbError } = require('../utils/apiErrors');
 const { isUuid } = require('../utils/validate');
 const { logAction } = require('../utils/audit');
 const { notify } = require('../utils/notify');
+const { announceAttendance } = require('../utils/telegramAnnounce');
 const { DAY_OPEN, DAY_CLOSE, toMinutes, toTime, tashkentNow } = require('../utils/schedule');
 const {
   isDate, addDays, weekdayOf, isMarkingOpen, lessonEnd, buildStats, loadTeacherGroups, remindUnmarked,
@@ -127,6 +128,9 @@ const markAttendance = async (req, res) => {
       { groupName: group.name, date },
       { link: '/student/attendance', dedupeKey: `attendance:${groupId}:${studentId}:${date}:${status}` },
     );
+  }
+  if (!before || before.status !== status) {
+    await announceAttendance({ studentId, attendanceId: data.id, status, groupName: group.name, date });
   }
   if (before && before.status !== status) {
     await logAction(req.user.id, 'attendance.change', 'attendance', data.id, { from: before.status, to: status, date });

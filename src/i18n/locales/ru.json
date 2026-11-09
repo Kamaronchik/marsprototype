@@ -69,7 +69,8 @@
       "sectionCrew": "Экипаж",
       "sectionOperations": "Операции",
       "sectionMoney": "Деньги",
-      "sectionSystem": "Система"
+      "sectionSystem": "Система",
+      "telegram": "Telegram"
     },
     "bell": {
       "title": "Уведомления",
@@ -725,7 +726,7 @@
       "user_deleted": "Пользователь удалён",
       "user_not_found": "Пользователь не найден",
       "username_and_password_are_required": "Введите логин и пароль",
-      "username_or_email_already_exists": "Такой логин или email уже существует",
+      "username_already_exists": "Такой логин уже существует",
       "username_3_30_chars_letters_digits": "Логин: от 3 до 30 символов (буквы, цифры, . _ -)",
       "verification_code_has_expired_please_request_a_new_one": "Срок действия кода истёк. Запросите новый.",
       "verification_code_resent_successfully": "Новый код отправлен",
@@ -738,7 +739,9 @@
       "text_must_be_1_2000_characters": "Текст: от 1 до 2000 символов",
       "keep_every_placeholder_word_of_the_original_text_in_double_curly_braces": "Сохраните все слова в двойных фигурных скобках из исходного текста",
       "isarchived_must_be_true_or_false": "Значение «в архиве» должно быть да или нет",
-      "isavailable_must_be_true_or_false": "Значение «в продаже» должно быть да или нет"
+      "isavailable_must_be_true_or_false": "Значение «в продаже» должно быть да или нет",
+      "invalid_student": "Некорректный ученик",
+      "too_many_connection_attempts_please_wait": "Слишком много попыток подключения. Подождите."
     },
     "theme": {
       "label": "Стиль",
@@ -808,6 +811,39 @@
       "finished": "Завершён",
       "marked": "Отмечено {{done}} из {{total}}",
       "giveCoins": "Выдать коины"
+    },
+    "profile": {
+      "title": "Профиль",
+      "subtitle": "Ваш аккаунт и подключения.",
+      "name": "Имя",
+      "email": "Почта"
+    },
+    "telegram": {
+      "title": "Telegram-помощник",
+      "about": "Подключите Telegram, чтобы получать сообщение, когда учитель вас отметил, объяснять пропуски и задавать помощнику вопросы о занятиях.",
+      "connect": "Подключить Telegram",
+      "connected": "Подключено",
+      "disconnect": "Отключить",
+      "waiting": "Telegram открылся в новой вкладке. Нажмите там Start, эта карточка обновится сама."
+    },
+    "telegramAdmin": {
+      "title": "Telegram",
+      "subtitle": "Причины пропусков и переписка учеников с помощником.",
+      "absences": "Ответы о пропусках",
+      "noAbsences": "Вопросов пока не отправлено.",
+      "waiting": "Ждём ответ ученика",
+      "conversations": "Переписки",
+      "noChats": "Пока никто не подключён",
+      "noChatsHint": "Ученики подключают Telegram в своём профиле.",
+      "noMessages": "Сообщений пока нет.",
+      "kind_text": "Сообщение",
+      "kind_ai": "Помощник",
+      "kind_absence_question": "Вопрос о пропуске",
+      "kind_absence_reason": "Причина пропуска",
+      "kind_system": "Система"
+    },
+    "notifications": {
+      "telegram_reason": "{{studentName}} объяснил(а) пропуск в группе {{groupName}} за {{date}}: {{reason}}"
     }
   }
 }

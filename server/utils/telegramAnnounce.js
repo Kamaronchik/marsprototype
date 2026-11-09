@@ -1,0 +1,35 @@
+const supabase = require('../config/supabase');
+const { sayTo, defaults } = require('./telegramBot');
+
+// Tells a student in Telegram how the teacher marked them. Does nothing when the student has not
+// connected Telegram. Never throws: a failed message must not break the teacher's marking.
+//   present: "thanks for coming"; any open question about this lesson is cancelled.
+//   absent: the bot asks why, and the answer goes to the admin's Telegram tab.
+// overrides replaces the real sender in tests.
+const announceAttendance = async ({ studentId, attendanceId, status, groupName, date }, overrides = {}) => {
+  try {
+    const deps = { ...defaults, ...overrides };
+    const { data: link } = await supabase
+      .from('telegram_links').select('user_id, chat_id, language').eq('user_id', studentId).maybeSingle();
+    if (!link) return;
+
+    if (status === 'present') {
+      await supabase.from('telegram_absences').update({ status: 'cancelled' }).eq('attendance_id', attendanceId).eq('status', 'asked');
+      await sayTo(deps, link, 'cameNotice', { group: groupName, date });
+      return;
+    }
+
+    // One question per lesson. Marking absent again after an answer must not ask twice.
+    const { data: existing } = await supabase.from('telegram_absences').select('id, status').eq('attendance_id', attendanceId).maybeSingle();
+    if (existing?.status === 'answered' || existing?.status === 'asked') return;
+
+    const row = { attendance_id: attendanceId, student_id: studentId, status: 'asked', reason: null, asked_at: new Date().toISOString(), answered_at: null };
+    await supabase.from('telegram_absences').upsert(row, { onConflict: 'attendance_id' });
+    await supabase.from('attendance').update({ reason_requested_at: row.asked_at }).eq('id', attendanceId);
+    await sayTo(deps, link, 'absentQuestion', { group: groupName, date }, { kind: 'absence_question' });
+  } catch (error) {
+    console.error('Telegram announcement error:', error.message);
+  }
+};
+
+module.exports = { announceAttendance };

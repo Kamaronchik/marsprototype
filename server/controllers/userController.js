@@ -42,7 +42,7 @@ const validate = ({ username, email, fullName, password, role }, { partial }) =>
 
 const handleDbError = (error, res) => {
   if (error.code === '23505') {
-    return res.status(409).json({ message: 'Username or email already exists' });
+    return res.status(409).json({ message: 'Username already exists' });
   }
   // Orders and coin transactions are never deleted: such a user can only be blocked.
   if (error.code === '23503') {

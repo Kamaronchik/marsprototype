@@ -69,7 +69,8 @@
       "sectionCrew": "Crew",
       "sectionOperations": "Operations",
       "sectionMoney": "Money",
-      "sectionSystem": "System"
+      "sectionSystem": "System",
+      "telegram": "Telegram"
     },
     "bell": {
       "title": "Notifications",
@@ -723,7 +724,7 @@
       "user_deleted": "User deleted",
       "user_not_found": "User not found",
       "username_and_password_are_required": "Username and password are required",
-      "username_or_email_already_exists": "Username or email already exists",
+      "username_already_exists": "Username already exists",
       "username_3_30_chars_letters_digits": "Username: 3-30 chars (letters, digits . _ -)",
       "verification_code_has_expired_please_request_a_new_one": "Verification code has expired. Please request a new one.",
       "verification_code_resent_successfully": "Verification code resent successfully",
@@ -736,7 +737,9 @@
       "text_must_be_1_2000_characters": "Text must be 1-2000 characters",
       "keep_every_placeholder_word_of_the_original_text_in_double_curly_braces": "Keep every placeholder word of the original text in double curly braces",
       "isarchived_must_be_true_or_false": "isArchived must be true or false",
-      "isavailable_must_be_true_or_false": "isAvailable must be true or false"
+      "isavailable_must_be_true_or_false": "isAvailable must be true or false",
+      "invalid_student": "Invalid student",
+      "too_many_connection_attempts_please_wait": "Too many connection attempts. Please wait."
     },
     "theme": {
       "label": "Style",
@@ -806,6 +809,39 @@
       "finished": "Finished",
       "marked": "Marked {{done}} of {{total}}",
       "giveCoins": "Give coins"
+    },
+    "profile": {
+      "title": "Profile",
+      "subtitle": "Your account and connections.",
+      "name": "Name",
+      "email": "Email"
+    },
+    "telegram": {
+      "title": "Telegram assistant",
+      "about": "Connect Telegram to get a message when a teacher marks you, to explain an absence, and to ask the assistant about your lessons.",
+      "connect": "Connect Telegram",
+      "connected": "Connected",
+      "disconnect": "Disconnect",
+      "waiting": "Telegram opened in a new tab. Press Start there; this card updates by itself."
+    },
+    "telegramAdmin": {
+      "title": "Telegram",
+      "subtitle": "Why students were absent, and their conversations with the assistant.",
+      "absences": "Absence answers",
+      "noAbsences": "No questions were sent yet.",
+      "waiting": "Waiting for the student's answer",
+      "conversations": "Conversations",
+      "noChats": "Nobody is connected yet",
+      "noChatsHint": "Students connect Telegram in their profile.",
+      "noMessages": "No messages yet.",
+      "kind_text": "Message",
+      "kind_ai": "Assistant",
+      "kind_absence_question": "Absence question",
+      "kind_absence_reason": "Absence reason",
+      "kind_system": "System"
+    },
+    "notifications": {
+      "telegram_reason": "{{studentName}} explained the absence in {{groupName}} on {{date}}: {{reason}}"
     }
   }
 }

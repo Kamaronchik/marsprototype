@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, GraduationCap, Layers, ClipboardCheck, CreditCard, Wallet, Gift, PackageCheck, Coins, Trophy, Settings, History } from 'lucide-react';
+import { LayoutDashboard, Users, GraduationCap, Layers, ClipboardCheck, CreditCard, Wallet, Gift, PackageCheck, Coins, Trophy, Settings, History, Send } from 'lucide-react';
 import ControlShell from '../../shells/ControlShell';
 import { useRoleLook } from '../../lib/useRoleLook';
 
@@ -16,6 +16,7 @@ const sections = [
     { label: 'nav.battles', path: '/admin/battles', icon: Trophy },
     { label: 'nav.products', path: '/admin/shop', icon: Gift },
     { label: 'nav.orders', path: '/admin/orders', icon: PackageCheck },
+    { label: 'nav.telegram', path: '/admin/telegram', icon: Send },
   ] },
   { label: 'nav.sectionMoney', items: [
     { label: 'nav.payments', path: '/admin/payments', icon: CreditCard },

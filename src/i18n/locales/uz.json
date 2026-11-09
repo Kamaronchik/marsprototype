@@ -69,7 +69,8 @@
       "sectionCrew": "Ekipaj",
       "sectionOperations": "Operatsiyalar",
       "sectionMoney": "Pul",
-      "sectionSystem": "Tizim"
+      "sectionSystem": "Tizim",
+      "telegram": "Telegram"
     },
     "bell": {
       "title": "Bildirishnomalar",
@@ -723,7 +724,7 @@
       "user_deleted": "Foydalanuvchi o'chirildi",
       "user_not_found": "Foydalanuvchi topilmadi",
       "username_and_password_are_required": "Login va parolni kiriting",
-      "username_or_email_already_exists": "Bunday login yoki email allaqachon bor",
+      "username_already_exists": "Bunday login allaqachon bor",
       "username_3_30_chars_letters_digits": "Login: 3 dan 30 belgigacha (harflar, raqamlar, . _ -)",
       "verification_code_has_expired_please_request_a_new_one": "Kod muddati tugadi. Yangisini so'rang.",
       "verification_code_resent_successfully": "Yangi kod yuborildi",
@@ -736,7 +737,9 @@
       "text_must_be_1_2000_characters": "Matn: 1 dan 2000 belgigacha",
       "keep_every_placeholder_word_of_the_original_text_in_double_curly_braces": "Asl matndagi ikkita jingalak qavs ichidagi barcha so'zlarni saqlang",
       "isarchived_must_be_true_or_false": "«Arxivda» qiymati ha yoki yo'q bo'lishi kerak",
-      "isavailable_must_be_true_or_false": "«Sotuvda» qiymati ha yoki yo'q bo'lishi kerak"
+      "isavailable_must_be_true_or_false": "«Sotuvda» qiymati ha yoki yo'q bo'lishi kerak",
+      "invalid_student": "Noto'g'ri o'quvchi",
+      "too_many_connection_attempts_please_wait": "Ulanish urinishlari juda ko'p. Biroz kuting."
     },
     "theme": {
       "label": "Uslub",
@@ -806,6 +809,39 @@
       "finished": "Tugadi",
       "marked": "{{total}} tadan {{done}} tasi belgilandi",
       "giveCoins": "Koin berish"
+    },
+    "profile": {
+      "title": "Profil",
+      "subtitle": "Akkauntingiz va ulanishlar.",
+      "name": "Ism",
+      "email": "Pochta"
+    },
+    "telegram": {
+      "title": "Telegram yordamchisi",
+      "about": "Telegramni ulang: o'qituvchi sizni belgilaganda xabar olasiz, dars qoldirish sababini aytasiz va yordamchiga darslar haqida savol berasiz.",
+      "connect": "Telegramni ulash",
+      "connected": "Ulangan",
+      "disconnect": "Uzish",
+      "waiting": "Telegram yangi oynada ochildi. U yerda Start tugmasini bosing, bu karta o'zi yangilanadi."
+    },
+    "telegramAdmin": {
+      "title": "Telegram",
+      "subtitle": "Dars qoldirish sabablari va o'quvchilarning yordamchi bilan yozishmalari.",
+      "absences": "Dars qoldirish javoblari",
+      "noAbsences": "Hozircha savollar yuborilmagan.",
+      "waiting": "O'quvchining javobi kutilmoqda",
+      "conversations": "Yozishmalar",
+      "noChats": "Hozircha hech kim ulanmagan",
+      "noChatsHint": "O'quvchilar Telegramni profilida ulaydi.",
+      "noMessages": "Hozircha xabarlar yo'q.",
+      "kind_text": "Xabar",
+      "kind_ai": "Yordamchi",
+      "kind_absence_question": "Dars qoldirish savoli",
+      "kind_absence_reason": "Dars qoldirish sababi",
+      "kind_system": "Tizim"
+    },
+    "notifications": {
+      "telegram_reason": "{{studentName}} {{date}} sanasida {{groupName}} guruhidagi darsni qoldirish sababini aytdi: {{reason}}"
     }
   }
 }
