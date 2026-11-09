@@ -731,6 +731,12 @@
       "keep_every_placeholder_word_of_the_original_text_in_double_curly_braces": "Asl matndagi ikkita jingalak qavs ichidagi barcha so'zlarni saqlang",
       "isarchived_must_be_true_or_false": "«Arxivda» qiymati ha yoki yo'q bo'lishi kerak",
       "isavailable_must_be_true_or_false": "«Sotuvda» qiymati ha yoki yo'q bo'lishi kerak"
+    },
+    "theme": {
+      "label": "Uslub",
+      "mars": "Mars: iliq qog'oz",
+      "orbit": "Orbit: chuqur kosmos",
+      "terminal": "Terminal: kod muharriri"
     }
   }
 }

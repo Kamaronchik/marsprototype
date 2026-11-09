@@ -29,7 +29,7 @@ const Shop = () => {
         action={
           <button onClick={() => setCartOpen(true)} className="btn-primary">
             <ShoppingCart size={17} /> {t('shop.cart')}
-            {cartCount > 0 && <span className="rounded-full bg-white/25 px-2 py-0.5 text-xs">{cartCount}</span>}
+            {cartCount > 0 && <span className="rounded-full bg-on-accent/25 px-2 py-0.5 text-xs">{cartCount}</span>}
           </button>
         }
       >

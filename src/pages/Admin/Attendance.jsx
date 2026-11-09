@@ -40,7 +40,7 @@ const Attendance = () => {
         <button onClick={() => setTab('marks')} className={tabClass('marks')}>{t('attendance.tabMarks')}</button>
         <button onClick={() => setTab('unmarked')} className={tabClass('unmarked')}>
           {t('attendance.tabUnmarked')}
-          {lessons.length > 0 && <span className="ml-2 rounded-full bg-mars px-2 py-0.5 text-[11px] font-bold text-white">{lessons.length}</span>}
+          {lessons.length > 0 && <span className="ml-2 rounded-full bg-mars px-2 py-0.5 text-[11px] font-bold text-on-accent">{lessons.length}</span>}
         </button>
       </div>
 

@@ -1,4 +1,10 @@
 /** @type {import('tailwindcss').Config} */
+
+// Every colour is a CSS variable holding "R G B", so a style (theme) is only a different set of
+// variables on <html data-theme="...">; see src/index.css. The "<alpha-value>" part keeps
+// classes like bg-card/70 working.
+const token = (name) => `rgb(var(--${name}) / <alpha-value>)`;
+
 export default {
   content: [
     "./index.html",
@@ -7,32 +13,45 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Warm paper surfaces
-        paper: '#F5EFE6',
-        card: '#FFFCF7',
-        sunken: '#EFE8DC',
-        line: '#E2D9CB',
+        // Surfaces
+        paper: token('paper'),
+        card: token('card'),
+        sunken: token('sunken'),
+        line: token('line'),
         // Ink
-        ink: '#1F1A15',
-        'ink-soft': '#5E554A',
-        'ink-faint': '#8A8174',
-        // Mars rust: the one accent colour
-        mars: '#B8431F',
-        'mars-deep': '#98330F',
-        'mars-tint': '#F6E3D9',
+        ink: token('ink'),
+        'ink-soft': token('ink-soft'),
+        'ink-faint': token('ink-faint'),
+        // The accent of the style (rust in Mars, violet in Orbit, green in Terminal)
+        mars: token('mars'),
+        'mars-deep': token('mars-deep'),
+        'mars-tint': token('mars-tint'),
+        // Text that sits on the accent colour
+        'on-accent': token('on-accent'),
         // Status
-        moss: '#3E6B4D',
-        'moss-tint': '#E3EEE4',
-        ochre: '#9A6A12',
-        'ochre-tint': '#F6EAC9',
-        brick: '#A12B2B',
-        'brick-tint': '#F5DEDA',
-        sky: '#2F5D86',
-        'sky-tint': '#DEE9F3',
+        moss: token('moss'),
+        'moss-tint': token('moss-tint'),
+        ochre: token('ochre'),
+        'ochre-tint': token('ochre-tint'),
+        brick: token('brick'),
+        'brick-tint': token('brick-tint'),
+        sky: token('sky'),
+        'sky-tint': token('sky-tint'),
       },
       fontFamily: {
-        sans: ['"Instrument Sans"', 'system-ui', 'sans-serif'],
-        display: ['Fraunces', 'Georgia', 'serif'],
+        sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-display)', 'Georgia', 'serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+      },
+      // Corners and shadows change with the style too (Terminal is sharp, Orbit is round).
+      borderRadius: {
+        md: 'var(--r-md)',
+        lg: 'var(--r-lg)',
+        xl: 'var(--r-xl)',
+        '2xl': 'var(--r-2xl)',
+      },
+      boxShadow: {
+        xl: 'var(--shadow-xl)',
       },
     },
   },

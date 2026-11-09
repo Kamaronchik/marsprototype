@@ -7,6 +7,7 @@ import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Logo from '../../components/Logo';
 import LanguageSwitch from '../../components/LanguageSwitch';
+import ThemeSwitch from '../../components/ThemeSwitch';
 import { messageText } from '../../lib/api';
 
 const LoginPage = () => {
@@ -68,21 +69,21 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="grid min-h-screen bg-paper lg:grid-cols-[1.05fr_1fr]">
+    <div className="grid min-h-screen lg:grid-cols-[1.05fr_1fr]">
       {/* Left: flat brand panel, desktop only */}
-      <aside className="relative hidden flex-col justify-between overflow-hidden bg-mars p-12 text-card lg:flex">
+      <aside className="relative hidden flex-col justify-between overflow-hidden bg-mars p-12 text-on-accent lg:flex">
         <Logo inverted />
 
         <div className="max-w-md">
           <h2 className="font-display text-[2.9rem] font-semibold leading-[1.08] tracking-tight">
             {t('auth.heroTitle')}
           </h2>
-          <p className="mt-5 text-[15px] leading-relaxed text-card/85">
+          <p className="mt-5 text-[15px] leading-relaxed text-on-accent/85">
             {t('auth.heroText')}
           </p>
         </div>
 
-        <ul className="space-y-2 border-t border-card/25 pt-6 text-sm text-card/85">
+        <ul className="space-y-2 border-t border-on-accent/25 pt-6 text-sm text-on-accent/85">
           <li>{t('auth.feature1')}</li>
           <li>{t('auth.feature2')}</li>
           <li>{t('auth.feature3')}</li>
@@ -90,7 +91,7 @@ const LoginPage = () => {
 
         {/* Big orbit line, purely decorative */}
         <svg
-          className="pointer-events-none absolute -bottom-40 -right-40 text-card/15"
+          className="pointer-events-none absolute -bottom-40 -right-40 text-on-accent/15"
           width="520" height="520" viewBox="0 0 520 520" fill="none" aria-hidden="true"
         >
           <circle cx="260" cy="260" r="250" stroke="currentColor" strokeWidth="1.5" />
@@ -103,7 +104,7 @@ const LoginPage = () => {
         <div className="w-full max-w-sm">
           <div className="mb-10 flex items-center justify-between">
             <Logo className="lg:hidden" />
-            <span className="ml-auto"><LanguageSwitch /></span>
+            <span className="ml-auto flex items-center gap-4"><ThemeSwitch /><LanguageSwitch /></span>
           </div>
 
           <h1 className="font-display text-[2rem] font-semibold tracking-tight text-ink">

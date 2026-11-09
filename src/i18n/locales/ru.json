@@ -733,6 +733,12 @@
       "keep_every_placeholder_word_of_the_original_text_in_double_curly_braces": "Сохраните все слова в двойных фигурных скобках из исходного текста",
       "isarchived_must_be_true_or_false": "Значение «в архиве» должно быть да или нет",
       "isavailable_must_be_true_or_false": "Значение «в продаже» должно быть да или нет"
+    },
+    "theme": {
+      "label": "Стиль",
+      "mars": "Mars: тёплая бумага",
+      "orbit": "Orbit: глубокий космос",
+      "terminal": "Terminal: редактор кода"
     }
   }
 }

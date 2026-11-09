@@ -731,6 +731,12 @@
       "keep_every_placeholder_word_of_the_original_text_in_double_curly_braces": "Keep every placeholder word of the original text in double curly braces",
       "isarchived_must_be_true_or_false": "isArchived must be true or false",
       "isavailable_must_be_true_or_false": "isAvailable must be true or false"
+    },
+    "theme": {
+      "label": "Style",
+      "mars": "Mars: warm paper",
+      "orbit": "Orbit: deep space",
+      "terminal": "Terminal: code editor"
     }
   }
 }

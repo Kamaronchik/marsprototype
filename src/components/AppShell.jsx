@@ -6,6 +6,7 @@ import { logoutUser } from '../features/auth/authSlice';
 import Logo from './Logo';
 import NotificationBell from './NotificationBell';
 import LanguageSwitch from './LanguageSwitch';
+import ThemeSwitch from './ThemeSwitch';
 
 // One shell for every role. Each layout only passes its own label and menu.
 // sectionLabel and every menu item "label" are translation keys.
@@ -25,12 +26,12 @@ const AppShell = ({ sectionLabel, menuItems }) => {
   const linkClass = ({ isActive }) =>
     `flex items-center gap-3 rounded-lg px-3 py-2 text-sm whitespace-nowrap ${
       isActive
-        ? 'bg-card font-semibold text-ink shadow-[inset_3px_0_0_#B8431F]'
+        ? 'bg-card font-semibold text-ink shadow-[inset_3px_0_0_rgb(var(--mars))]'
         : 'font-medium text-ink-soft hover:bg-card/70 hover:text-ink'
     }`;
 
   return (
-    <div className="flex min-h-screen flex-col bg-paper md:h-screen md:flex-row md:overflow-hidden">
+    <div className="flex min-h-screen flex-col md:h-screen md:flex-row md:overflow-hidden">
       <aside className="flex shrink-0 flex-col border-b border-line bg-sunken md:w-60 md:border-b-0 md:border-r">
         <div className="flex items-center justify-between px-5 pb-3 pt-5 md:pb-0 md:pt-6">
           <Logo />
@@ -59,8 +60,9 @@ const AppShell = ({ sectionLabel, menuItems }) => {
           ))}
         </nav>
 
-        <div className="hidden px-4 pb-2 md:block">
+        <div className="hidden items-center justify-between gap-2 px-4 pb-3 md:flex">
           <LanguageSwitch />
+          <ThemeSwitch />
         </div>
 
         <div className="hidden items-center gap-3 border-t border-line px-4 py-4 md:flex">
@@ -84,7 +86,8 @@ const AppShell = ({ sectionLabel, menuItems }) => {
 
       <main className="min-w-0 flex-1 md:overflow-y-auto">
         <div className="mx-auto max-w-6xl px-5 py-8 md:px-10 md:py-10">
-          <div className="mb-4 flex justify-end md:hidden">
+          <div className="mb-4 flex items-center justify-end gap-4 md:hidden">
+            <ThemeSwitch />
             <LanguageSwitch />
           </div>
           <Outlet />

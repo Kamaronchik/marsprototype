@@ -25,7 +25,7 @@ const Attendance = () => {
 
   const buttonClass = (active, tone) => {
     if (!active) return 'border-line bg-card text-ink-faint hover:border-ink-faint hover:text-ink';
-    return tone === 'ok' ? 'border-moss bg-moss text-white' : 'border-brick bg-brick text-white';
+    return tone === 'ok' ? 'border-moss bg-moss text-on-accent' : 'border-brick bg-brick text-on-accent';
   };
 
   return (

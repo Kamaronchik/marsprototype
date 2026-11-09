@@ -77,7 +77,7 @@ const NotificationBell = () => {
       >
         <Bell size={19} />
         {unread > 0 && (
-          <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-mars px-1 text-[10px] font-bold text-white">
+          <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-mars px-1 text-[10px] font-bold text-on-accent">
             {unread > 99 ? '99+' : unread}
           </span>
         )}
