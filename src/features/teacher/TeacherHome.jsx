@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +7,7 @@ import Eyebrow from '../../components/Eyebrow';
 import CoinAmount from '../../components/CoinAmount';
 import { SkeletonText } from '../../components/Skeleton';
 import { useFetch } from '../../lib/useFetch';
+import { usePolling } from '../../lib/usePolling';
 import { greetingKey, firstNameOf } from '../../lib/greeting';
 import { formatDate, tashkentNow, timeToMinutes } from '../../lib/format';
 
@@ -32,10 +33,7 @@ const TeacherHome = () => {
   const pool = useFetch('/api/wallet/pool');
   const [minutes, setMinutes] = useState(() => tashkentNow().minutes);
 
-  useEffect(() => {
-    const timer = setInterval(() => setMinutes(tashkentNow().minutes), REFRESH_MS);
-    return () => clearInterval(timer);
-  }, []);
+  usePolling(() => setMinutes(tashkentNow().minutes), REFRESH_MS);
 
   // today.data stays the same object between renders until the list is reloaded, so keying the memo
   // on it (not on a freshly-built `?? []` array) actually skips the work most of the time.

@@ -10,7 +10,7 @@ const BaseStage = ({ children }) => {
 
   return (
     <div className="base-sky relative flex min-h-screen items-center overflow-hidden">
-      <Starfield count={110} shooting={2} className="!bottom-[30%]" />
+      <Starfield count={50} shooting={2} className="!bottom-[30%]" />
       <Horizon className="horizon-fade pointer-events-none absolute inset-x-0 bottom-0 h-[34vh] min-h-[14rem] w-full" />
 
       <LoginTools onLightText />

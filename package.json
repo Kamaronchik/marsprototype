@@ -18,6 +18,7 @@
     "test-i18n": "node server/scripts/testI18n.js",
     "test-home": "node server/scripts/testHome.js",
     "test-telegram": "node server/scripts/testTelegram.js",
+    "test-learning": "node server/scripts/testLearning.js",
     "bot": "node server/scripts/botPolling.js",
     "bot-webhook": "node server/scripts/setWebhook.js",
     "test-battle": "node server/scripts/testBattle.js",
@@ -45,7 +46,6 @@
     "react-redux": "^9.3.1",
     "react-router-dom": "^7.18.5",
     "react-toastify": "^11.2.0",
-    "redux-persist": "^6.0.0",
     "uuid": "^14.0.3"
   },
   "devDependencies": {

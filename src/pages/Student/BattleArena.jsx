@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
@@ -7,6 +7,7 @@ import PageHeader from '../../components/PageHeader';
 import CoinAmount from '../../components/CoinAmount';
 import { api, errorText } from '../../lib/api';
 import { useFetch } from '../../lib/useFetch';
+import { usePolling } from '../../lib/usePolling';
 import { SkeletonRow, SkeletonStat } from '../../components/Skeleton';
 import { formatDateTime } from '../../lib/format';
 
@@ -37,10 +38,7 @@ const BattleArena = () => {
 
   // The list of open challenges refreshes by itself.
   const { reload } = challenges;
-  useEffect(() => {
-    const timer = setInterval(reload, CHALLENGES_REFRESH_MS);
-    return () => clearInterval(timer);
-  }, [reload]);
+  usePolling(reload, CHALLENGES_REFRESH_MS);
 
   const config = options.data;
   // Re-split only when the challenge list itself changes (every 5s at most), not on every render

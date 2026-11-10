@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { Gift, ShoppingCart } from 'lucide-react';
@@ -28,19 +29,22 @@ const Shop = () => {
       <PageHeader
         title={t('shop.title')}
         action={
-          <button onClick={() => setCartOpen(true)} className="btn-primary">
-            <ShoppingCart size={17} /> {t('shop.cart')}
-            {cartCount > 0 && <span className="rounded-full bg-on-accent/25 px-2 py-0.5 text-xs">{cartCount}</span>}
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <Link to="/student/purchases" className="btn-quiet">{t('nav.purchases')}</Link>
+            <button onClick={() => setCartOpen(true)} className="btn-primary">
+              <ShoppingCart size={17} /> {t('shop.cart')}
+              {cartCount > 0 && <span className="rounded-full bg-on-accent/25 px-2 py-0.5 text-xs">{cartCount}</span>}
+            </button>
+          </div>
         }
       >
         {t('shop.subtitle')}
       </PageHeader>
 
-      <div className="mb-6 inline-flex items-center gap-3 rounded-xl border border-line bg-card px-5 py-3">
+      <Link to="/student/coins" title={t('nav.coins')} className="mb-6 inline-flex items-center gap-3 rounded-xl border border-line bg-card px-5 py-3 hover:bg-sunken">
         <span className="text-sm text-ink-soft">{t('shop.balance')}</span>
         {balance === null ? '—' : <CoinAmount amount={balance} className="text-xl text-ink" />}
-      </div>
+      </Link>
 
       {list.length === 0 && !products.loading && (
         <div className="rounded-xl border border-dashed border-ink-faint/40 bg-card px-6 py-14 text-center">

@@ -32,7 +32,7 @@ const RailShell = ({ menuItems }) => {
       </aside>
 
       <div className="min-w-0 flex-1 pb-20 md:pb-0">
-        <div className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3 px-5 py-3 backdrop-blur md:px-8">
+        <div className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3 px-5 py-3 md:px-8">
           <Link to="/student" className="md:hidden"><Logo /></Link>
           <div className="ml-auto flex items-center gap-5">
             <ShellTools withDesign />
@@ -44,7 +44,7 @@ const RailShell = ({ menuItems }) => {
         </main>
       </div>
 
-      <nav aria-label={t('home.navigation')} className="fixed inset-x-0 bottom-0 z-40 flex border-t border-line bg-card/95 backdrop-blur md:hidden">
+      <nav aria-label={t('home.navigation')} className="fixed inset-x-0 bottom-0 z-40 flex border-t border-line bg-card md:hidden">
         {menuItems.map((item) => (
           <NavLink key={item.path} to={item.path} end={item.end ?? true} className={tabLink}>
             <item.icon size={20} strokeWidth={1.8} />

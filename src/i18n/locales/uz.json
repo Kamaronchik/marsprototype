@@ -70,7 +70,10 @@
       "sectionOperations": "Operatsiyalar",
       "sectionMoney": "Pul",
       "sectionSystem": "Tizim",
-      "telegram": "Telegram"
+      "telegram": "Telegram",
+      "homework": "Uy vazifalari",
+      "grades": "Baholar",
+      "tutor": "AI repetitor"
     },
     "bell": {
       "title": "Bildirishnomalar",
@@ -94,7 +97,11 @@
       "order_cancelled": "Buyurtmangiz bekor qilindi. {{total}} koin balansingizga qaytdi",
       "order_cancelled_by_student": "{{studentName}} {{total}} koinlik buyurtmani bekor qildi",
       "battle_accepted": "{{opponentName}} {{courseName}} bo'yicha chaqiruvingizni qabul qildi. Bahsni oching!",
-      "battle_finished": "{{courseName}} bo'yicha bahsingiz tugadi: {{result}}"
+      "battle_finished": "{{courseName}} bo'yicha bahsingiz tugadi: {{result}}",
+      "homework_new": "{{groupName}} guruhida yangi vazifa: {{title}}",
+      "homework_graded": "«{{title}}» vazifangiz baholandi: {{score}} / {{maxScore}}",
+      "homework_submitted": "{{student}} «{{title}}» vazifasini topshirdi",
+      "grade_added": "{{groupName}} guruhida yangi baho: {{title}}, {{score}} / {{maxScore}}"
     },
     "errors": {
       "ROOM_BUSY": "Bu xona shu vaqtda band",
@@ -755,7 +762,29 @@
       "isavailable_must_be_true_or_false": "«Sotuvda» qiymati ha yoki yo'q bo'lishi kerak",
       "invalid_student": "Noto'g'ri o'quvchi",
       "too_many_connection_attempts_please_wait": "Ulanish urinishlari juda ko'p. Biroz kuting.",
-      "this_months_top_up_was_already_run": "Bu oyda to'ldirish allaqachon bajarilgan"
+      "this_months_top_up_was_already_run": "Bu oyda to'ldirish allaqachon bajarilgan",
+      "a_homework_mark_is_changed_in_the_homework": "Uy vazifasi bahosi «Uy vazifalari» bo'limida o'zgartiriladi",
+      "answer_not_found": "Javob topilmadi",
+      "graded": "Baholandi",
+      "group_is_required": "Guruhni tanlang",
+      "homework_not_found": "Uy vazifasi topilmadi",
+      "homework_removed": "Uy vazifasi o'chirildi",
+      "invalid_type_of_mark": "Baho turi noto'g'ri",
+      "mark_deleted": "Baho o'chirildi",
+      "mark_not_found": "Baho topilmadi",
+      "maximum_score_must_be_from_1_to_100": "Eng yuqori ball 1 dan 100 gacha bo'lishi kerak",
+      "score_must_be_a_whole_number_from_0_to_the_maximum": "Ball 0 dan maksimumgacha butun son bo'lishi kerak",
+      "sent": "Yuborildi",
+      "student_and_group_are_required": "O'quvchi va guruh kerak",
+      "text_is_too_long": "Matn juda uzun",
+      "the_link_must_start_with_http_or_https": "Havola http:// yoki https:// bilan boshlanishi kerak",
+      "the_question_is_too_long": "Savol juda uzun",
+      "the_tutor_is_not_available_right_now_try_again_later": "Repetitor hozir mavjud emas. Keyinroq urinib ko'ring.",
+      "this_homework_is_already_graded": "Bu vazifa allaqachon baholangan",
+      "title_is_required_up_to_120_characters": "Sarlavha kerak (120 belgigacha)",
+      "too_many_questions_try_again_in_15_minutes": "Savollar juda ko'p. 15 daqiqadan keyin urinib ko'ring.",
+      "write_a_question": "Savol yozing",
+      "write_an_answer_or_add_a_link": "Javob yozing yoki havola qo'shing"
     },
     "theme": {
       "label": "Uslub",
@@ -860,6 +889,84 @@
     },
     "notifications": {
       "telegram_reason": "{{studentName}} {{date}} sanasida {{groupName}} guruhidagi darsni qoldirish sababini aytdi: {{reason}}"
+    },
+    "homework": {
+      "title": "Uy vazifalari",
+      "studentSubtitle": "O'qituvchilardan topshiriqlar. Javob yuboring va baho oling.",
+      "teacherSubtitle": "Guruhga topshiriq bering, javoblarni o'qing, baho qo'ying.",
+      "state": {
+        "todo": "Bajarish kerak",
+        "submitted": "Yuborilgan",
+        "graded": "Baholangan"
+      },
+      "empty": {
+        "todo": "Vazifa yo'q. Ajoyib!",
+        "submitted": "Bahosini kutayotgan javob yo'q.",
+        "graded": "Baholangan vazifa hali yo'q."
+      },
+      "due": "Muddat",
+      "overdue": "Muddati o'tgan",
+      "waiting": "O'qituvchi bahosini kutmoqda",
+      "answer": "Javobingiz (kod yoki matn)",
+      "link": "Havola (GitHub, CodePen, sayt)",
+      "send": "Yuborish",
+      "sent": "Javob yuborildi",
+      "edit": "Javobni o'zgartirish",
+      "doIt": "Javob yozish",
+      "askTutor": "Repetitordan so'rash",
+      "new": "Yangi vazifa",
+      "group": "Guruh",
+      "taskTitle": "Sarlavha",
+      "description": "Topshiriq tavsifi",
+      "maxScore": "Eng yuqori ball",
+      "give": "Guruhga berish",
+      "created": "Vazifa berildi",
+      "removed": "Vazifa o'chirildi",
+      "remove": "Vazifani o'chirish",
+      "noneTeacher": "Vazifa hali yo'q. Birinchisini bering.",
+      "progress": "Topshirdi {{sent}}/{{total}}, baholandi {{graded}}",
+      "answers": "Javoblar",
+      "notSent": "Topshirilmagan",
+      "score": "Ball",
+      "feedback": "Izoh",
+      "grade": "Baho qo'yish",
+      "regrade": "Bahoni o'zgartirish",
+      "graded": "Baho saqlandi"
+    },
+    "grades": {
+      "title": "Baholar",
+      "studentSubtitle": "Barcha baholaringiz va har bir guruh bo'yicha o'rtacha ball.",
+      "teacherSubtitle": "Guruhlaringiz baholari. Uy vazifasi baholari bu yerda o'zi paydo bo'ladi.",
+      "average": "O'rtacha ball",
+      "count": "Baholar soni",
+      "empty": "Baholar hali yo'q",
+      "kind": {
+        "homework": "Uy vazifasi",
+        "lesson": "Dars",
+        "test": "Test",
+        "project": "Loyiha"
+      },
+      "add": "Baho qo'shish",
+      "added": "Baho qo'shildi",
+      "delete": "Bahoni o'chirish",
+      "type": "Turi",
+      "what": "Nima uchun",
+      "save": "Bahoni saqlash"
+    },
+    "tutor": {
+      "title": "AI repetitor",
+      "subtitle": "HTML, CSS, JavaScript va React haqida so'rang. Repetitor tushuntiradi va yo'l ko'rsatadi.",
+      "aboutHomework": "Vazifa haqida: {{title}}",
+      "hello": "Salom! Bugun nimani o'rganamiz?",
+      "hint": "Repetitor vazifani sizning o'rningizga bajarmaydi, tushunishga yordam beradi. Xatoli kodni qo'yishingiz mumkin.",
+      "suggestion": {
+        "explain": "Closure nima ekanini tushuntir",
+        "error": "Nega kodim ishlamayapti?",
+        "review": "CSS'da div'ni qanday markazlashtiraman?"
+      },
+      "thinking": "O'ylayapman…",
+      "placeholder": "Savol yozing. Enter yuboradi, Shift+Enter — yangi qator",
+      "send": "Yuborish"
     }
   }
 }

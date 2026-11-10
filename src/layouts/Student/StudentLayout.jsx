@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { LayoutDashboard, UserCircle, ClipboardCheck, Gift, Coins, Receipt, Swords } from 'lucide-react';
+import { LayoutDashboard, UserCircle, ClipboardCheck, Gift, Swords, BookOpenCheck, Award, Bot } from 'lucide-react';
 import { useDesign } from '../../lib/useDesign';
 import { useRoleLook } from '../../lib/useRoleLook';
 import StudentHomeProvider from '../../features/student/StudentHomeProvider';
@@ -12,13 +12,15 @@ const RailShell = lazy(() => import('../../shells/RailShell'));
 const ExplorerShell = lazy(() => import('../../shells/ExplorerShell'));
 const SHELLS = { cockpit: DockShell, base: RailShell, console: ExplorerShell };
 
+// Coins and purchases are reached from the Shop page, so the menu stays short.
 const menuItems = [
   { label: 'nav.home', path: '/student', icon: LayoutDashboard },
+  { label: 'nav.homework', path: '/student/homework', icon: BookOpenCheck },
+  { label: 'nav.tutor', path: '/student/tutor', icon: Bot },
+  { label: 'nav.grades', path: '/student/grades', icon: Award },
   { label: 'nav.attendance', path: '/student/attendance', icon: ClipboardCheck },
   { label: 'nav.battle', path: '/student/battle', icon: Swords, end: false },
   { label: 'nav.shop', path: '/student/shop', icon: Gift },
-  { label: 'nav.coins', path: '/student/coins', icon: Coins },
-  { label: 'nav.purchases', path: '/student/purchases', icon: Receipt },
   { label: 'nav.profile', path: '/student/profile', icon: UserCircle },
 ];
 

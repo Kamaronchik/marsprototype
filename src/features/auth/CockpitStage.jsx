@@ -11,7 +11,7 @@ const CockpitStage = ({ children }) => {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-5 py-24">
-      <Starfield count={130} shooting={3} />
+      <Starfield count={60} shooting={2} />
       <Planet className="planet-corner" size="42rem" />
 
       <svg className="orbit-rings pointer-events-none absolute -bottom-[26rem] -right-[18rem] text-mars/40" width="1100" height="1100" viewBox="0 0 1100 1100" fill="none" aria-hidden="true">
@@ -22,7 +22,7 @@ const CockpitStage = ({ children }) => {
 
       <LoginTools />
 
-      <section className="cockpit-panel relative z-10 w-full max-w-md rounded-2xl border border-line bg-card/70 p-8 backdrop-blur-md">
+      <section className="cockpit-panel relative z-10 w-full max-w-md rounded-2xl border border-line bg-card/70 p-8">
         <span className="hud-mark hud-tl" /><span className="hud-mark hud-tr" /><span className="hud-mark hud-bl" /><span className="hud-mark hud-br" />
         <div className="mb-6"><Eyebrow>{t('auth.launchPad')}</Eyebrow></div>
         {children}

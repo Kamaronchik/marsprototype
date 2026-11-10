@@ -19,7 +19,7 @@ const DockShell = ({ menuItems }) => {
 
   return (
     <div className="min-h-screen pb-28">
-      <header className="sticky top-0 z-30 border-b border-line bg-paper/65 backdrop-blur-xl">
+      <header className="sticky top-0 z-30 border-b border-line bg-paper">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-5 gap-y-2 px-4 py-2.5">
           <Logo />
           <div className="ml-auto flex flex-wrap items-center gap-x-5 gap-y-2">
@@ -45,7 +45,7 @@ const DockShell = ({ menuItems }) => {
       </main>
 
       <nav aria-label={t('home.navigation')} className="fixed inset-x-0 bottom-4 z-40 flex justify-center px-3">
-        <div className="flex max-w-full gap-1 overflow-x-auto rounded-2xl border border-line bg-card/80 p-1.5 shadow-xl backdrop-blur-xl">
+        <div className="flex max-w-full gap-1 overflow-x-auto rounded-2xl border border-line bg-card p-1.5 shadow-xl">
           {menuItems.map((item) => (
             <NavLink key={item.path} to={item.path} end={item.end ?? true} className={dockLink}>
               <item.icon size={20} strokeWidth={1.8} />

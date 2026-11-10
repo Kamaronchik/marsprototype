@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Bell } from 'lucide-react';
 import { api } from '../lib/api';
+import { usePolling } from '../lib/usePolling';
 import { formatDate, formatDateTime } from '../lib/format';
 import { formatMoney } from '../lib/money';
 import { SkeletonRow } from './Skeleton';
@@ -27,11 +28,8 @@ const NotificationBell = ({ align = 'sidebar' }) => {
       .finally(() => setLoading(false));
   }, []);
 
-  useEffect(() => {
-    load();
-    const timer = setInterval(load, REFRESH_MS);
-    return () => clearInterval(timer);
-  }, [load]);
+  useEffect(() => { load(); }, [load]);
+  usePolling(load, REFRESH_MS);
 
   useEffect(() => {
     if (!open) return undefined;

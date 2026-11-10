@@ -69,7 +69,7 @@ const BaseHome = () => {
             <h1 className="mt-2 font-display text-4xl font-semibold leading-tight drop-shadow sm:text-5xl">{t(greetingKey())}, {firstNameOf(user)}</h1>
             <p className="mt-2 text-sm text-[#ffe6cc]">{t(`ranks.${rank.key}`)} · {t('home.xpValue', { xp: rank.xp })}</p>
           </div>
-          <div className="rounded-2xl bg-black/25 px-4 py-3 backdrop-blur-sm">
+          <div className="rounded-2xl bg-black/25 px-4 py-3">
             <RankBadge rank={rank} size={64} />
           </div>
         </div>

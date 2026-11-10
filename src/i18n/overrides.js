@@ -10,12 +10,17 @@ export const applyOverrides = (lang, overrides) => {
   }
 };
 
-// Called once when the site opens. If the server cannot be reached, the bundled texts are used.
-export const loadOverrides = () => Promise.all(LANGUAGES.map(async (lang) => {
+const loadedOverrides = new Set();
+
+// Texts the admin changed come from the server, one language at a time: the current one when the
+// site opens, another one when the visitor switches. If the server cannot be reached, the bundled texts are used.
+export const loadOverrides = async (lang) => {
+  if (!LANGUAGES.includes(lang) || loadedOverrides.has(lang)) return;
+  loadedOverrides.add(lang);
   try {
     const { overrides } = await api(`/api/i18n/${lang}`);
     applyOverrides(lang, overrides);
   } catch {
-    // Nothing to do: the site works with the bundled texts.
+    loadedOverrides.delete(lang);
   }
-}));
+};

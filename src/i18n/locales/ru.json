@@ -70,7 +70,10 @@
       "sectionOperations": "Операции",
       "sectionMoney": "Деньги",
       "sectionSystem": "Система",
-      "telegram": "Telegram"
+      "telegram": "Telegram",
+      "homework": "Домашние задания",
+      "grades": "Оценки",
+      "tutor": "ИИ-репетитор"
     },
     "bell": {
       "title": "Уведомления",
@@ -94,7 +97,11 @@
       "order_cancelled": "Ваш заказ отменён. Коины в размере {{total}} вернулись на баланс",
       "order_cancelled_by_student": "{{studentName}} отменил заказ на {{total}} коинов",
       "battle_accepted": "{{opponentName}} принял ваш вызов по теме {{courseName}}. Откройте баттл!",
-      "battle_finished": "Ваш баттл по теме {{courseName}} завершён: {{result}}"
+      "battle_finished": "Ваш баттл по теме {{courseName}} завершён: {{result}}",
+      "homework_new": "Новое задание в {{groupName}}: {{title}}",
+      "homework_graded": "Ваше задание «{{title}}» оценено: {{score}} / {{maxScore}}",
+      "homework_submitted": "{{student}} сдал(а) задание «{{title}}»",
+      "grade_added": "Новая оценка в {{groupName}}: {{title}}, {{score}} / {{maxScore}}"
     },
     "errors": {
       "ROOM_BUSY": "Этот кабинет в это время уже занят",
@@ -757,7 +764,29 @@
       "isavailable_must_be_true_or_false": "Значение «в продаже» должно быть да или нет",
       "invalid_student": "Некорректный ученик",
       "too_many_connection_attempts_please_wait": "Слишком много попыток подключения. Подождите.",
-      "this_months_top_up_was_already_run": "Пополнение в этом месяце уже было сделано"
+      "this_months_top_up_was_already_run": "Пополнение в этом месяце уже было сделано",
+      "a_homework_mark_is_changed_in_the_homework": "Оценка за ДЗ меняется в разделе «Домашние задания»",
+      "answer_not_found": "Ответ не найден",
+      "graded": "Оценено",
+      "group_is_required": "Выберите группу",
+      "homework_not_found": "Домашнее задание не найдено",
+      "homework_removed": "Домашнее задание удалено",
+      "invalid_type_of_mark": "Неверный тип оценки",
+      "mark_deleted": "Оценка удалена",
+      "mark_not_found": "Оценка не найдена",
+      "maximum_score_must_be_from_1_to_100": "Максимальный балл — от 1 до 100",
+      "score_must_be_a_whole_number_from_0_to_the_maximum": "Балл — целое число от 0 до максимума",
+      "sent": "Отправлено",
+      "student_and_group_are_required": "Нужны ученик и группа",
+      "text_is_too_long": "Текст слишком длинный",
+      "the_link_must_start_with_http_or_https": "Ссылка должна начинаться с http:// или https://",
+      "the_question_is_too_long": "Вопрос слишком длинный",
+      "the_tutor_is_not_available_right_now_try_again_later": "Репетитор сейчас недоступен. Попробуйте позже.",
+      "this_homework_is_already_graded": "Это задание уже оценено",
+      "title_is_required_up_to_120_characters": "Нужно название (до 120 символов)",
+      "too_many_questions_try_again_in_15_minutes": "Слишком много вопросов. Попробуйте через 15 минут.",
+      "write_a_question": "Напишите вопрос",
+      "write_an_answer_or_add_a_link": "Напишите ответ или добавьте ссылку"
     },
     "theme": {
       "label": "Стиль",
@@ -862,6 +891,84 @@
     },
     "notifications": {
       "telegram_reason": "{{studentName}} объяснил(а) пропуск в группе {{groupName}} за {{date}}: {{reason}}"
+    },
+    "homework": {
+      "title": "Домашние задания",
+      "studentSubtitle": "Задания от учителей. Отправьте ответ и получите оценку.",
+      "teacherSubtitle": "Дайте задание группе, читайте ответы, ставьте оценки.",
+      "state": {
+        "todo": "К выполнению",
+        "submitted": "Отправлено",
+        "graded": "Оценено"
+      },
+      "empty": {
+        "todo": "Заданий нет. Отлично!",
+        "submitted": "Нет ответов, ожидающих оценки.",
+        "graded": "Оценённых заданий пока нет."
+      },
+      "due": "Срок",
+      "overdue": "Просрочено",
+      "waiting": "Ждёт оценки учителя",
+      "answer": "Ваш ответ (код или текст)",
+      "link": "Ссылка (GitHub, CodePen, сайт)",
+      "send": "Отправить",
+      "sent": "Ответ отправлен",
+      "edit": "Изменить ответ",
+      "doIt": "Написать ответ",
+      "askTutor": "Спросить репетитора",
+      "new": "Новое задание",
+      "group": "Группа",
+      "taskTitle": "Название",
+      "description": "Описание задания",
+      "maxScore": "Максимальный балл",
+      "give": "Задать группе",
+      "created": "Задание выдано",
+      "removed": "Задание удалено",
+      "remove": "Удалить задание",
+      "noneTeacher": "Заданий пока нет. Выдайте первое.",
+      "progress": "Сдали {{sent}} из {{total}}, оценено {{graded}}",
+      "answers": "Ответы",
+      "notSent": "Не сдано",
+      "score": "Балл",
+      "feedback": "Комментарий",
+      "grade": "Поставить оценку",
+      "regrade": "Изменить оценку",
+      "graded": "Оценка сохранена"
+    },
+    "grades": {
+      "title": "Оценки",
+      "studentSubtitle": "Все ваши оценки и средний балл по каждой группе.",
+      "teacherSubtitle": "Оценки ваших групп. Оценки за ДЗ появляются здесь сами.",
+      "average": "Средний балл",
+      "count": "Оценок",
+      "empty": "Оценок пока нет",
+      "kind": {
+        "homework": "Домашнее задание",
+        "lesson": "Урок",
+        "test": "Тест",
+        "project": "Проект"
+      },
+      "add": "Поставить оценку",
+      "added": "Оценка добавлена",
+      "delete": "Удалить оценку",
+      "type": "Тип",
+      "what": "За что",
+      "save": "Сохранить оценку"
+    },
+    "tutor": {
+      "title": "ИИ-репетитор",
+      "subtitle": "Спрашивайте про HTML, CSS, JavaScript и React. Репетитор объясняет и подсказывает.",
+      "aboutHomework": "Про задание: {{title}}",
+      "hello": "Привет! Что изучим сегодня?",
+      "hint": "Репетитор не делает задание за вас, а помогает разобраться. Можно вставить код с ошибкой.",
+      "suggestion": {
+        "explain": "Объясни, что такое замыкание",
+        "error": "Почему мой код не работает?",
+        "review": "Как центрировать div в CSS?"
+      },
+      "thinking": "Думаю…",
+      "placeholder": "Напишите вопрос. Enter отправляет, Shift+Enter — новая строка",
+      "send": "Отправить"
     }
   }
 }

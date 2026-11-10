@@ -16,7 +16,7 @@ const TopNavShell = ({ menuItems }) => {
 
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-30 border-b border-line bg-card/85 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-line bg-card">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-8 gap-y-1 px-5">
           <Link to="/teacher" className="flex items-center gap-3 py-3">
             <Logo />

@@ -70,7 +70,10 @@
       "sectionOperations": "Operations",
       "sectionMoney": "Money",
       "sectionSystem": "System",
-      "telegram": "Telegram"
+      "telegram": "Telegram",
+      "homework": "Homework",
+      "grades": "Grades",
+      "tutor": "AI tutor"
     },
     "bell": {
       "title": "Notifications",
@@ -94,7 +97,11 @@
       "order_cancelled": "Your order was cancelled. {{total}} coins are back on your balance",
       "order_cancelled_by_student": "{{studentName}} cancelled an order of {{total}} coins",
       "battle_accepted": "{{opponentName}} accepted your {{courseName}} challenge. Open the battle!",
-      "battle_finished": "Your {{courseName}} battle is over: {{result}}"
+      "battle_finished": "Your {{courseName}} battle is over: {{result}}",
+      "homework_new": "New homework in {{groupName}}: {{title}}",
+      "homework_graded": "Your homework \"{{title}}\" is graded: {{score}} / {{maxScore}}",
+      "homework_submitted": "{{student}} sent homework \"{{title}}\"",
+      "grade_added": "New mark in {{groupName}}: {{title}}, {{score}} / {{maxScore}}"
     },
     "errors": {
       "ROOM_BUSY": "This room is already taken at that time",
@@ -755,7 +762,29 @@
       "isavailable_must_be_true_or_false": "isAvailable must be true or false",
       "invalid_student": "Invalid student",
       "too_many_connection_attempts_please_wait": "Too many connection attempts. Please wait.",
-      "this_months_top_up_was_already_run": "This month's top-up was already run"
+      "this_months_top_up_was_already_run": "This month's top-up was already run",
+      "a_homework_mark_is_changed_in_the_homework": "A homework mark is changed in the homework",
+      "answer_not_found": "Answer not found",
+      "graded": "Graded",
+      "group_is_required": "Group is required",
+      "homework_not_found": "Homework not found",
+      "homework_removed": "Homework removed",
+      "invalid_type_of_mark": "Invalid type of mark",
+      "mark_deleted": "Mark deleted",
+      "mark_not_found": "Mark not found",
+      "maximum_score_must_be_from_1_to_100": "Maximum score must be from 1 to 100",
+      "score_must_be_a_whole_number_from_0_to_the_maximum": "Score must be a whole number from 0 to the maximum",
+      "sent": "Sent",
+      "student_and_group_are_required": "Student and group are required",
+      "text_is_too_long": "Text is too long",
+      "the_link_must_start_with_http_or_https": "The link must start with http:// or https://",
+      "the_question_is_too_long": "The question is too long",
+      "the_tutor_is_not_available_right_now_try_again_later": "The tutor is not available right now. Try again later.",
+      "this_homework_is_already_graded": "This homework is already graded",
+      "title_is_required_up_to_120_characters": "Title is required (up to 120 characters)",
+      "too_many_questions_try_again_in_15_minutes": "Too many questions. Try again in 15 minutes.",
+      "write_a_question": "Write a question",
+      "write_an_answer_or_add_a_link": "Write an answer or add a link"
     },
     "theme": {
       "label": "Style",
@@ -860,6 +889,84 @@
     },
     "notifications": {
       "telegram_reason": "{{studentName}} explained the absence in {{groupName}} on {{date}}: {{reason}}"
+    },
+    "homework": {
+      "title": "Homework",
+      "studentSubtitle": "Tasks from your teachers. Send an answer, get a mark.",
+      "teacherSubtitle": "Give a task to a group, read the answers, give marks.",
+      "state": {
+        "todo": "To do",
+        "submitted": "Sent",
+        "graded": "Graded"
+      },
+      "empty": {
+        "todo": "Nothing to do. Great job!",
+        "submitted": "No answers are waiting for a mark.",
+        "graded": "No graded homework yet."
+      },
+      "due": "Due",
+      "overdue": "Overdue",
+      "waiting": "Waiting for the teacher's mark",
+      "answer": "Your answer (code or text)",
+      "link": "Link (GitHub, CodePen, site)",
+      "send": "Send",
+      "sent": "Answer sent",
+      "edit": "Change answer",
+      "doIt": "Write answer",
+      "askTutor": "Ask the tutor",
+      "new": "New homework",
+      "group": "Group",
+      "taskTitle": "Title",
+      "description": "Task description",
+      "maxScore": "Maximum score",
+      "give": "Give to the group",
+      "created": "Homework given",
+      "removed": "Homework removed",
+      "remove": "Remove homework",
+      "noneTeacher": "No homework yet. Give the first task.",
+      "progress": "Sent {{sent}} of {{total}}, graded {{graded}}",
+      "answers": "Answers",
+      "notSent": "Not sent",
+      "score": "Score",
+      "feedback": "Comment",
+      "grade": "Give mark",
+      "regrade": "Change mark",
+      "graded": "Mark saved"
+    },
+    "grades": {
+      "title": "Grades",
+      "studentSubtitle": "All your marks with the average for every group.",
+      "teacherSubtitle": "Marks of your groups. Homework marks appear here by themselves.",
+      "average": "Average",
+      "count": "Marks",
+      "empty": "No marks yet",
+      "kind": {
+        "homework": "Homework",
+        "lesson": "Lesson",
+        "test": "Test",
+        "project": "Project"
+      },
+      "add": "Add mark",
+      "added": "Mark added",
+      "delete": "Delete mark",
+      "type": "Type",
+      "what": "What for",
+      "save": "Save mark"
+    },
+    "tutor": {
+      "title": "AI tutor",
+      "subtitle": "Ask about HTML, CSS, JavaScript or React. The tutor explains and gives hints.",
+      "aboutHomework": "About the homework: {{title}}",
+      "hello": "Hi! What shall we learn today?",
+      "hint": "The tutor does not do your homework for you, but helps you understand it. You can paste code with an error.",
+      "suggestion": {
+        "explain": "Explain what a closure is",
+        "error": "Why does my code not work?",
+        "review": "How do I center a div in CSS?"
+      },
+      "thinking": "Thinking…",
+      "placeholder": "Write a question. Enter sends, Shift+Enter is a new line",
+      "send": "Send"
     }
   }
 }

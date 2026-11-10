@@ -7,6 +7,7 @@ import PageHeader from '../../components/PageHeader';
 import CoinAmount from '../../components/CoinAmount';
 import { Skeleton, SkeletonText } from '../../components/Skeleton';
 import { api, errorText } from '../../lib/api';
+import { usePolling } from '../../lib/usePolling';
 
 const POLL_MS = 2000;
 const FEEDBACK_MS = 1300;   // how long the right answer stays on screen before the next question
@@ -50,18 +51,19 @@ const BattleRoom = () => {
   const waitingForOpponent = view?.battle.status === 'open';
 
   // While waiting, ask the server every 2 seconds.
-  useEffect(() => {
-    if (!waitingForOther && !waitingForOpponent) return undefined;
-    const timer = setInterval(load, POLL_MS);
-    return () => clearInterval(timer);
-  }, [waitingForOther, waitingForOpponent, load]);
+  usePolling(load, POLL_MS, !!(waitingForOther || waitingForOpponent));
 
   // The countdown.
   useEffect(() => {
     if (!question) return undefined;
-    const timer = setInterval(() => setNow(Date.now()), 250);
+    // Ticks often to be exact, but the screen is redrawn only when the second on the clock changes.
+    const second = (time) => Math.ceil((Date.parse(question.endsAt) - (time + clockOffset)) / 1000);
+    const timer = setInterval(() => setNow((prev) => {
+      const current = Date.now();
+      return second(current) === second(prev) ? prev : current;
+    }), 250);
     return () => clearInterval(timer);
-  }, [question]);
+  }, [question, clockOffset]);
 
   // When the 20 seconds end, the server closes the question and sends the next one.
   useEffect(() => {

@@ -38,6 +38,8 @@ const TeacherHome = lazy(() => import('./features/teacher/TeacherHome'));
 const TeacherAttendance = lazy(() => import('./pages/Teacher/Attendance'));
 const MyGroups = lazy(() => import('./pages/Teacher/MyGroups'));
 const TeacherCoins = lazy(() => import('./pages/Teacher/Coins'));
+const TeacherHomework = lazy(() => import('./pages/Teacher/Homework'));
+const TeacherGrades = lazy(() => import('./pages/Teacher/Grades'));
 
 const StudentLayout = lazy(() => import('./layouts/Student/StudentLayout'));
 const StudentHome = lazy(() => import('./features/student/StudentHome'));
@@ -48,6 +50,9 @@ const Shop = lazy(() => import('./pages/Student/Shop'));
 const StudentCoins = lazy(() => import('./pages/Student/Coins'));
 const Purchases = lazy(() => import('./pages/Student/Purchases'));
 const StudentProfile = lazy(() => import('./pages/Student/Profile'));
+const StudentHomework = lazy(() => import('./pages/Student/Homework'));
+const StudentGrades = lazy(() => import('./pages/Student/Grades'));
+const Tutor = lazy(() => import('./pages/Student/Tutor'));
 
 const AppRoutes = () => {
   const dispatch = useDispatch();
@@ -116,6 +121,8 @@ const AppRoutes = () => {
             <Route index element={<TeacherHome />} />
             <Route path="groups" element={<MyGroups />} />
             <Route path="attendance" element={<TeacherAttendance />} />
+            <Route path="homework" element={<TeacherHomework />} />
+            <Route path="grades" element={<TeacherGrades />} />
             <Route path="coins" element={<TeacherCoins />} />
           </Route>
 
@@ -130,6 +137,9 @@ const AppRoutes = () => {
           >
             <Route index element={<StudentHome />} />
             <Route path="attendance" element={<StudentAttendance />} />
+            <Route path="homework" element={<StudentHomework />} />
+            <Route path="grades" element={<StudentGrades />} />
+            <Route path="tutor" element={<Tutor />} />
             <Route path="battle" element={<BattleArena />} />
             <Route path="battle/:id" element={<BattleRoom />} />
             <Route path="shop" element={<Shop />} />

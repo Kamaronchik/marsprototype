@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const supabase = require('../config/supabase');
+const db = require('../databaseService');
 const { isUuid } = require('../utils/validate');
 const { addStudentToGroup } = require('../utils/groups');
 
@@ -140,6 +141,8 @@ const updateUser = async (req, res) => {
 
   // Blocked users lose all active sessions immediately.
   if (status === 'blocked') await supabase.from('sessions').delete().eq('user_id', id);
+  // Role or status changed: forget the cached sessions (after the delete) so the new rights apply at once.
+  if (role !== undefined || status !== undefined) db.clearSessionCache();
 
   res.json({ user: toClient(data) });
 };
@@ -151,6 +154,7 @@ const deleteUser = async (req, res) => {
   }
   const { error } = await supabase.from('users').delete().eq('id', id);
   if (error) return handleDbError(error, res);
+  db.clearSessionCache();
   res.json({ message: 'User deleted' });
 };
 

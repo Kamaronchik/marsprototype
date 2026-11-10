@@ -291,8 +291,6 @@ body {
 /* Glass: cards let the glow through, with a thin bright edge */
 [data-theme='orbit'] .bg-card {
   background-color: rgb(var(--card) / 0.72);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
 }
 [data-theme='orbit'] .btn-primary {
   background-image: linear-gradient(135deg, rgb(139 124 255), rgb(96 205 255));
@@ -546,14 +544,8 @@ body {
     6% { opacity: 0; transform: translate(300px, 210px) rotate(35deg); }
     100% { opacity: 0; transform: translate(300px, 210px) rotate(35deg); }
   }
-  .planet-surface {
-    animation: planet-turn 220s linear infinite;
-  }
   @keyframes planet-turn {
     to { transform: translateX(-50%); }
-  }
-  .orbit-rings {
-    animation: ring-turn 160s linear infinite;
   }
   @keyframes ring-turn {
     to { transform: rotate(360deg); }

@@ -28,7 +28,7 @@ const Starfield = ({ count = 100, shape = 'round', color = '#ffffff', shooting =
       {stars.map((s) => (
         <span
           key={s.id}
-          className="star absolute"
+          className={`${s.id % 4 === 0 ? 'star ' : ''}absolute`}
           style={{
             left: `${s.left}%`,
             top: `${s.top}%`,

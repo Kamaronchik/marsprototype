@@ -34,9 +34,31 @@ export const savedDesign = () => {
   return DESIGNS.includes(name) ? name : DEFAULT_DESIGN;
 };
 
+// Only the display font of the look on the screen is downloaded, not all six.
+// (Inter and JetBrains Mono are loaded by index.html.)
+const THEME_FONT = {
+  mars: 'Fraunces:opsz,wght@9..144,500;9..144,600',
+  orbit: 'Exo+2:wght@500;600;700',
+  control: 'IBM+Plex+Sans:wght@500;600;700',
+  station: 'Manrope:wght@600;700;800',
+  bay: 'Roboto+Slab:wght@500;600;700',
+};
+const loadedFonts = new Set();
+
+export const loadThemeFont = (theme = 'mars') => {
+  const family = THEME_FONT[theme];
+  if (!family || loadedFonts.has(family)) return;
+  loadedFonts.add(family);
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = `https://fonts.googleapis.com/css2?family=${family}&display=swap`;
+  document.head.appendChild(link);
+};
+
 const showTheme = (theme) => {
   document.documentElement.setAttribute('data-theme', theme);
   write(THEME_KEY, theme);
+  loadThemeFont(theme);
 };
 
 // Screens that show the design (the shells) listen to this.

@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { Send, Link2Off } from 'lucide-react';
 import { api, errorText } from '../lib/api';
 import { useFetch } from '../lib/useFetch';
+import { usePolling } from '../lib/usePolling';
 import { formatDate } from '../lib/format';
 import { SkeletonText } from './Skeleton';
 
@@ -21,11 +22,7 @@ const TelegramConnect = () => {
   const { reload } = status;
   const linked = status.data?.linked;
 
-  useEffect(() => {
-    if (!waiting) return undefined;
-    const timer = setInterval(reload, POLL_MS);
-    return () => clearInterval(timer);
-  }, [waiting, reload]);
+  usePolling(reload, POLL_MS, !!waiting);
 
   // Once the chat is connected the waiting is over; the card itself changes, so no state is needed.
   const isWaiting = waiting && !linked;

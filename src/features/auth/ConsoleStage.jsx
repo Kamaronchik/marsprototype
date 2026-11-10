@@ -11,7 +11,7 @@ const ConsoleStage = ({ children }) => {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-5 py-24">
-      <Starfield count={90} shape="square" color="rgb(var(--mars))" shooting={2} />
+      <Starfield count={45} shape="square" color="rgb(var(--mars))" shooting={2} />
       <LoginTools />
 
       <section className="console-window relative z-10 w-full max-w-lg border border-line bg-card/90">

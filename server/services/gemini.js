@@ -1,9 +1,9 @@
 const MODEL = () => process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite';
 const TIMEOUT_MS = 20 * 1000;
 
-// Asks the model. system = rules and facts, history = [{ role: 'user' | 'model', text }], text = the new question.
+// Asks the model. maxOutputTokens limits the length of the answer. system = rules and facts, history = [{ role: 'user' | 'model', text }], text = the new question.
 // Returns the answer text; throws when the service is not reachable or answers with an error.
-const askGemini = async ({ system, history = [], text }) => {
+const askGemini = async ({ system, history = [], text, maxOutputTokens = 600 }) => {
   const key = process.env.GEMINI_API_KEY;
   if (!key) throw new Error('GEMINI_API_KEY is not set in .env');
 
@@ -14,7 +14,7 @@ const askGemini = async ({ system, history = [], text }) => {
     body: JSON.stringify({
       systemInstruction: { parts: [{ text: system }] },
       contents,
-      generationConfig: { maxOutputTokens: 600, temperature: 0.4 },
+      generationConfig: { maxOutputTokens, temperature: 0.4 },
     }),
     signal: AbortSignal.timeout(TIMEOUT_MS),
   });

@@ -1,6 +1,11 @@
 const supabase = require('./config/supabase');
 const crypto = require('crypto');
 
+// Short on purpose: on Vercel every server instance has its own copy, so a block or role change
+// reaches the other instances within this time.
+const SESSION_CACHE_MS = 20 * 1000;
+const sessionCache = new Map();
+
 /**
  * Database Service for Mars Space
  * Replaces in-memory Maps with Supabase PostgreSQL queries.
@@ -102,17 +107,33 @@ const db = {
     return true;
   },
 
+  // Every API call checks the session, so it is kept in memory for a short time instead of
+  // asking Supabase each time. Logout, block and role changes clear it (see clearSessionCache).
   async getSession(sessionIdHash) {
+    const cached = sessionCache.get(sessionIdHash);
+    if (cached && cached.until > Date.now()) return cached.session;
+
     const { data, error } = await supabase
       .from('sessions')
       .select('*, users(role)')
       .eq('session_hash', sessionIdHash)
       .maybeSingle();
-    if (error || !data) return null;
-    return { ...data, role: data.users?.role };
+    if (error || !data) {
+      sessionCache.delete(sessionIdHash);
+      return null;
+    }
+    const session = { ...data, role: data.users?.role };
+    sessionCache.set(sessionIdHash, { session, until: Date.now() + SESSION_CACHE_MS });
+    if (sessionCache.size > 2000) sessionCache.delete(sessionCache.keys().next().value);
+    return session;
+  },
+
+  clearSessionCache() {
+    sessionCache.clear();
   },
 
   async deleteSession(sessionIdHash) {
+    sessionCache.delete(sessionIdHash);
     const { error } = await supabase
       .from('sessions')
       .delete()
