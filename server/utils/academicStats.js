@@ -15,10 +15,11 @@ const average = (numbers) => (numbers.length ? Math.round(numbers.reduce((a, b) 
 
 // Lessons that should have been held by now but have no lesson record (no topic written).
 // Returns [{ groupId, groupName, teacherId, date, startTime }], newest first.
-const missingLessons = async (days, filter) => {
+// slots can be passed in when the caller already loaded them (saves two database trips).
+const missingLessons = async (days, filter, loaded) => {
   const now = tashkentNow();
   const from = addDays(now.date, -days);
-  const slots = await loadSlots(filter);
+  const slots = loaded ?? await loadSlots(filter);
   const { data: held, error } = await supabase.from('lessons').select('group_id, date').gte('date', from);
   if (error) throw error;
   const heldKeys = new Set(held.map((l) => `${l.group_id}:${l.date}`));
@@ -36,10 +37,9 @@ const missingLessons = async (days, filter) => {
 };
 
 // Lessons of the last two weeks where some students have no tick or cross yet.
-const unmarkedCount = async () => {
+const unmarkedCount = async (slots) => {
   const now = tashkentNow();
   const from = addDays(now.date, -RISK_DAYS);
-  const slots = await loadSlots();
   const [{ data: members }, { data: marks }] = await Promise.all([
     supabase.from('group_students').select('group_id, joined_at, student:users!group_students_student_id_fkey(status)'),
     supabase.from('attendance').select('group_id, student_id, lesson_date').gte('lesson_date', from),
@@ -60,15 +60,18 @@ const unmarkedCount = async () => {
 // The numbers on the dashboard.
 const dashboard = async () => {
   const now = tashkentNow();
-  const slots = (await loadSlots()).filter((s) => s.weekday === now.weekday);
-  const missing = await missingLessons(RISK_DAYS);
-  const { count: ungraded } = await supabase
-    .from('homework_submissions').select('id', { count: 'exact', head: true }).is('score', null);
+  const slots = await loadSlots();
+  // The four numbers do not depend on each other: ask the database for all of them at once.
+  const [missing, unmarked, { count: ungraded }] = await Promise.all([
+    missingLessons(RISK_DAYS, undefined, slots),
+    unmarkedCount(slots),
+    supabase.from('homework_submissions').select('id', { count: 'exact', head: true }).is('score', null),
+  ]);
 
   return {
-    lessonsToday: slots.length,
+    lessonsToday: slots.filter((s) => s.weekday === now.weekday).length,
     lessonsWithoutTopic: missing.length,
-    unmarkedAttendance: await unmarkedCount(),
+    unmarkedAttendance: unmarked,
     ungradedHomework: ungraded ?? 0,
     missing: missing.slice(0, 10),
   };
