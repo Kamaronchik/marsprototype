@@ -1039,7 +1039,8 @@
       "reviews": "What students say",
       "reviewsHint": "Answers are anonymous: you see the score and the words, not the name.",
       "noReviews": "No comments yet.",
-      "average": "Average rating {{value}} of 5 ({{count}} answers)"
+      "average_one": "Average rating {{value}} of 5 ({{count}} answer)",
+      "average_other": "Average rating {{value}} of 5 ({{count}} answers)"
     },
     "rating": {
       "title": "How were the lessons this week?",

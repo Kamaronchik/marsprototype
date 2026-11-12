@@ -1039,7 +1039,8 @@
       "reviews": "O'quvchilar nima deydi",
       "reviewsHint": "Javoblar anonim: siz bahoni va so'zlarni ko'rasiz, ismni emas.",
       "noReviews": "Hozircha izohlar yo'q.",
-      "average": "O'rtacha baho {{value}} / 5 ({{count}} ta javob)"
+      "average_one": "O'rtacha baho {{value}} / 5 ({{count}} ta javob)",
+      "average_other": "O'rtacha baho {{value}} / 5 ({{count}} ta javob)"
     },
     "rating": {
       "title": "Bu hafta darslar qanday o'tdi?",
