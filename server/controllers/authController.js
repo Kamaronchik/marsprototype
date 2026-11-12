@@ -238,7 +238,7 @@ const me = async (req, res) => {
   const session = await db.getSession(hashToken(sessionToken));
   if (!session || new Date() > new Date(session.expires_at)) return guest();
 
-  const user = await db.findUserById(session.user_id);
+  const user = session.user ?? await db.findUserById(session.user_id);
   if (!user || user.status === 'blocked' || user.status === 'frozen') return guest();
 
   res.status(200).json({

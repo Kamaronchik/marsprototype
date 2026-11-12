@@ -160,7 +160,7 @@ const run = async (who, ctx) => {
 
   console.log('\nAnonymity');
   const forTeacher = await call('GET', '/api/ratings/mine', teacher);
-  const forManager = await call('GET', '/api/ratings', am);
+  const forManager = await call('GET', `/api/ratings?groupId=${groupId}`, am); // only this test's group: other groups may hold real answers
   check('the teacher sees 2 answers, average 4', forTeacher.body.count === 2 && forTeacher.body.average === 4, forTeacher.body);
   check('the teacher sees the comment', forTeacher.body.answers.some((a) => a.comment === 'ZZ too fast'));
   for (const [name, res] of [['teacher', forTeacher], ['manager', forManager]]) {
