@@ -32,4 +32,18 @@ const announceAttendance = async ({ studentId, attendanceId, status, groupName, 
   }
 };
 
-module.exports = { announceAttendance };
+// Sends one ready text (balance top up, freeze, unfreeze) to a student. Does nothing when the student
+// has not connected Telegram. Never throws: a failed message must not break the admin's action.
+const announceToStudent = async (studentId, key, values = {}, overrides = {}) => {
+  try {
+    const deps = { ...defaults, ...overrides };
+    const { data: link } = await supabase
+      .from('telegram_links').select('user_id, chat_id, language').eq('user_id', studentId).maybeSingle();
+    if (!link) return;
+    await sayTo(deps, link, key, values);
+  } catch (error) {
+    console.error('Telegram announcement error:', error.message);
+  }
+};
+
+module.exports = { announceAttendance, announceToStudent };

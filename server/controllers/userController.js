@@ -5,6 +5,7 @@ const { isUuid } = require('../utils/validate');
 const { addStudentToGroup } = require('../utils/groups');
 const { topUp } = require('../utils/balance');
 const { logAction } = require('../utils/audit');
+const { announceToStudent } = require('../utils/telegramAnnounce');
 
 const ROLES = ['Admin', 'Teacher', 'Financier', 'Student'];
 const STATUSES = ['active', 'blocked', 'frozen'];
@@ -143,6 +144,12 @@ const updateUser = async (req, res) => {
     }
   }
 
+  let previousStatus = null;
+  if (status !== undefined) {
+    const { data: before } = await supabase.from('users').select('status').eq('id', id).maybeSingle();
+    previousStatus = before?.status ?? null;
+  }
+
   const { data, error } = await supabase
     .from('users').update(updates).eq('id', id).select(COLUMNS).maybeSingle();
   if (error) return handleDbError(error, res);
@@ -152,6 +159,10 @@ const updateUser = async (req, res) => {
   if (status === 'blocked' || status === 'frozen') await supabase.from('sessions').delete().eq('user_id', id);
   // Role or status changed: forget the cached sessions (after the delete) so the new rights apply at once.
   if (role !== undefined || status !== undefined) db.clearSessionCache();
+
+  // Tell the student in Telegram when the account is frozen or unfrozen.
+  if (status === 'frozen' && previousStatus !== 'frozen') await announceToStudent(id, 'accountFrozen');
+  if (status === 'active' && previousStatus === 'frozen') await announceToStudent(id, 'accountUnfrozen');
 
   res.json({ user: toClient(data) });
 };
@@ -172,6 +183,7 @@ const topUpBalance = async (req, res) => {
   try {
     const balance = await topUp(id, amount, note || null, req.user.id);
     await logAction(req.user.id, 'balance.topup', 'user', id, { amount });
+    await announceToStudent(id, 'balanceTopUp', { amount: amount.toLocaleString('ru-RU'), balance: Number(balance).toLocaleString('ru-RU') });
     res.json({ balance: Number(balance) });
   } catch (error) {
     handleDbError(error, res);

@@ -6,6 +6,11 @@ const {
 } = require('./testKit');
 const { SLOTS, ROOMS, tashkentNow } = require('../utils/schedule');
 const { LESSON_PRICE } = require('../utils/balance');
+const { defaults } = require('../utils/telegramBot');
+
+// The bot does not really send: every message is kept here.
+const sent = [];
+defaults.send = async (chatId, text) => { sent.push({ chatId, text }); };
 
 const GROUP_NAME = 'ZZ Balance A';
 const ALL_DAYS = [1, 2, 3, 4, 5, 6, 7];
@@ -89,6 +94,32 @@ const testFreeze = async ({ admin, teacher, studentA, studentB }, ctx) => {
   check('after unfreezing the student can be marked and is charged', again.status === 200 && (await balanceOf(studentB.id)) === before - 90000, again.body);
 };
 
+const testTelegram = async ({ admin, studentA, studentB }) => {
+  console.log('\nTelegram messages');
+  const chatId = 9000000000 + Math.floor(Math.random() * 1000000);
+  await supabase.from('telegram_links').upsert({ user_id: studentA.id, chat_id: chatId, language: 'en' });
+  const textsFor = (id) => sent.filter((m) => m.chatId === id).map((m) => m.text.replace(/\s/g, ' ')); // numbers use a no-break space
+
+  await call('POST', `/api/users/${studentA.id}/balance`, admin, { amount: 100000 });
+  check('top up is sent to the student', textsFor(chatId).some((t) => t.includes('topped up by 100 000') && t.includes('Balance now: 310 000')), textsFor(chatId));
+
+  await call('PATCH', `/api/users/${studentA.id}`, admin, { status: 'frozen' });
+  check('freezing is sent to the student', textsFor(chatId).some((t) => t.includes('is frozen')), textsFor(chatId));
+  const afterFreeze = textsFor(chatId).length;
+  await call('PATCH', `/api/users/${studentA.id}`, admin, { status: 'frozen' });
+  check('freezing twice sends nothing more', textsFor(chatId).length === afterFreeze);
+
+  await call('PATCH', `/api/users/${studentA.id}`, admin, { status: 'active' });
+  check('unfreezing is sent to the student', textsFor(chatId).some((t) => t.includes('is unfrozen')), textsFor(chatId));
+  const afterUnfreeze = textsFor(chatId).length;
+  await call('PATCH', `/api/users/${studentA.id}`, admin, { fullName: 'ZZ Test student_a' });
+  check('an ordinary edit sends nothing', textsFor(chatId).length === afterUnfreeze);
+
+  const before = sent.length;
+  const topUp = await call('POST', `/api/users/${studentB.id}/balance`, admin, { amount: 5000 });
+  check('a student without Telegram is topped up and nothing is sent', topUp.status === 200 && sent.length === before, topUp.body);
+};
+
 const cleanup = async (users, ctx) => {
   const ids = users.map((u) => u.id);
   if (ctx.group) {
@@ -98,6 +129,8 @@ const cleanup = async (users, ctx) => {
   }
   await supabase.from('balance_transactions').delete().in('student_id', ids);
   await supabase.from('telegram_absences').delete().in('student_id', ids);
+  await supabase.from('telegram_messages').delete().in('user_id', ids);
+  await supabase.from('telegram_links').delete().in('user_id', ids);
   await supabase.from('sessions').delete().in('user_id', ids);
   await supabase.from('notifications').delete().in('user_id', ids);
   await supabase.from('users').update({ status: 'blocked', payment_status: 'active', balance: 0 }).in('id', ids);
@@ -136,6 +169,7 @@ const cleanup = async (users, ctx) => {
     await testTopUp(who);
     await testCharge(who, ctx);
     await testFreeze(who, ctx);
+    await testTelegram(who);
   } catch (error) {
     console.error('Test crashed:', error);
     markFailed();
