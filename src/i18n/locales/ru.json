@@ -38,7 +38,8 @@
       "Admin": "Админ",
       "Teacher": "Учитель",
       "Financier": "Финансист",
-      "Student": "Ученик"
+      "Student": "Ученик",
+      "AcademicManager": "Завуч"
     },
     "nav": {
       "overview": "Обзор",
@@ -73,7 +74,11 @@
       "telegram": "Telegram",
       "homework": "Домашние задания",
       "grades": "Оценки",
-      "tutor": "ИИ-репетитор"
+      "tutor": "ИИ-репетитор",
+      "schedule": "Расписание",
+      "lessons": "Уроки",
+      "atRisk": "Зона риска",
+      "teachers": "Учителя"
     },
     "bell": {
       "title": "Уведомления",
@@ -101,7 +106,9 @@
       "homework_new": "Новое задание в {{groupName}}: {{title}}",
       "homework_graded": "Ваше задание «{{title}}» оценено: {{score}} / {{maxScore}}",
       "homework_submitted": "{{student}} сдал(а) задание «{{title}}»",
-      "grade_added": "Новая оценка в {{groupName}}: {{title}}, {{score}} / {{maxScore}}"
+      "grade_added": "Новая оценка в {{groupName}}: {{title}}, {{score}} / {{maxScore}}",
+      "academic_message": "{{text}}",
+      "lesson_rate": "Как прошли уроки на этой неделе? Оцените урок «{{topic}}» ({{groupName}}) на главной странице."
     },
     "errors": {
       "ROOM_BUSY": "Этот кабинет в это время уже занят",
@@ -642,7 +649,8 @@
       "Admin": "Админы",
       "Teacher": "Учителя",
       "Student": "Ученики",
-      "Financier": "Финансисты"
+      "Financier": "Финансисты",
+      "AcademicManager": "Завучи"
     },
     "settings": {
       "title": "Настройки",
@@ -803,7 +811,39 @@
       "title_is_required_up_to_120_characters": "Нужно название (до 120 символов)",
       "too_many_questions_try_again_in_15_minutes": "Слишком много вопросов. Попробуйте через 15 минут.",
       "write_a_question": "Напишите вопрос",
-      "write_an_answer_or_add_a_link": "Напишите ответ или добавьте ссылку"
+      "write_an_answer_or_add_a_link": "Напишите ответ или добавьте ссылку",
+      "choose_a_different_group": "Выберите другую группу",
+      "choose_a_group": "Выберите группу",
+      "choose_a_weekday": "Выберите день недели",
+      "deleted": "Удалено",
+      "end_time_must_look_like_19_30": "Время окончания должно быть вида 19:30",
+      "homework_title_1_120_characters": "Название ДЗ: от 1 до 120 символов",
+      "invalid_attendance": "Неверные отметки посещаемости",
+      "invalid_lesson": "Неверный урок",
+      "invalid_request": "Неверный запрос",
+      "lesson_time_not_found": "Время урока не найдено",
+      "lessons_are_from_09_00_to_22_00": "Уроки идут с 09:00 до 22:00",
+      "mark_the_students": "Отметьте учеников",
+      "not_found": "Не найдено",
+      "saved": "Сохранено",
+      "start_time_must_look_like_18_00": "Время начала должно быть вида 18:00",
+      "student_moved": "Ученик переведён",
+      "teacher_assigned": "Учитель назначен",
+      "thank_you": "Спасибо",
+      "the_ai_analysis_is_not_available_right_now_try_again_later": "ИИ-анализ сейчас недоступен. Попробуйте позже.",
+      "the_lesson_must_end_after_it_starts": "Урок должен закончиться после начала",
+      "the_message_is_too_long": "Сообщение слишком длинное",
+      "the_notes_are_too_long": "Заметки слишком длинные",
+      "the_topic_is_too_long": "Тема слишком длинная",
+      "this_lesson_time_is_already_in_the_schedule": "Это время урока уже есть в расписании",
+      "too_many_ai_requests_try_again_in_15_minutes": "Слишком много запросов к ИИ. Повторите через 15 минут.",
+      "update_the_analysis_first": "Сначала обновите анализ",
+      "write_the_message": "Напишите сообщение",
+      "write_the_topic_of_the_lesson": "Напишите тему урока",
+      "score_must_be_from_1_to_5": "Оценка должна быть от 1 до 5",
+      "lesson_not_found": "Урок не найден",
+      "you_already_rated_this_lesson": "Вы уже оценили этот урок",
+      "you_can_rate_a_lesson_once_a_week": "Оценивать урок можно раз в неделю"
     },
     "theme": {
       "label": "Стиль",
@@ -821,7 +861,8 @@
       "student": "Палуба экипажа",
       "admin": "Центр управления",
       "teacher": "Станция командира",
-      "finance": "Логистический отсек"
+      "finance": "Логистический отсек",
+      "academic": "Учебная часть"
     },
     "design": {
       "label": "Дизайн",
@@ -986,6 +1027,70 @@
       "thinking": "Думаю…",
       "placeholder": "Напишите вопрос. Enter отправляет, Shift+Enter — новая строка",
       "send": "Отправить"
+    },
+    "lessons": {
+      "todayTitle": "Сегодняшние уроки",
+      "todaySubtitle": "После урока: напишите тему, отметьте учеников и добавьте ДЗ. Это займёт меньше минуты.",
+      "topic": "Тема урока",
+      "topicRequired": "Напишите тему урока",
+      "saved": "Урок сохранён",
+      "addHomework": "Добавить ДЗ",
+      "homeworkTitle": "Название ДЗ",
+      "hold": "Провести урок",
+      "edit": "Изменить",
+      "reviews": "Что говорят ученики",
+      "reviewsHint": "Ответы анонимные: вы видите оценку и слова, но не имя.",
+      "noReviews": "Комментариев пока нет.",
+      "average": "Средняя оценка {{value}} из 5 ({{count}} ответов)"
+    },
+    "rating": {
+      "title": "Как прошли уроки на этой неделе?",
+      "lesson": "Оцените урок «{{topic}}» ({{group}}, {{date}}) от 1 до 5.",
+      "comment": "Комментарий, если хотите",
+      "anonymous": "Ответ анонимный: учитель не увидит ваше имя.",
+      "thanks": "Спасибо за оценку!"
+    },
+    "academic": {
+      "dashboardHint": "Сегодня в школе в цифрах.",
+      "lessonsToday": "Уроков сегодня",
+      "withoutTopic": "Уроков без темы",
+      "unmarked": "Уроков с неотмеченными учениками",
+      "ungraded": "Непроверенных ДЗ",
+      "missingList": "Уроки без темы (последние 2 недели)",
+      "nothingMissing": "У всех уроков есть тема.",
+      "sendWeeklyQuestion": "Отправить недельный вопрос",
+      "promptsSent": "Вопрос отправлен ученикам: {{count}}",
+      "scheduleHint": "Когда у каждой группы уроки. Если у группы здесь нет строк, берутся дни и время самой группы.",
+      "weekday": "День недели",
+      "start": "Начало",
+      "end": "Конец",
+      "time": "Время",
+      "teacher": "Учитель",
+      "lessonsHint": "Уроки, которые прошли, с их темами.",
+      "allGroups": "Все группы",
+      "allTeachers": "Все учителя",
+      "noLessons": "Уроков не найдено.",
+      "rating": "Оценка",
+      "riskHint": "Ученики с 3 и более пропусками за две недели или с падающими оценками.",
+      "noRisk": "Сейчас нет учеников в зоне риска.",
+      "absences": "Пропусков за 2 недели: {{count}}",
+      "falling": "Оценки упали: {{from}}% до {{to}}%",
+      "analysis": "Анализ",
+      "analysisFrom": "Анализ от {{date}}",
+      "noAnalysis": "Анализа пока нет. Нажмите «Обновить анализ».",
+      "update": "Обновить анализ",
+      "writeWithAi": "Написать через ИИ",
+      "draftTitle": "Сообщение",
+      "draftHint": "Это черновик. Прочитайте, поправьте и отправьте сами. Пока вы не нажмёте кнопку, ничего не уйдёт.",
+      "send": "Отправить",
+      "sent": "Отправлено людям: {{count}}, из них в Telegram: {{telegram}}",
+      "teachersHint": "Средняя оценка уроков, проверенные ДЗ и уроки без темы.",
+      "averageRating": "Средняя оценка",
+      "checkedHomework": "ДЗ проверено",
+      "reviews": "Анонимные отзывы",
+      "groupsHint": "Смените учителя группы или переведите ученика в другую группу.",
+      "moved": "Ученик переведён",
+      "moveTo": "Перевести в..."
     }
   }
 }

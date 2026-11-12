@@ -38,7 +38,8 @@
       "Admin": "Admin",
       "Teacher": "O'qituvchi",
       "Financier": "Moliyachi",
-      "Student": "O'quvchi"
+      "Student": "O'quvchi",
+      "AcademicManager": "O'quv bo'limi mudiri"
     },
     "nav": {
       "overview": "Umumiy ko'rinish",
@@ -73,7 +74,11 @@
       "telegram": "Telegram",
       "homework": "Uy vazifalari",
       "grades": "Baholar",
-      "tutor": "AI repetitor"
+      "tutor": "AI repetitor",
+      "schedule": "Jadval",
+      "lessons": "Darslar",
+      "atRisk": "Xavf guruhi",
+      "teachers": "O'qituvchilar"
     },
     "bell": {
       "title": "Bildirishnomalar",
@@ -101,7 +106,9 @@
       "homework_new": "{{groupName}} guruhida yangi vazifa: {{title}}",
       "homework_graded": "«{{title}}» vazifangiz baholandi: {{score}} / {{maxScore}}",
       "homework_submitted": "{{student}} «{{title}}» vazifasini topshirdi",
-      "grade_added": "{{groupName}} guruhida yangi baho: {{title}}, {{score}} / {{maxScore}}"
+      "grade_added": "{{groupName}} guruhida yangi baho: {{title}}, {{score}} / {{maxScore}}",
+      "academic_message": "{{text}}",
+      "lesson_rate": "Bu hafta darslar qanday o'tdi? Bosh sahifada «{{topic}}» ({{groupName}}) darsini baholang."
     },
     "errors": {
       "ROOM_BUSY": "Bu xona shu vaqtda band",
@@ -640,7 +647,8 @@
       "Admin": "Adminlar",
       "Teacher": "O'qituvchilar",
       "Student": "O'quvchilar",
-      "Financier": "Moliyachilar"
+      "Financier": "Moliyachilar",
+      "AcademicManager": "O'quv bo'limi mudirlari"
     },
     "settings": {
       "title": "Sozlamalar",
@@ -801,7 +809,39 @@
       "title_is_required_up_to_120_characters": "Sarlavha kerak (120 belgigacha)",
       "too_many_questions_try_again_in_15_minutes": "Savollar juda ko'p. 15 daqiqadan keyin urinib ko'ring.",
       "write_a_question": "Savol yozing",
-      "write_an_answer_or_add_a_link": "Javob yozing yoki havola qo'shing"
+      "write_an_answer_or_add_a_link": "Javob yozing yoki havola qo'shing",
+      "choose_a_different_group": "Boshqa guruhni tanlang",
+      "choose_a_group": "Guruhni tanlang",
+      "choose_a_weekday": "Hafta kunini tanlang",
+      "deleted": "O'chirildi",
+      "end_time_must_look_like_19_30": "Tugash vaqti 19:30 ko'rinishida bo'lishi kerak",
+      "homework_title_1_120_characters": "Uy vazifasi nomi: 1 dan 120 gacha belgi",
+      "invalid_attendance": "Davomat belgilari noto'g'ri",
+      "invalid_lesson": "Dars noto'g'ri",
+      "invalid_request": "So'rov noto'g'ri",
+      "lesson_time_not_found": "Dars vaqti topilmadi",
+      "lessons_are_from_09_00_to_22_00": "Darslar 09:00 dan 22:00 gacha",
+      "mark_the_students": "O'quvchilarni belgilang",
+      "not_found": "Topilmadi",
+      "saved": "Saqlandi",
+      "start_time_must_look_like_18_00": "Boshlanish vaqti 18:00 ko'rinishida bo'lishi kerak",
+      "student_moved": "O'quvchi o'tkazildi",
+      "teacher_assigned": "O'qituvchi tayinlandi",
+      "thank_you": "Rahmat",
+      "the_ai_analysis_is_not_available_right_now_try_again_later": "AI tahlili hozir mavjud emas. Keyinroq urinib ko'ring.",
+      "the_lesson_must_end_after_it_starts": "Dars boshlanishidan keyin tugashi kerak",
+      "the_message_is_too_long": "Xabar juda uzun",
+      "the_notes_are_too_long": "Qaydlar juda uzun",
+      "the_topic_is_too_long": "Mavzu juda uzun",
+      "this_lesson_time_is_already_in_the_schedule": "Bu dars vaqti jadvalda allaqachon bor",
+      "too_many_ai_requests_try_again_in_15_minutes": "AI ga juda ko'p so'rov. 15 daqiqadan keyin urinib ko'ring.",
+      "update_the_analysis_first": "Avval tahlilni yangilang",
+      "write_the_message": "Xabarni yozing",
+      "write_the_topic_of_the_lesson": "Dars mavzusini yozing",
+      "score_must_be_from_1_to_5": "Baho 1 dan 5 gacha bo'lishi kerak",
+      "lesson_not_found": "Dars topilmadi",
+      "you_already_rated_this_lesson": "Siz bu darsni allaqachon baholagansiz",
+      "you_can_rate_a_lesson_once_a_week": "Darsni haftada bir marta baholash mumkin"
     },
     "theme": {
       "label": "Uslub",
@@ -819,7 +859,8 @@
       "student": "Ekipaj palubasi",
       "admin": "Boshqaruv markazi",
       "teacher": "Komandir stansiyasi",
-      "finance": "Logistika bo'limi"
+      "finance": "Logistika bo'limi",
+      "academic": "O'quv bo'limi"
     },
     "design": {
       "label": "Dizayn",
@@ -984,6 +1025,70 @@
       "thinking": "O'ylayapman…",
       "placeholder": "Savol yozing. Enter yuboradi, Shift+Enter — yangi qator",
       "send": "Yuborish"
+    },
+    "lessons": {
+      "todayTitle": "Bugungi darslar",
+      "todaySubtitle": "Darsdan keyin: mavzuni yozing, o'quvchilarni belgilang va uy vazifasini qo'shing. Bir daqiqadan kam vaqt oladi.",
+      "topic": "Dars mavzusi",
+      "topicRequired": "Dars mavzusini yozing",
+      "saved": "Dars saqlandi",
+      "addHomework": "Uy vazifasini qo'shish",
+      "homeworkTitle": "Uy vazifasi nomi",
+      "hold": "Darsni o'tkazish",
+      "edit": "O'zgartirish",
+      "reviews": "O'quvchilar nima deydi",
+      "reviewsHint": "Javoblar anonim: siz bahoni va so'zlarni ko'rasiz, ismni emas.",
+      "noReviews": "Hozircha izohlar yo'q.",
+      "average": "O'rtacha baho {{value}} / 5 ({{count}} ta javob)"
+    },
+    "rating": {
+      "title": "Bu hafta darslar qanday o'tdi?",
+      "lesson": "«{{topic}}» darsini ({{group}}, {{date}}) 1 dan 5 gacha baholang.",
+      "comment": "Xohlasangiz, izoh yozing",
+      "anonymous": "Javobingiz anonim: o'qituvchi ismingizni ko'rmaydi.",
+      "thanks": "Bahoyingiz uchun rahmat!"
+    },
+    "academic": {
+      "dashboardHint": "Bugun maktabda raqamlarda.",
+      "lessonsToday": "Bugungi darslar",
+      "withoutTopic": "Mavzusiz darslar",
+      "unmarked": "Belgilanmagan o'quvchili darslar",
+      "ungraded": "Tekshirilmagan uy vazifalari",
+      "missingList": "Mavzusiz darslar (oxirgi 2 hafta)",
+      "nothingMissing": "Barcha darslarda mavzu bor.",
+      "sendWeeklyQuestion": "Haftalik savolni yuborish",
+      "promptsSent": "Savol o'quvchilarga yuborildi: {{count}}",
+      "scheduleHint": "Har bir guruhning dars vaqti. Bu yerda qatori yo'q guruhlar uchun guruhning o'z kunlari va vaqti olinadi.",
+      "weekday": "Hafta kuni",
+      "start": "Boshlanishi",
+      "end": "Tugashi",
+      "time": "Vaqt",
+      "teacher": "O'qituvchi",
+      "lessonsHint": "O'tgan darslar va ularning mavzulari.",
+      "allGroups": "Barcha guruhlar",
+      "allTeachers": "Barcha o'qituvchilar",
+      "noLessons": "Darslar topilmadi.",
+      "rating": "Baho",
+      "riskHint": "Ikki haftada 3 ta va undan ko'p dars qoldirgan yoki baholari tushayotgan o'quvchilar.",
+      "noRisk": "Hozir xavf guruhida o'quvchi yo'q.",
+      "absences": "2 haftada qoldirilgan: {{count}}",
+      "falling": "Baholar tushdi: {{from}}% dan {{to}}% gacha",
+      "analysis": "Tahlil",
+      "analysisFrom": "{{date}} dagi tahlil",
+      "noAnalysis": "Hozircha tahlil yo'q. «Tahlilni yangilash» tugmasini bosing.",
+      "update": "Tahlilni yangilash",
+      "writeWithAi": "AI orqali yozish",
+      "draftTitle": "Xabar",
+      "draftHint": "Bu qoralama. O'qing, o'zgartiring va o'zingiz yuboring. Tugmani bosmaguncha hech narsa yuborilmaydi.",
+      "send": "Yuborish",
+      "sent": "Yuborildi: {{count}} kishi, ulardan Telegramda: {{telegram}}",
+      "teachersHint": "Darslarning o'rtacha bahosi, tekshirilgan uy vazifalari va mavzusiz darslar.",
+      "averageRating": "O'rtacha baho",
+      "checkedHomework": "Uy vazifasi tekshirilgan",
+      "reviews": "Anonim sharhlar",
+      "groupsHint": "Guruh o'qituvchisini almashtiring yoki o'quvchini boshqa guruhga o'tkazing.",
+      "moved": "O'quvchi o'tkazildi",
+      "moveTo": "O'tkazish..."
     }
   }
 }

@@ -4,6 +4,7 @@ const { isUuid } = require('../utils/validate');
 const { isDate } = require('../utils/attendance');
 const { tashkentNow } = require('../utils/schedule');
 const { notify } = require('../utils/notify');
+const { createHomeworkRecord } = require('../utils/createHomework');
 
 const MAX_TEXT = 5000;
 
@@ -45,22 +46,12 @@ const createHomework = async (req, res) => {
   const group = await accessibleGroup(req.user, groupId);
   if (!group) return res.status(404).json({ message: 'Group not found' });
 
-  const { data, error } = await supabase
-    .from('homework')
-    .insert({ group_id: groupId, teacher_id: req.user.id, title: name, description: text, due_date: dueDate || null, max_score: max })
-    .select('id')
-    .single();
-  if (error) return handleDbError(error, res);
+  const result = await createHomeworkRecord({
+    group, teacherId: req.user.id, title: name, description: text, dueDate, maxScore: max,
+  });
+  if (result.error) return handleDbError(result.error, res);
 
-  const { data: members } = await supabase.from('group_students').select('student_id').eq('group_id', groupId);
-  await Promise.all((members ?? []).map((m) => notify(
-    m.student_id,
-    'homework.new',
-    { title: name, groupName: group.name, date: dueDate || '' },
-    { link: '/student/homework', dedupeKey: `homework.new:${data.id}:${m.student_id}` },
-  )));
-
-  res.status(201).json({ id: data.id });
+  res.status(201).json({ id: result.id });
 };
 
 const listTeacherHomework = async (req, res) => {

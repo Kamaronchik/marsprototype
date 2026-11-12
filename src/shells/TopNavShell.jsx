@@ -6,7 +6,7 @@ import { ShellTools, UserChip, LogoutButton } from './parts';
 
 // TEACHER: COMMANDER'S STATION. A teacher has few pages, so there is no sidebar: the navigation
 // is a row of tabs along the top and the page gets the full width below.
-const TopNavShell = ({ menuItems }) => {
+const TopNavShell = ({ menuItems, home = '/teacher', eyebrow = 'eyebrow.teacher' }) => {
   const { t } = useTranslation();
 
   const tab = ({ isActive }) =>
@@ -18,9 +18,9 @@ const TopNavShell = ({ menuItems }) => {
     <div className="min-h-screen">
       <header className="sticky top-0 z-30 border-b border-line bg-card">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-8 gap-y-1 px-5">
-          <Link to="/teacher" className="flex items-center gap-3 py-3">
+          <Link to={home} className="flex items-center gap-3 py-3">
             <Logo />
-            <span className="hidden border-l border-line pl-3 md:block"><Eyebrow>{t('eyebrow.teacher')}</Eyebrow></span>
+            <span className="hidden border-l border-line pl-3 md:block"><Eyebrow>{t(eyebrow)}</Eyebrow></span>
           </Link>
           <nav className="order-last flex w-full gap-1 overflow-x-auto md:order-none md:w-auto" aria-label={t('home.navigation')}>
             {menuItems.map((item) => (

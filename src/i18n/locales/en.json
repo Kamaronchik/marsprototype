@@ -38,7 +38,8 @@
       "Admin": "Admin",
       "Teacher": "Teacher",
       "Financier": "Finance",
-      "Student": "Student"
+      "Student": "Student",
+      "AcademicManager": "Academic manager"
     },
     "nav": {
       "overview": "Overview",
@@ -73,7 +74,11 @@
       "telegram": "Telegram",
       "homework": "Homework",
       "grades": "Grades",
-      "tutor": "AI tutor"
+      "tutor": "AI tutor",
+      "schedule": "Schedule",
+      "lessons": "Lessons",
+      "atRisk": "At risk",
+      "teachers": "Teachers"
     },
     "bell": {
       "title": "Notifications",
@@ -101,7 +106,9 @@
       "homework_new": "New homework in {{groupName}}: {{title}}",
       "homework_graded": "Your homework \"{{title}}\" is graded: {{score}} / {{maxScore}}",
       "homework_submitted": "{{student}} sent homework \"{{title}}\"",
-      "grade_added": "New mark in {{groupName}}: {{title}}, {{score}} / {{maxScore}}"
+      "grade_added": "New mark in {{groupName}}: {{title}}, {{score}} / {{maxScore}}",
+      "academic_message": "{{text}}",
+      "lesson_rate": "How were the lessons this week? Rate the lesson \"{{topic}}\" ({{groupName}}) on your home page."
     },
     "errors": {
       "ROOM_BUSY": "This room is already taken at that time",
@@ -640,7 +647,8 @@
       "Admin": "Admins",
       "Teacher": "Teachers",
       "Student": "Students",
-      "Financier": "Finance"
+      "Financier": "Finance",
+      "AcademicManager": "Academic managers"
     },
     "settings": {
       "title": "Settings",
@@ -801,7 +809,39 @@
       "title_is_required_up_to_120_characters": "Title is required (up to 120 characters)",
       "too_many_questions_try_again_in_15_minutes": "Too many questions. Try again in 15 minutes.",
       "write_a_question": "Write a question",
-      "write_an_answer_or_add_a_link": "Write an answer or add a link"
+      "write_an_answer_or_add_a_link": "Write an answer or add a link",
+      "choose_a_different_group": "Choose a different group",
+      "choose_a_group": "Choose a group",
+      "choose_a_weekday": "Choose a weekday",
+      "deleted": "Deleted",
+      "end_time_must_look_like_19_30": "End time must look like 19:30",
+      "homework_title_1_120_characters": "Homework title: 1-120 characters",
+      "invalid_attendance": "Invalid attendance",
+      "invalid_lesson": "Invalid lesson",
+      "invalid_request": "Invalid request",
+      "lesson_time_not_found": "Lesson time not found",
+      "lessons_are_from_09_00_to_22_00": "Lessons are from 09:00 to 22:00",
+      "mark_the_students": "Mark the students",
+      "not_found": "Not found",
+      "saved": "Saved",
+      "start_time_must_look_like_18_00": "Start time must look like 18:00",
+      "student_moved": "Student moved",
+      "teacher_assigned": "Teacher assigned",
+      "thank_you": "Thank you",
+      "the_ai_analysis_is_not_available_right_now_try_again_later": "The AI analysis is not available right now. Try again later.",
+      "the_lesson_must_end_after_it_starts": "The lesson must end after it starts",
+      "the_message_is_too_long": "The message is too long",
+      "the_notes_are_too_long": "The notes are too long",
+      "the_topic_is_too_long": "The topic is too long",
+      "this_lesson_time_is_already_in_the_schedule": "This lesson time is already in the schedule",
+      "too_many_ai_requests_try_again_in_15_minutes": "Too many AI requests. Try again in 15 minutes.",
+      "update_the_analysis_first": "Update the analysis first",
+      "write_the_message": "Write the message",
+      "write_the_topic_of_the_lesson": "Write the topic of the lesson",
+      "score_must_be_from_1_to_5": "Score must be from 1 to 5",
+      "lesson_not_found": "Lesson not found",
+      "you_already_rated_this_lesson": "You already rated this lesson",
+      "you_can_rate_a_lesson_once_a_week": "You can rate a lesson once a week"
     },
     "theme": {
       "label": "Style",
@@ -819,7 +859,8 @@
       "student": "Crew deck",
       "admin": "Mission Control",
       "teacher": "Commander's station",
-      "finance": "Logistics bay"
+      "finance": "Logistics bay",
+      "academic": "Study office"
     },
     "design": {
       "label": "Design",
@@ -984,6 +1025,70 @@
       "thinking": "Thinking…",
       "placeholder": "Write a question. Enter sends, Shift+Enter is a new line",
       "send": "Send"
+    },
+    "lessons": {
+      "todayTitle": "Today's lessons",
+      "todaySubtitle": "After a lesson: write the topic, mark the students and add homework. It takes less than a minute.",
+      "topic": "Topic of the lesson",
+      "topicRequired": "Write the topic of the lesson",
+      "saved": "Lesson saved",
+      "addHomework": "Add homework",
+      "homeworkTitle": "Homework title",
+      "hold": "Hold the lesson",
+      "edit": "Change",
+      "reviews": "What students say",
+      "reviewsHint": "Answers are anonymous: you see the score and the words, not the name.",
+      "noReviews": "No comments yet.",
+      "average": "Average rating {{value}} of 5 ({{count}} answers)"
+    },
+    "rating": {
+      "title": "How were the lessons this week?",
+      "lesson": "Rate the lesson \"{{topic}}\" ({{group}}, {{date}}) from 1 to 5.",
+      "comment": "A comment, if you want",
+      "anonymous": "Your answer is anonymous: the teacher will not see your name.",
+      "thanks": "Thank you for your rating!"
+    },
+    "academic": {
+      "dashboardHint": "Today at school, in numbers.",
+      "lessonsToday": "Lessons today",
+      "withoutTopic": "Lessons without a topic",
+      "unmarked": "Lessons with unmarked students",
+      "ungraded": "Homework not checked",
+      "missingList": "Lessons without a topic (last 2 weeks)",
+      "nothingMissing": "Every lesson has a topic.",
+      "sendWeeklyQuestion": "Send the weekly question",
+      "promptsSent": "The question was sent to {{count}} students",
+      "scheduleHint": "When every group has its lessons. Groups without rows here use the days and time of the group itself.",
+      "weekday": "Weekday",
+      "start": "Start",
+      "end": "End",
+      "time": "Time",
+      "teacher": "Teacher",
+      "lessonsHint": "Lessons that took place, with their topics.",
+      "allGroups": "All groups",
+      "allTeachers": "All teachers",
+      "noLessons": "No lessons found.",
+      "rating": "Rating",
+      "riskHint": "Students with 3 or more absences in two weeks, or with marks going down.",
+      "noRisk": "No students at risk now.",
+      "absences": "Absences in 2 weeks: {{count}}",
+      "falling": "Marks went down: {{from}}% to {{to}}%",
+      "analysis": "Analysis",
+      "analysisFrom": "Analysis of {{date}}",
+      "noAnalysis": "No analysis yet. Press \"Update analysis\".",
+      "update": "Update analysis",
+      "writeWithAi": "Write with AI",
+      "draftTitle": "Message",
+      "draftHint": "This is a draft. Read it, change it, and send it yourself. Nothing is sent before you press the button.",
+      "send": "Send",
+      "sent": "Sent to {{count}} people, {{telegram}} of them also in Telegram",
+      "teachersHint": "Average rating of lessons, checked homework and lessons without a topic.",
+      "averageRating": "Average rating",
+      "checkedHomework": "Homework checked",
+      "reviews": "Anonymous reviews",
+      "groupsHint": "Change the teacher of a group or move a student to another group.",
+      "moved": "Student moved",
+      "moveTo": "Move to..."
     }
   }
 }

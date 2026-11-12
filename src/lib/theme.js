@@ -8,7 +8,7 @@ export const DEFAULT_DESIGN = 'base';
 
 // Which colour set goes with which student design.
 const DESIGN_THEME = { cockpit: 'orbit', base: 'mars', console: 'terminal' };
-const ROLE_THEME = { Admin: 'control', Teacher: 'station', Financier: 'bay' };
+const ROLE_THEME = { Admin: 'control', Teacher: 'station', Financier: 'bay', AcademicManager: 'station' };
 
 const THEME_KEY = 'mars-theme';   // the look on the page now (read by index.html)
 const DESIGN_KEY = 'mars-design'; // the student's own choice

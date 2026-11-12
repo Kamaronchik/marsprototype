@@ -9,6 +9,7 @@ import Logo from '../../components/Logo';
 import LanguageSwitch from '../../components/LanguageSwitch';
 import DesignSwitch from '../../components/DesignSwitch';
 import { messageText } from '../../lib/api';
+import { homePath } from '../../lib/roleHome';
 
 const DeviceVerificationPage = () => {
   const { t } = useTranslation();
@@ -94,8 +95,7 @@ const DeviceVerificationPage = () => {
       if (response.ok && data.user) {
         toast.success(t('verify.verified'));
         dispatch(loginSuccess(data.user));
-        const targetRole = data.user.role?.toLowerCase() || 'student';
-        navigate(`/${targetRole}`);
+        navigate(homePath(data.user.role));
       } else {
         toast.error(data.message ? messageText(t, data.message) : t('verify.failed'));
       }

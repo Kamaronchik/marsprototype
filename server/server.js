@@ -28,6 +28,10 @@ const adminTelegramRoutes = require('./routes/adminTelegramRoutes');
 const homeworkRoutes = require('./routes/homeworkRoutes');
 const gradeRoutes = require('./routes/gradeRoutes');
 const tutorRoutes = require('./routes/tutorRoutes');
+const lessonRoutes = require('./routes/lessonRoutes');
+const scheduleRoutes = require('./routes/scheduleRoutes');
+const ratingRoutes = require('./routes/ratingRoutes');
+const academicRoutes = require('./routes/academicRoutes');
 
 const app = express();
 
@@ -62,6 +66,10 @@ app.use('/api/admin/telegram', adminTelegramRoutes);
 app.use('/api/homework', homeworkRoutes);
 app.use('/api/grades', gradeRoutes);
 app.use('/api/tutor', tutorRoutes);
+app.use('/api/lessons', lessonRoutes);
+app.use('/api/schedule', scheduleRoutes);
+app.use('/api/ratings', ratingRoutes);
+app.use('/api/academic', academicRoutes);
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'Mars Space Backend is running' });

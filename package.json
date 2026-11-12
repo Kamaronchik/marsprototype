@@ -20,6 +20,7 @@
     "test-home": "node server/scripts/testHome.js",
     "test-telegram": "node server/scripts/testTelegram.js",
     "test-learning": "node server/scripts/testLearning.js",
+    "test-academic": "node server/scripts/testAcademic.js",
     "bot": "node server/scripts/botPolling.js",
     "bot-webhook": "node server/scripts/setWebhook.js",
     "test-battle": "node server/scripts/testBattle.js",

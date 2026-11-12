@@ -14,6 +14,7 @@ const roleStyle = {
   Admin: 'bg-ink/10 text-ink',
   Teacher: 'bg-sky-tint text-sky',
   Financier: 'bg-moss-tint text-moss',
+  AcademicManager: 'bg-sky-tint text-sky',
   Student: 'bg-mars-tint text-mars-deep',
 };
 
@@ -177,7 +178,7 @@ const UserManagement = () => {
           onChange={(e) => setFilterRole(e.target.value)}
         >
           <option value="All">{t('peoplePage.allRoles')}</option>
-          {['Admin', 'Teacher', 'Student', 'Financier'].map((role) => (
+          {['Admin', 'Teacher', 'Student', 'Financier', 'AcademicManager'].map((role) => (
             <option key={role} value={role}>{t(`rolesPlural.${role}`)}</option>
           ))}
         </select>
@@ -359,7 +360,7 @@ const UserManagement = () => {
                 <div>
                   <label htmlFor="role" className="field-label">{t('peoplePage.role')}</label>
                   <select id="role" name="role" value={formData.role} onChange={handleInputChange} className="field">
-                    {['Student', 'Teacher', 'Financier', 'Admin'].map((role) => (
+                    {['Student', 'Teacher', 'Financier', 'AcademicManager', 'Admin'].map((role) => (
                       <option key={role} value={role}>{t(`roles.${role}`)}</option>
                     ))}
                   </select>

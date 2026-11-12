@@ -1,10 +1,7 @@
 const supabase = require('../config/supabase');
 const { handleDbError } = require('../utils/apiErrors');
 const { isUuid } = require('../utils/validate');
-const { logAction } = require('../utils/audit');
-const { notify } = require('../utils/notify');
-const { announceAttendance } = require('../utils/telegramAnnounce');
-const { chargeLesson } = require('../utils/balance');
+const { saveMark } = require('../utils/saveMark');
 const { DAY_OPEN, DAY_CLOSE, toMinutes, toTime, tashkentNow } = require('../utils/schedule');
 const {
   isDate, addDays, weekdayOf, isMarkingOpen, lessonEnd, buildStats, loadTeacherGroups, remindUnmarked,
@@ -116,43 +113,13 @@ const markAttendance = async (req, res) => {
     return res.status(400).json({ message: 'This student is frozen and cannot be marked', code: 'STUDENT_FROZEN' });
   }
 
-  const { data: before } = await supabase
-    .from('attendance').select('status').eq('group_id', groupId).eq('student_id', studentId).eq('lesson_date', date).maybeSingle();
+  const result = await saveMark({ group, studentId, status, date, actorId: req.user.id });
+  if (result.error) return handleDbError(result.error, res);
 
-  const { data, error } = await supabase
-    .from('attendance')
-    .upsert(
-      { group_id: groupId, student_id: studentId, lesson_date: date, status, marked_by: req.user.id },
-      { onConflict: 'group_id,student_id,lesson_date' },
-    )
-    .select('id')
-    .single();
-  if (error) return handleDbError(error, res);
-
-  // The first mark of this lesson takes the lesson price from the student's balance.
-  if (!before) {
-    await chargeLesson(studentId, data.id, `${group.name} ${date}`, req.user.id);
-  }
-
-  if (!before || before.status !== status) {
-    await notify(
-      studentId,
-      status === 'present' ? 'attendance.present' : 'attendance.absent',
-      { groupName: group.name, date },
-      { link: '/student/attendance', dedupeKey: `attendance:${groupId}:${studentId}:${date}:${status}` },
-    );
-  }
-  if (!before || before.status !== status) {
-    await announceAttendance({ studentId, attendanceId: data.id, status, groupName: group.name, date });
-  }
-  if (before && before.status !== status) {
-    await logAction(req.user.id, 'attendance.change', 'attendance', data.id, { from: before.status, to: status, date });
-  }
-
-  res.json({ id: data.id, status });
+  res.json({ id: result.id, status });
 };
 
-// Admin: every mark. Teacher: only marks of own groups.
+// Admin and academic manager: every mark. Teacher: only marks of own groups.
 // Filters: ?from ?to ?groupId ?studentId ?teacherId ?status
 const listAttendance = async (req, res) => {
   const range = readRange(req.query);

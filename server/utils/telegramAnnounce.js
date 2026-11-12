@@ -1,5 +1,5 @@
 const supabase = require('../config/supabase');
-const { sayTo, defaults } = require('./telegramBot');
+const { sayTo, defaults, logMessage } = require('./telegramBot');
 
 // Tells a student in Telegram how the teacher marked them. Does nothing when the student has not
 // connected Telegram. Never throws: a failed message must not break the teacher's marking.
@@ -46,4 +46,36 @@ const announceToStudent = async (studentId, key, values = {}, overrides = {}) =>
   }
 };
 
-module.exports = { announceAttendance, announceToStudent };
+// The weekly question: "rate this lesson" with the buttons 1-5. Does nothing when the student has no Telegram.
+// A pressed button comes back as "rate:<lessonId>:<score>" (see telegramBot.js).
+const sendRatingPrompt = async (studentId, lesson, overrides = {}) => {
+  try {
+    const deps = { ...defaults, ...overrides };
+    const { data: link } = await supabase
+      .from('telegram_links').select('user_id, chat_id, language').eq('user_id', studentId).maybeSingle();
+    if (!link) return;
+    const buttons = [1, 2, 3, 4, 5].map((n) => ({ text: String(n), data: `rate:${lesson.id}:${n}` }));
+    await sayTo(deps, link, 'ratePrompt', { topic: lesson.topic, group: lesson.groupName, date: lesson.date }, { options: { inline: [buttons] } });
+  } catch (error) {
+    console.error('Telegram rating error:', error.message);
+  }
+};
+
+// A text written by a person (the academic manager). Does nothing when the student has no Telegram.
+// Returns true when the message went out.
+const announceText = async (studentId, text, overrides = {}) => {
+  try {
+    const deps = { ...defaults, ...overrides };
+    const { data: link } = await supabase
+      .from('telegram_links').select('user_id, chat_id, language').eq('user_id', studentId).maybeSingle();
+    if (!link) return false;
+    await deps.send(link.chat_id, text);
+    await logMessage(studentId, 'out', 'text', text);
+    return true;
+  } catch (error) {
+    console.error('Telegram announcement error:', error.message);
+    return false;
+  }
+};
+
+module.exports = { announceAttendance, announceToStudent, sendRatingPrompt, announceText };

@@ -7,7 +7,7 @@ const { topUp } = require('../utils/balance');
 const { logAction } = require('../utils/audit');
 const { announceToStudent } = require('../utils/telegramAnnounce');
 
-const ROLES = ['Admin', 'Teacher', 'Financier', 'Student'];
+const ROLES = ['Admin', 'Teacher', 'Financier', 'Student', 'AcademicManager'];
 const STATUSES = ['active', 'blocked', 'frozen'];
 
 // Never send password_hash to the browser.

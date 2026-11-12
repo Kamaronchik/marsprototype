@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { useDesign } from '../../lib/useDesign';
 import { SkeletonText, SkeletonCard, SkeletonList } from '../../components/Skeleton';
+import LessonRating from '../../components/LessonRating';
 
 // The home screen of the design the student has chosen. Only the one actually shown is downloaded.
 const CockpitHome = lazy(() => import('./CockpitHome'));
@@ -21,9 +22,12 @@ const HomeSkeleton = () => (
 const StudentHome = () => {
   const Home = HOMES[useDesign()];
   return (
-    <Suspense fallback={<HomeSkeleton />}>
-      <Home />
-    </Suspense>
+    <>
+      <LessonRating />
+      <Suspense fallback={<HomeSkeleton />}>
+        <Home />
+      </Suspense>
+    </>
   );
 };
 

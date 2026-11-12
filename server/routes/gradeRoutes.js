@@ -8,7 +8,7 @@ router.use(authMiddleware);
 router.get('/mine', requireRole('Student'), listMyGrades);
 
 router.post('/', requireRole('Teacher', 'Admin'), addGrade);
-router.get('/group/:groupId', requireRole('Teacher', 'Admin'), listGroupGrades);
+router.get('/group/:groupId', requireRole('Teacher', 'Admin', 'AcademicManager'), listGroupGrades);
 router.delete('/:id', requireRole('Teacher', 'Admin'), deleteGrade);
 
 module.exports = router;

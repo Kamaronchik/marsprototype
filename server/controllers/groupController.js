@@ -86,7 +86,10 @@ const getOptions = (req, res) => {
 const listGroups = async (req, res) => {
   const { data, error } = await supabase.from('groups').select(COLUMNS).order('name');
   if (error) return handleDbError(error, res);
-  res.json({ groups: data.map(toClient) });
+  // The price is money: the academic manager does not see it.
+  const withoutPrice = ({ monthlyPrice, ...rest }) => rest;
+  const groups = data.map(toClient);
+  res.json({ groups: req.user.role === 'AcademicManager' ? groups.map(withoutPrice) : groups });
 };
 
 const createGroup = async (req, res) => {
@@ -173,14 +176,13 @@ const listGroupStudents = async (req, res) => {
     .eq('group_id', id);
   if (error) return handleDbError(error, res);
 
+  // Payment status is money: the academic manager gets only ids and names.
+  const academic = req.user.role === 'AcademicManager';
   res.json({
     students: data
-      .map((row) => ({
-        id: row.student.id,
-        fullName: row.student.full_name,
-        email: row.student.email,
-        paymentStatus: row.student.payment_status,
-      }))
+      .map((row) => (academic
+        ? { id: row.student.id, fullName: row.student.full_name }
+        : { id: row.student.id, fullName: row.student.full_name, email: row.student.email, paymentStatus: row.student.payment_status }))
       .sort(byName),
   });
 };

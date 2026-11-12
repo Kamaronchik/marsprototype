@@ -40,6 +40,15 @@ const MyGroups = lazy(() => import('./pages/Teacher/MyGroups'));
 const TeacherCoins = lazy(() => import('./pages/Teacher/Coins'));
 const TeacherHomework = lazy(() => import('./pages/Teacher/Homework'));
 const TeacherGrades = lazy(() => import('./pages/Teacher/Grades'));
+const TeacherLessons = lazy(() => import('./pages/Teacher/Lessons'));
+
+const AcademicManagerLayout = lazy(() => import('./layouts/AcademicManager/AcademicManagerLayout'));
+const AcademicDashboard = lazy(() => import('./pages/AcademicManager/Dashboard'));
+const AcademicSchedule = lazy(() => import('./pages/AcademicManager/Schedule'));
+const AcademicLessons = lazy(() => import('./pages/AcademicManager/Lessons'));
+const AcademicStudents = lazy(() => import('./pages/AcademicManager/Students'));
+const AcademicTeachers = lazy(() => import('./pages/AcademicManager/Teachers'));
+const AcademicGroups = lazy(() => import('./pages/AcademicManager/Groups'));
 
 const StudentLayout = lazy(() => import('./layouts/Student/StudentLayout'));
 const StudentHome = lazy(() => import('./features/student/StudentHome'));
@@ -120,10 +129,28 @@ const AppRoutes = () => {
           >
             <Route index element={<TeacherHome />} />
             <Route path="groups" element={<MyGroups />} />
+            <Route path="lessons" element={<TeacherLessons />} />
             <Route path="attendance" element={<TeacherAttendance />} />
             <Route path="homework" element={<TeacherHomework />} />
             <Route path="grades" element={<TeacherGrades />} />
             <Route path="coins" element={<TeacherCoins />} />
+          </Route>
+
+          {/* Academic manager Routes */}
+          <Route
+            path="/academic"
+            element={
+              <ProtectedRoute allowedRoles={['AcademicManager']}>
+                <AcademicManagerLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<AcademicDashboard />} />
+            <Route path="schedule" element={<AcademicSchedule />} />
+            <Route path="lessons" element={<AcademicLessons />} />
+            <Route path="students" element={<AcademicStudents />} />
+            <Route path="teachers" element={<AcademicTeachers />} />
+            <Route path="groups" element={<AcademicGroups />} />
           </Route>
 
           {/* Student Routes */}
