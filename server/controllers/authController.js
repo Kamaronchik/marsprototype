@@ -35,6 +35,9 @@ const login = async (req, res) => {
     if (user.status === 'blocked') {
       return res.status(403).json({ message: 'Your account is blocked. Contact administrator.' });
     }
+    if (user.status === 'frozen') {
+      return res.status(403).json({ message: 'Your account is frozen. Contact administrator.' });
+    }
 
     // 3. Verify password using bcrypt
     const isMatch = await bcrypt.compare(password, user.password_hash);
@@ -236,7 +239,7 @@ const me = async (req, res) => {
   if (!session || new Date() > new Date(session.expires_at)) return guest();
 
   const user = await db.findUserById(session.user_id);
-  if (!user || user.status === 'blocked') return guest();
+  if (!user || user.status === 'blocked' || user.status === 'frozen') return guest();
 
   res.status(200).json({
     user: {

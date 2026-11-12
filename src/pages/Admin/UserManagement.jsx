@@ -6,7 +6,7 @@ import { Plus, Search, Pencil, Trash2, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import PageHeader from '../../components/PageHeader';
 import { useFetch } from '../../lib/useFetch';
-import { messageText } from '../../lib/api';
+import { api, messageText } from '../../lib/api';
 import { formatDate } from '../../lib/format';
 import { SkeletonAvatar, SkeletonText } from '../../components/Skeleton';
 
@@ -86,8 +86,37 @@ const UserManagement = () => {
     }
   };
 
-  const toggleStatus = async (user) => {
-    const status = user.status === 'active' ? 'blocked' : 'active';
+  const statusColor = { active: 'text-moss', frozen: 'text-sky', blocked: 'text-brick' };
+  const formatSum = (value) => Number(value).toLocaleString('ru-RU');
+
+  const [topUpUser, setTopUpUser] = useState(null);
+  const [topUpAmount, setTopUpAmount] = useState('');
+  const [topUpNote, setTopUpNote] = useState('');
+
+  const openTopUp = (user) => {
+    setTopUpUser(user);
+    setTopUpAmount('');
+    setTopUpNote('');
+  };
+
+  const submitTopUp = async (e) => {
+    e.preventDefault();
+    const amount = Number(topUpAmount);
+    if (!Number.isInteger(amount) || amount <= 0) {
+      toast.error(t('peoplePage.topUpInvalid'));
+      return;
+    }
+    try {
+      await api(`/api/users/${topUpUser.id}/balance`, { method: 'POST', body: { amount, note: topUpNote } });
+      await dispatch(fetchUsers());
+      toast.success(t('peoplePage.topUpDone'));
+      setTopUpUser(null);
+    } catch (err) {
+      toast.error(messageText(t, err.message));
+    }
+  };
+
+  const changeStatus = async (user, status) => {
     try {
       await dispatch(updateUser({ id: user.id, changes: { status } })).unwrap();
     } catch (err) {
@@ -155,12 +184,13 @@ const UserManagement = () => {
       </div>
 
       <div className="overflow-x-auto rounded-xl border border-line bg-card">
-        <table className="w-full min-w-[640px] border-collapse text-left">
+        <table className="w-full min-w-[780px] border-collapse text-left">
           <thead>
             <tr className="border-b border-line bg-sunken/60 text-xs font-semibold uppercase tracking-wider text-ink-soft">
               <th className="px-5 py-3">{t('peoplePage.person')}</th>
               <th className="px-5 py-3">{t('peoplePage.role')}</th>
               <th className="px-5 py-3">{t('peoplePage.status')}</th>
+              <th className="px-5 py-3">{t('peoplePage.balance')}</th>
               <th className="px-5 py-3">{t('peoplePage.added')}</th>
               <th className="px-5 py-3"><span className="sr-only">{t('common.actions')}</span></th>
             </tr>
@@ -170,6 +200,7 @@ const UserManagement = () => {
               <tr key={i}>
                 <td className="px-5 py-3.5"><div className="flex items-center gap-3"><SkeletonAvatar size="2.25rem" /><div className="space-y-2"><SkeletonText width="9rem" /><SkeletonText width="7rem" height="0.7rem" /></div></div></td>
                 <td className="px-5 py-3.5"><SkeletonText width="4rem" height="1.4rem" /></td>
+                <td className="px-5 py-3.5"><SkeletonText width="4.5rem" /></td>
                 <td className="px-5 py-3.5"><SkeletonText width="4.5rem" /></td>
                 <td className="px-5 py-3.5"><SkeletonText width="5rem" /></td>
                 <td className="px-5 py-3.5" />
@@ -198,22 +229,34 @@ const UserManagement = () => {
                   </span>
                 </td>
                 <td className="px-5 py-3.5">
-                  <button
-                    onClick={() => toggleStatus(user)}
-                    title={user.status === 'active' ? t('peoplePage.clickToBlock') : t('peoplePage.clickToUnblock')}
-                    className={`inline-flex items-center gap-2 text-sm font-medium ${
-                      user.status === 'active' ? 'text-moss' : 'text-brick'
-                    }`}
+                  <select
+                    value={user.status}
+                    onChange={(e) => changeStatus(user, e.target.value)}
+                    aria-label={t('peoplePage.changeStatus', { name: user.fullName })}
+                    className={`rounded-lg border border-line bg-card px-2 py-1 text-sm font-medium ${statusColor[user.status]}`}
                   >
-                    <span className={`h-2 w-2 rounded-full ${user.status === 'active' ? 'bg-moss' : 'bg-brick'}`} />
-                    {user.status === 'active' ? t('peoplePage.active') : t('peoplePage.blocked')}
-                  </button>
+                    <option value="active">{t('peoplePage.active')}</option>
+                    {(user.role === 'Student' || user.status === 'frozen') && <option value="frozen">{t('peoplePage.frozen')}</option>}
+                    <option value="blocked">{t('peoplePage.blocked')}</option>
+                  </select>
+                </td>
+                <td className="px-5 py-3.5 text-sm">
+                  {user.role === 'Student' && (
+                    <span className={`font-semibold ${user.balance < 0 ? 'text-brick' : 'text-ink'}`}>
+                      {formatSum(user.balance)} <span className="text-xs font-normal text-ink-faint">{t('peoplePage.sum')}</span>
+                    </span>
+                  )}
                 </td>
                 <td className="px-5 py-3.5 text-sm text-ink-soft">
                   {formatDate(user.createdAt, i18n.language)}
                 </td>
                 <td className="px-5 py-3.5">
-                  <div className="flex justify-end gap-1">
+                  <div className="flex items-center justify-end gap-1">
+                    {user.role === 'Student' && (
+                      <button onClick={() => openTopUp(user)} className="btn-quiet !px-3 !py-1.5 text-sm">
+                        {t('peoplePage.topUp')}
+                      </button>
+                    )}
                     <button
                       onClick={() => openEditModal(user)}
                       aria-label={t('peoplePage.edit', { name: user.fullName })}
@@ -234,7 +277,7 @@ const UserManagement = () => {
             ))}
             {!usersLoading && filteredUsers.length === 0 && (
               <tr>
-                <td colSpan="5" className="px-5 py-14 text-center">
+                <td colSpan="6" className="px-5 py-14 text-center">
                   <p className="font-display text-lg font-semibold text-ink">{t('peoplePage.noMatch')}</p>
                   <p className="mt-1 text-sm text-ink-soft">{t('peoplePage.noMatchHint')}</p>
                 </td>
@@ -243,6 +286,53 @@ const UserManagement = () => {
           </tbody>
         </table>
       </div>
+
+      {topUpUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-4">
+          <div role="dialog" aria-modal="true" className="w-full max-w-md rounded-2xl border border-line bg-card shadow-xl">
+            <div className="flex items-center justify-between border-b border-line px-6 py-4">
+              <h3 className="font-display text-xl font-semibold text-ink">{t('peoplePage.topUpTitle')}</h3>
+              <button
+                onClick={() => setTopUpUser(null)}
+                aria-label={t('common.close')}
+                className="rounded-lg p-1.5 text-ink-faint hover:bg-sunken hover:text-ink"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <form onSubmit={submitTopUp} className="space-y-4 p-6">
+              <p className="text-sm text-ink-soft">
+                {t('peoplePage.topUpFor', { name: topUpUser.fullName, balance: formatSum(topUpUser.balance) })}
+              </p>
+              <div>
+                <label htmlFor="topUpAmount" className="field-label">{t('peoplePage.amount')}</label>
+                <input
+                  id="topUpAmount"
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={topUpAmount}
+                  onChange={(e) => setTopUpAmount(e.target.value)}
+                  className="field"
+                  placeholder="90000"
+                  autoFocus
+                />
+              </div>
+              <div>
+                <label htmlFor="topUpNote" className="field-label">
+                  {t('peoplePage.note')} <span className="font-normal text-ink-faint">({t('peoplePage.noteOptional')})</span>
+                </label>
+                <input id="topUpNote" value={topUpNote} onChange={(e) => setTopUpNote(e.target.value)} className="field" maxLength={200} />
+              </div>
+              <p className="text-xs text-ink-faint">{t('peoplePage.lessonPriceHint')}</p>
+              <div className="flex justify-end gap-3 pt-2">
+                <button type="button" onClick={() => setTopUpUser(null)} className="btn-quiet">{t('common.cancel')}</button>
+                <button type="submit" className="btn-primary">{t('peoplePage.topUp')}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-4">

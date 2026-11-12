@@ -3,9 +3,11 @@ const supabase = require('../config/supabase');
 const db = require('../databaseService');
 const { isUuid } = require('../utils/validate');
 const { addStudentToGroup } = require('../utils/groups');
+const { topUp } = require('../utils/balance');
+const { logAction } = require('../utils/audit');
 
 const ROLES = ['Admin', 'Teacher', 'Financier', 'Student'];
-const STATUSES = ['active', 'blocked'];
+const STATUSES = ['active', 'blocked', 'frozen'];
 
 // Never send password_hash to the browser.
 const toClient = (u) => ({
@@ -15,11 +17,12 @@ const toClient = (u) => ({
   email: u.email,
   role: u.role,
   status: u.status,
+  balance: Number(u.balance ?? 0),
   emailVerified: u.email_verified,
   createdAt: u.created_at,
 });
 
-const COLUMNS = 'id, username, full_name, email, role, status, email_verified, created_at';
+const COLUMNS = 'id, username, full_name, email, role, status, balance, email_verified, created_at';
 
 const validate = ({ username, email, fullName, password, role }, { partial }) => {
   if (!partial || username !== undefined) {
@@ -107,8 +110,14 @@ const updateUser = async (req, res) => {
     return res.status(400).json({ message: 'Invalid status' });
   }
   // An admin must not lock themselves out.
-  if (id === req.user.id && ((role && role !== 'Admin') || status === 'blocked')) {
+  if (id === req.user.id && ((role && role !== 'Admin') || status === 'blocked' || status === 'frozen')) {
     return res.status(400).json({ message: 'You cannot block or demote your own account' });
+  }
+  // Only a student can be frozen (a pause of lessons and payments).
+  if (status === 'frozen') {
+    const { data: target } = await supabase.from('users').select('role').eq('id', id).maybeSingle();
+    if (!target) return res.status(404).json({ message: 'User not found' });
+    if (target.role !== 'Student') return res.status(400).json({ message: 'Only a student can be frozen' });
   }
 
   const updates = {};
@@ -139,12 +148,34 @@ const updateUser = async (req, res) => {
   if (error) return handleDbError(error, res);
   if (!data) return res.status(404).json({ message: 'User not found' });
 
-  // Blocked users lose all active sessions immediately.
-  if (status === 'blocked') await supabase.from('sessions').delete().eq('user_id', id);
+  // Blocked and frozen users lose all active sessions immediately.
+  if (status === 'blocked' || status === 'frozen') await supabase.from('sessions').delete().eq('user_id', id);
   // Role or status changed: forget the cached sessions (after the delete) so the new rights apply at once.
   if (role !== undefined || status !== undefined) db.clearSessionCache();
 
   res.json({ user: toClient(data) });
+};
+
+// Admin puts money on a student's balance.
+const topUpBalance = async (req, res) => {
+  const { id } = req.params;
+  const amount = Number(req.body.amount);
+  if (!isUuid(id)) return res.status(400).json({ message: 'Invalid student' });
+  if (!Number.isInteger(amount) || amount <= 0 || amount > 1000000000) {
+    return res.status(400).json({ message: 'Amount must be a positive whole number' });
+  }
+  const note = typeof req.body.note === 'string' ? req.body.note.trim().slice(0, 200) : '';
+
+  const { data: student } = await supabase.from('users').select('id, role').eq('id', id).maybeSingle();
+  if (!student || student.role !== 'Student') return res.status(404).json({ message: 'Student not found' });
+
+  try {
+    const balance = await topUp(id, amount, note || null, req.user.id);
+    await logAction(req.user.id, 'balance.topup', 'user', id, { amount });
+    res.json({ balance: Number(balance) });
+  } catch (error) {
+    handleDbError(error, res);
+  }
 };
 
 const deleteUser = async (req, res) => {
@@ -158,4 +189,4 @@ const deleteUser = async (req, res) => {
   res.json({ message: 'User deleted' });
 };
 
-module.exports = { listUsers, createUser, updateUser, deleteUser };
+module.exports = { listUsers, createUser, updateUser, deleteUser, topUpBalance };

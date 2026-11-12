@@ -4,6 +4,7 @@ const { isUuid } = require('../utils/validate');
 const { logAction } = require('../utils/audit');
 const { notify } = require('../utils/notify');
 const { announceAttendance } = require('../utils/telegramAnnounce');
+const { chargeLesson } = require('../utils/balance');
 const { DAY_OPEN, DAY_CLOSE, toMinutes, toTime, tashkentNow } = require('../utils/schedule');
 const {
   isDate, addDays, weekdayOf, isMarkingOpen, lessonEnd, buildStats, loadTeacherGroups, remindUnmarked,
@@ -47,7 +48,7 @@ const getToday = async (req, res) => {
 
   const { data: records, error } = await supabase
     .from('attendance')
-    .select('group_id, student_id, status')
+    .select('group_id, student_id, status, absence_reason')
     .eq('lesson_date', now.date)
     .in('group_id', lessons.map((g) => g.id));
   if (error) return handleDbError(error, res);
@@ -64,11 +65,15 @@ const getToday = async (req, res) => {
       startTime: g.start_time.slice(0, 5),
       endTime: lessonEnd(g),
       students: g.members
-        .map((m) => ({
-          id: m.student.id,
-          fullName: m.student.full_name,
-          status: records.find((r) => r.group_id === g.id && r.student_id === m.student.id)?.status ?? null,
-        }))
+        .map((m) => {
+          const record = records.find((r) => r.group_id === g.id && r.student_id === m.student.id);
+          return {
+            id: m.student.id,
+            fullName: m.student.full_name,
+            status: record?.status ?? null,
+            absenceReason: record?.absence_reason ?? null,
+          };
+        })
         .sort(byName),
     })),
   });
@@ -105,8 +110,11 @@ const markAttendance = async (req, res) => {
   }
 
   const { data: member } = await supabase
-    .from('group_students').select('student_id').eq('group_id', groupId).eq('student_id', studentId).maybeSingle();
+    .from('group_students').select('student_id, student:users!group_students_student_id_fkey(status)').eq('group_id', groupId).eq('student_id', studentId).maybeSingle();
   if (!member) return res.status(404).json({ message: 'Student is not in this group' });
+  if (member.student?.status === 'frozen') {
+    return res.status(400).json({ message: 'This student is frozen and cannot be marked', code: 'STUDENT_FROZEN' });
+  }
 
   const { data: before } = await supabase
     .from('attendance').select('status').eq('group_id', groupId).eq('student_id', studentId).eq('lesson_date', date).maybeSingle();
@@ -120,6 +128,11 @@ const markAttendance = async (req, res) => {
     .select('id')
     .single();
   if (error) return handleDbError(error, res);
+
+  // The first mark of this lesson takes the lesson price from the student's balance.
+  if (!before) {
+    await chargeLesson(studentId, data.id, `${group.name} ${date}`, req.user.id);
+  }
 
   if (!before || before.status !== status) {
     await notify(
@@ -179,7 +192,7 @@ const listUnmarked = async (req, res) => {
 
   const { data: groups, error } = await supabase
     .from('groups')
-    .select('id, name, room, weekdays, start_time, teacher:users!groups_teacher_id_fkey(full_name), members:group_students(joined_at, student_id)')
+    .select('id, name, room, weekdays, start_time, teacher:users!groups_teacher_id_fkey(full_name), members:group_students(joined_at, student_id, student:users!group_students_student_id_fkey(status))')
     .eq('status', 'active');
   if (error) return handleDbError(error, res);
 
@@ -198,7 +211,7 @@ const listUnmarked = async (req, res) => {
 
       const marked = new Set(records.filter((r) => r.group_id === group.id && r.lesson_date === date).map((r) => r.student_id));
       // Only students who were already in the group on that day.
-      const expected = group.members.filter((m) => m.joined_at.slice(0, 10) <= date);
+      const expected = group.members.filter((m) => m.joined_at.slice(0, 10) <= date && m.student?.status !== 'frozen');
       const missing = expected.filter((m) => !marked.has(m.student_id)).length;
       if (missing > 0) {
         unmarked.push({

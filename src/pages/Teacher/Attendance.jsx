@@ -80,12 +80,21 @@ const Attendance = () => {
             <ul className="divide-y divide-line">
               {lesson.students.map((s) => (
                 <li key={s.id} className="flex items-center justify-between gap-3 px-5 py-3">
-                  <span className="flex items-center gap-3 text-sm font-medium text-ink">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-sunken font-display text-sm font-semibold text-ink-soft">
+                  <span className="flex min-w-0 items-center gap-3 text-sm font-medium text-ink">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sunken font-display text-sm font-semibold text-ink-soft">
                       {s.fullName.charAt(0)}
                     </span>
-                    {s.fullName}
-                    {s.status === null && <span className="rounded bg-sunken px-1.5 py-0.5 text-[11px] font-semibold text-ink-faint">{t('attendance.notMarked')}</span>}
+                    <span className="min-w-0">
+                      <span className="flex flex-wrap items-center gap-2">
+                        {s.fullName}
+                        {s.status === null && <span className="rounded bg-sunken px-1.5 py-0.5 text-[11px] font-semibold text-ink-faint">{t('attendance.notMarked')}</span>}
+                      </span>
+                      {s.status === 'absent' && (
+                        <span className="mt-0.5 block break-words text-xs font-normal text-ink-soft">
+                          {t('attendance.reason')}: {s.absenceReason || t('attendance.noReason')}
+                        </span>
+                      )}
+                    </span>
                   </span>
                   <span className="flex gap-2">
                     <button

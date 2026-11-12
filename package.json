@@ -13,6 +13,7 @@
     "test-shop": "node server/scripts/testShop.js",
     "test-platform": "node server/scripts/testPlatform.js",
     "test-finance": "node server/scripts/testFinance.js",
+    "test-balance": "node server/scripts/testBalance.js",
     "seed-battle": "node server/scripts/seedBattleQuestions.js",
     "check-i18n": "node server/scripts/checkI18n.js",
     "test-i18n": "node server/scripts/testI18n.js",

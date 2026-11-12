@@ -33,12 +33,13 @@ const buildStats = (records) => {
 const loadTeacherGroups = async (teacherId) => {
   const { data, error } = await supabase
     .from('groups')
-    .select('id, name, room, weekdays, start_time, members:group_students(joined_at, student:users!group_students_student_id_fkey(id, full_name))')
+    .select('id, name, room, weekdays, start_time, members:group_students(joined_at, student:users!group_students_student_id_fkey(id, full_name, status))')
     .eq('teacher_id', teacherId)
     .eq('status', 'active')
     .order('start_time');
   if (error) throw error;
-  return data;
+  // Frozen students are on pause: they are not shown and not marked.
+  return data.map((g) => ({ ...g, members: g.members.filter((m) => m.student.status !== 'frozen') }));
 };
 
 // Reminder for the teacher: a lesson is over, but some students have no tick or cross.
