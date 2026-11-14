@@ -68,13 +68,13 @@ const escapeHtml = (text) => text.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0
 const codeHtml = ({ title, code, details }) => `
       <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0B0E14; color: #F1F5F9; padding: 40px; border-radius: 20px; max-width: 600px; margin: 0 auto; border: 1px solid #1F2937;">
         <div style="text-align: center; margin-bottom: 30px;">
-          <h1 style="color: #3B82F6; font-size: 28px; margin-bottom: 10px;">Mars Space</h1>
+          <h1 style="color: #C9481F; font-size: 28px; margin-bottom: 10px;">Mars Space</h1>
           <p style="color: #94A3B8; font-size: 16px;">Educational IT Platform</p>
         </div>
-        <div style="text-align: center; background-color: #151921; padding: 30px; border-radius: 15px; border: 1px solid #3B82F633;">
+        <div style="text-align: center; background-color: #151921; padding: 30px; border-radius: 15px; border: 1px solid #C9481F55;">
           <h2 style="font-size: 20px; margin-bottom: 20px;">${title}</h2>
           ${details ? `<p style="color: #94A3B8; font-size: 14px; margin-bottom: 20px;">${details}</p>` : ''}
-          <div style="font-size: 36px; font-weight: bold; letter-spacing: 8px; color: #3B82F6; margin-bottom: 20px;">
+          <div style="font-size: 36px; font-weight: bold; letter-spacing: 8px; color: #C9481F; margin-bottom: 20px;">
             ${code}
           </div>
           <p style="color: #94A3B8; font-size: 14px;">This code is valid for <b>5 minutes</b>.</p>
