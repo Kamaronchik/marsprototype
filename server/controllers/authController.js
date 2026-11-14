@@ -122,6 +122,13 @@ const verifyDevice = async (req, res) => {
     }
 
     const deviceHash = hashToken(deviceToken);
+
+    // A code sent before the account was blocked must not open a session.
+    const account = await db.findUserById(userId);
+    if (!account || account.status === 'blocked' || account.status === 'frozen') {
+      return res.status(403).json({ message: 'Your account is blocked. Contact administrator.' });
+    }
+
     const record = await db.getVerificationCode(userId);
 
     if (!record) {
@@ -185,6 +192,9 @@ const resendCode = async (req, res) => {
     const user = await db.findUserById(userId);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
+    }
+    if (user.status === 'blocked' || user.status === 'frozen') {
+      return res.status(403).json({ message: 'Your account is blocked. Contact administrator.' });
     }
 
     // A new code can be requested once per minute (prevents email spam).

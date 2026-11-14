@@ -21,6 +21,13 @@ const authMiddleware = async (req, res, next) => {
     return res.status(401).json({ message: 'Session expired' });
   }
 
+  // A blocked or frozen account has no access, even if an old session is still stored.
+  const accountStatus = session.user?.status;
+  if (accountStatus === 'blocked' || accountStatus === 'frozen') {
+    await db.deleteSession(sessionHash);
+    return res.status(401).json({ message: 'Account is not active' });
+  }
+
   // Device verification: ensure the current device matches the session's device
   const deviceToken = req.cookies.deviceId;
   if (!deviceToken) {
