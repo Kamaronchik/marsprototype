@@ -3,7 +3,7 @@ const { handleDbError } = require('../utils/apiErrors');
 const { isUuid } = require('../utils/validate');
 const { readRange, applyRange } = require('../utils/financeRange');
 
-const { prefixesFor, canSee, actorRolesFor } = require('../utils/auditAreas');
+const { prefixesFor, hiddenFor, canSee, actorRolesFor } = require('../utils/auditAreas');
 
 const PAGE_SIZE = 25;
 const MAX_PAGE_SIZE = 100;
@@ -48,6 +48,7 @@ const listAudit = async (req, res) => {
 
   const prefixes = prefixesFor(req.user.role);
   if (prefixes) query = query.or(prefixFilter(prefixes));
+  hiddenFor(req.user.role).forEach((prefix) => { query = query.not('action', 'like', `${prefix}*`); });
   if (action) query = query.eq('action', action);
   if (userId) query = query.eq('actor_id', userId);
   query = applyRange(query, range, 'created_at');
@@ -78,10 +79,11 @@ const listAuditUsers = async (req, res) => {
   const roles = actorRolesFor(req.user.role);
   if (roles) query = query.in('role', roles);
   else query = query.neq('role', 'Student');
+  if (req.user.role !== 'Owner') query = query.neq('role', 'Owner');
 
   const { data, error } = await query;
   if (error) return handleDbError(error, res);
   res.json({ users: data.map((u) => ({ id: u.id, fullName: u.full_name, role: u.role })) });
 };
 
-module.exports = { listAudit, listAuditUsers };
+module.exports = { listAudit, listAuditUsers, loadNames };

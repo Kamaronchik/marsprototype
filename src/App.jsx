@@ -53,6 +53,15 @@ const AcademicTeachers = lazy(() => import('./pages/AcademicManager/Teachers'));
 const AcademicGroups = lazy(() => import('./pages/AcademicManager/Groups'));
 const AcademicRoster = lazy(() => import('./pages/AcademicManager/Roster'));
 
+const OwnerLayout = lazy(() => import('./layouts/Owner/OwnerLayout'));
+const OwnerOverview = lazy(() => import('./pages/Owner/Overview'));
+const OwnerJournal = lazy(() => import('./pages/Owner/Journal'));
+const OwnerViolations = lazy(() => import('./pages/Owner/Violations'));
+const OwnerStaff = lazy(() => import('./pages/Owner/Staff'));
+const OwnerStaffProfile = lazy(() => import('./pages/Owner/StaffProfile'));
+const OwnerHistory = lazy(() => import('./pages/Owner/History'));
+const OwnerRules = lazy(() => import('./pages/Owner/Rules'));
+
 const StudentLayout = lazy(() => import('./layouts/Student/StudentLayout'));
 const StudentHome = lazy(() => import('./features/student/StudentHome'));
 const StudentAttendance = lazy(() => import('./pages/Student/Attendance'));
@@ -163,6 +172,25 @@ const AppRoutes = () => {
             <Route path="subjects" element={<Subjects />} />
             <Route path="applications" element={<Applications />} />
             <Route path="audit" element={<AuditLogs />} />
+          </Route>
+
+          {/* Owner Routes: the audit panel. Only the Owner role. */}
+          <Route
+            path="/owner"
+            element={
+              <ProtectedRoute allowedRoles={['Owner']}>
+                <OwnerLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<OwnerOverview />} />
+            <Route path="journal" element={<OwnerJournal />} />
+            <Route path="my-log" element={<OwnerJournal ownOnly />} />
+            <Route path="violations" element={<OwnerViolations />} />
+            <Route path="staff" element={<OwnerStaff />} />
+            <Route path="staff/:id" element={<OwnerStaffProfile />} />
+            <Route path="history/:entity/:id" element={<OwnerHistory />} />
+            <Route path="rules" element={<OwnerRules />} />
           </Route>
 
           {/* Student Routes */}

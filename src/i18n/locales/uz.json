@@ -39,7 +39,8 @@
       "Teacher": "O'qituvchi",
       "Financier": "Moliyachi",
       "Student": "O'quvchi",
-      "AcademicManager": "O'quv bo'limi mudiri"
+      "AcademicManager": "O'quv bo'limi mudiri",
+      "Owner": "Egasi"
     },
     "nav": {
       "overview": "Umumiy ko'rinish",
@@ -84,7 +85,11 @@
       "applications": "Arizalar",
       "expenses": "Xarajatlar",
       "reports": "Hisobotlar",
-      "audit": "Harakatlar jurnali"
+      "audit": "Harakatlar jurnali",
+      "violations": "Qoidabuzarliklar",
+      "staff": "Xodimlar",
+      "rules": "Qoidalar",
+      "ownerLog": "Mening jurnalim"
     },
     "bell": {
       "title": "Bildirishnomalar",
@@ -115,7 +120,9 @@
       "grade_added": "{{groupName}} guruhida yangi baho: {{title}}, {{score}} / {{maxScore}}",
       "academic_message": "{{text}}",
       "lesson_rate": "Bu hafta darslar qanday o'tdi? Bosh sahifada «{{topic}}» ({{groupName}}) darsini baholang.",
-      "attendance_late": "Siz {{groupName}} guruhida {{date}} kuni kechikdi deb belgilandingiz"
+      "attendance_late": "Siz {{groupName}} guruhida {{date}} kuni kechikdi deb belgilandingiz",
+      "violation_attendance": "{{groupName}} guruhining {{date}} kungi davomati belgilanmagan. Belgilanmagan o'quvchilar: {{count}}. Uni belgilang",
+      "violation_escalated": "O'qituvchi {{teacherName}} {{groupName}} guruhining {{date}} kungi davomatini belgilamadi (belgilanmagan: {{count}})"
     },
     "errors": {
       "ROOM_BUSY": "Bu xona shu vaqtda band",
@@ -878,7 +885,17 @@
       "too_many_applications_try_again_later": "Arizalar juda ko'p. Keyinroq urinib ko'ring.",
       "the_resume_is_too_big_up_to_4_mb": "Rezyume juda katta (4 MB gacha)",
       "invalid_form": "Shakl noto'g'ri",
-      "only_the_admin_can_change_a_mark": "Belgini faqat administrator o'zgartira oladi"
+      "only_the_admin_can_change_a_mark": "Belgini faqat administrator o'zgartira oladi",
+      "invalid_violation": "Noto'g'ri qoidabuzarlik",
+      "violation_not_found": "Qoidabuzarlik topilmadi",
+      "invalid_outcome": "Noto'g'ri natija",
+      "a_comment_is_required_3_to_500_characters": "Izoh kerak (3 dan 500 belgigacha)",
+      "invalid_user": "Noto'g'ri foydalanuvchi",
+      "invalid_rule": "Noto'g'ri qoida",
+      "invalid_levels": "Ogohlantirish zanjiri noto'g'ri",
+      "rule_not_found": "Qoida topilmadi",
+      "cron_is_not_configured": "Taymer sozlanmagan",
+      "invalid_cron_secret": "Taymer siri noto'g'ri"
     },
     "ranks": {
       "cadet": "Kursant",
@@ -891,7 +908,8 @@
       "admin": "Boshqaruv markazi",
       "teacher": "Komandir stansiyasi",
       "finance": "Logistika bo'limi",
-      "academic": "O'quv bo'limi"
+      "academic": "O'quv bo'limi",
+      "owner": "Ega kuzatuv punkti"
     },
     "home": {
       "navigation": "Asosiy navigatsiya",
@@ -1220,7 +1238,8 @@
         "Teacher": "o'qituvchi",
         "Financier": "moliyachi",
         "Student": "o'quvchi",
-        "AcademicManager": "o'quv bo'limi mudiri"
+        "AcademicManager": "o'quv bo'limi mudiri",
+        "Owner": "egasi"
       },
       "actions": {
         "user": {
@@ -1312,6 +1331,38 @@
         "translation": {
           "save": "Sayt matnini o'zgartirdi",
           "reset": "Sayt matnini asl holiga qaytardi"
+        },
+        "auth": {
+          "login": "tizimga kirdi",
+          "login_failed": "kirishga muvaffaqiyatsiz urinish"
+        },
+        "db": {
+          "attendance": {
+            "insert": "bazada davomat belgisi qo'shildi",
+            "update": "bazada davomat belgisi o'zgardi",
+            "delete": "bazada davomat belgisi o'chirildi"
+          },
+          "grades": {
+            "insert": "bazada baho qo'shildi",
+            "update": "bazada baho o'zgardi",
+            "delete": "bazada baho o'chirildi"
+          }
+        },
+        "violation": {
+          "open": "qoidabuzarlik: {{group}} guruhining {{date}} kungi davomati belgilanmagan",
+          "escalate": "qoidabuzarlik zanjirdagi keyingi odamga uzatildi",
+          "acknowledge": "qoidabuzarlikdan xabardor bo'ldi",
+          "resolve": "qoidabuzarlik tuzatilgan deb yopildi",
+          "dismiss": "qoidabuzarlik yolg'on signal deb yopildi"
+        },
+        "rule": {
+          "update": "{{code}} qoidasini o'zgartirdi"
+        },
+        "owner": {
+          "view": "panelda ochdi: {{path}}",
+          "export": "jurnalni CSV ga yukladi",
+          "run_rules": "qoidalar tekshiruvini ishga tushirdi",
+          "create": "ega akkaunti yaratildi"
         }
       }
     },
@@ -1346,6 +1397,103 @@
     "theme": {
       "dark": "Qorong'i rejim",
       "light": "Yorug' rejim"
+    },
+    "owner": {
+      "overviewTitle": "Ega paneli",
+      "overviewHint": "Hozir nimaga e'tibor kerak. Paneldagi har bir harakatingiz ham yoziladi.",
+      "checkNow": "Hozir tekshirish",
+      "checkDone": "Tekshiruv tugadi. Yangi qoidabuzarliklar: {{created}}, yopilgan: {{resolved}}, uzatilgan: {{escalated}}",
+      "openViolations": "Ochiq qoidabuzarliklar",
+      "violationsToday": "Bugungi qoidabuzarliklar",
+      "actionsToday": "Bugungi jurnal yozuvlari",
+      "reaction": "O'rtacha javob tezligi",
+      "minutes": "{{count}} daq",
+      "latestOpen": "Ochiq qoidabuzarliklar",
+      "showAll": "Hammasini ko'rsatish",
+      "noOpen": "Ochiq qoidabuzarliklar yo'q",
+      "topOffenders": "Eng ko'p buzganlar (30 kun)",
+      "noOffenders": "30 kun ichida qoidabuzarlik yo'q",
+      "journalTitle": "Harakatlar jurnali",
+      "journalHint": "Maktabdagi barcha harakatlar: kim, nima, qachon, qayerdan, avval va hozir. Tafsilot uchun qatorni bosing.",
+      "myLogTitle": "Mening jurnalim",
+      "myLogHint": "Egalar panelda nimani ko'rgani va o'zgartirgani. Bu jurnalni o'chirib bo'lmaydi.",
+      "role": "Rol",
+      "allRoles": "Barcha rollar",
+      "ip": "IP manzil",
+      "exportCsv": "CSV yuklab olish",
+      "system": "Tizim",
+      "oldValue": "Avval",
+      "newValue": "Hozir",
+      "details": "Tafsilotlar",
+      "reason": "Sabab",
+      "browser": "Brauzer",
+      "openHistory": "Bu obyektning tarixi",
+      "historyTitle": "Obyekt tarixi",
+      "historyHint": "Bitta baho, davomat belgisi yoki akkauntning yaratilganidan bugungacha barcha o'zgarishlari.",
+      "backToJournal": "Jurnalga qaytish",
+      "violationsTitle": "Qoidabuzarliklar",
+      "violationsHint": "Zanjir: qoida, ogohlantirish, javob, yopish. Qo'lda faqat izoh bilan yopish mumkin.",
+      "tab": {
+        "active": "Ochiq",
+        "resolved": "Tuzatilgan",
+        "dismissed": "Yolg'on",
+        "all": "Hammasi"
+      },
+      "noViolations": "Qoidabuzarliklar yo'q",
+      "openProfile": "Xodim profili",
+      "event": {
+        "detected": "Qoidabuzarlik aniqlandi",
+        "notified": "Ogohlantirish: {{who}} ({{channel}})",
+        "escalated": "Keyingisiga uzatildi: {{who}} ({{channel}})",
+        "acknowledged": "Xabardor bo'ldi: {{who}}",
+        "resolved": "Tuzatilgan deb yopildi",
+        "dismissed": "Yolg'on deb yopildi"
+      },
+      "channel": {
+        "bell": "qo'ng'iroqcha",
+        "telegram": "Telegram"
+      },
+      "auto": "avtomatik",
+      "closeComment": "Izoh (yopish uchun majburiy)",
+      "acknowledge": "Xabardor bo'lish",
+      "markResolved": "Tuzatildi",
+      "markDismissed": "Yolg'on signal",
+      "reactionTime": "Aniqlashdan yopishgacha bo'lgan vaqt: {{count}} daq",
+      "staffTitle": "Xodimlar",
+      "staffHint": "O'qituvchilar, o'quv bo'limi mudirlari, moliyachilar va adminlar, qoidabuzarliklar soni bilan.",
+      "openCount": "Ochiq",
+      "totalCount": "Jami",
+      "backToStaff": "Xodimlarga qaytish",
+      "devices": "Kirishlar va qurilmalar",
+      "latestActions": "So'nggi harakatlar",
+      "rulesTitle": "Qoidalar",
+      "rulesHint": "Vaqt chegaralari va ogohlantirish zanjiri. Har bir o'zgarish jurnalga yoziladi.",
+      "enabled": "Qoida yoqilgan",
+      "severity": "Jiddiylik",
+      "severities": {
+        "low": "Past",
+        "medium": "O'rtacha",
+        "high": "Yuqori",
+        "critical": "Kritik"
+      },
+      "levels": "Kimga va qachon xabar berish",
+      "afterMinutes": "Dars boshlanganidan keyin daqiqa:",
+      "removeLevel": "Qadamni olib tashlash",
+      "addLevel": "Qadam qo'shish",
+      "save": "Saqlash",
+      "rule": {
+        "ATT_LATE": "Davomat belgilanmagan"
+      },
+      "ruleHint": {
+        "ATT_LATE": "Dars boshlandi, lekin o'qituvchi hamma o'quvchilarni belgilamadi. Birinchi qadam: o'qituvchiga eslatma. Keyingi qadamlar: hech kim javob bermasa, ogohlantirish keyingisiga o'tadi."
+      },
+      "status": {
+        "open": "Ochiq",
+        "acknowledged": "Qabul qilingan",
+        "escalated": "Uzatilgan",
+        "resolved": "Tuzatilgan",
+        "dismissed": "Yolg'on"
+      }
     }
   }
 }

@@ -16,8 +16,13 @@ const AREAS = {
   hr: ['application.'],
 };
 
+// Only the Owner reads these: database triggers, rules, violations and the Owner's own actions.
+// The Admin is checked by the Owner, so the Admin must not see them (the principle "nobody checks himself").
+const OWNER_ONLY = ['db.', 'rule.', 'violation.', 'owner.'];
+
 const ROLE_AUDIT = {
-  Admin: { areas: 'all' },
+  Owner: { areas: 'all' },
+  Admin: { areas: 'all', hide: OWNER_ONLY },
   AcademicManager: { areas: ['academic', 'hr'], actors: ['Admin', 'Teacher', 'AcademicManager'] },
   Financier: { areas: ['finance'], actors: ['Admin', 'Financier'] },
 };
@@ -30,7 +35,11 @@ const prefixesFor = (role) => {
   return areas === 'all' ? null : areas.flatMap((area) => AREAS[area]);
 };
 
+// The action prefixes a role must not see even though it sees "all of them".
+const hiddenFor = (role) => ROLE_AUDIT[role]?.hide ?? [];
+
 const canSee = (role, action) => {
+  if (hiddenFor(role).some((prefix) => action.startsWith(prefix))) return false;
   const prefixes = prefixesFor(role);
   return !prefixes || prefixes.some((prefix) => action.startsWith(prefix));
 };
@@ -38,4 +47,4 @@ const canSee = (role, action) => {
 // The roles whose actions the person may filter by; null = everybody but students.
 const actorRolesFor = (role) => ROLE_AUDIT[role]?.actors ?? null;
 
-module.exports = { canOpen, prefixesFor, canSee, actorRolesFor };
+module.exports = { canOpen, prefixesFor, hiddenFor, canSee, actorRolesFor };

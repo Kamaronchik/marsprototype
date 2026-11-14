@@ -39,7 +39,8 @@
       "Teacher": "Teacher",
       "Financier": "Finance",
       "Student": "Student",
-      "AcademicManager": "Academic manager"
+      "AcademicManager": "Academic manager",
+      "Owner": "Owner"
     },
     "nav": {
       "overview": "Overview",
@@ -84,7 +85,11 @@
       "applications": "Applications",
       "expenses": "Expenses",
       "reports": "Reports",
-      "audit": "Audit log"
+      "audit": "Audit log",
+      "violations": "Violations",
+      "staff": "Staff",
+      "rules": "Rules",
+      "ownerLog": "My journal"
     },
     "bell": {
       "title": "Notifications",
@@ -115,7 +120,9 @@
       "grade_added": "New mark in {{groupName}}: {{title}}, {{score}} / {{maxScore}}",
       "academic_message": "{{text}}",
       "lesson_rate": "How were the lessons this week? Rate the lesson \"{{topic}}\" ({{groupName}}) on your home page.",
-      "attendance_late": "You were marked late in {{groupName}} on {{date}}"
+      "attendance_late": "You were marked late in {{groupName}} on {{date}}",
+      "violation_attendance": "Attendance of group {{groupName}} for {{date}} is not marked. Students not marked: {{count}}. Please mark it",
+      "violation_escalated": "Teacher {{teacherName}} has not marked attendance of group {{groupName}} for {{date}} (not marked: {{count}})"
     },
     "errors": {
       "ROOM_BUSY": "This room is already taken at that time",
@@ -878,7 +885,17 @@
       "too_many_applications_try_again_later": "Too many applications. Try again later.",
       "the_resume_is_too_big_up_to_4_mb": "The resume is too big (up to 4 MB)",
       "invalid_form": "Invalid form",
-      "only_the_admin_can_change_a_mark": "Only the Admin can change a mark"
+      "only_the_admin_can_change_a_mark": "Only the Admin can change a mark",
+      "invalid_violation": "Invalid violation",
+      "violation_not_found": "Violation not found",
+      "invalid_outcome": "Invalid outcome",
+      "a_comment_is_required_3_to_500_characters": "A comment is required (3 to 500 characters)",
+      "invalid_user": "Invalid user",
+      "invalid_rule": "Invalid rule",
+      "invalid_levels": "Invalid chain of warnings",
+      "rule_not_found": "Rule not found",
+      "cron_is_not_configured": "The timer is not configured",
+      "invalid_cron_secret": "Invalid timer secret"
     },
     "ranks": {
       "cadet": "Cadet",
@@ -891,7 +908,8 @@
       "admin": "Mission Control",
       "teacher": "Commander's station",
       "finance": "Logistics bay",
-      "academic": "Study office"
+      "academic": "Study office",
+      "owner": "Owner bridge"
     },
     "home": {
       "navigation": "Main navigation",
@@ -1220,7 +1238,8 @@
         "Teacher": "Teacher",
         "Financier": "Financier",
         "Student": "Student",
-        "AcademicManager": "Academic manager"
+        "AcademicManager": "Academic manager",
+        "Owner": "owner"
       },
       "actions": {
         "user": {
@@ -1312,6 +1331,38 @@
         "translation": {
           "save": "changed a text of the site",
           "reset": "reset a text of the site"
+        },
+        "auth": {
+          "login": "signed in",
+          "login_failed": "failed sign-in attempt"
+        },
+        "db": {
+          "attendance": {
+            "insert": "an attendance mark was added in the database",
+            "update": "an attendance mark was changed in the database",
+            "delete": "an attendance mark was deleted in the database"
+          },
+          "grades": {
+            "insert": "a grade was added in the database",
+            "update": "a grade was changed in the database",
+            "delete": "a grade was deleted in the database"
+          }
+        },
+        "violation": {
+          "open": "violation: attendance of group {{group}} for {{date}} is not marked",
+          "escalate": "violation passed to the next person in the chain",
+          "acknowledge": "acknowledged a violation",
+          "resolve": "violation closed as fixed",
+          "dismiss": "violation closed as a false alarm"
+        },
+        "rule": {
+          "update": "changed the rule {{code}}"
+        },
+        "owner": {
+          "view": "opened in the panel: {{path}}",
+          "export": "exported the journal to CSV",
+          "run_rules": "ran the rules check",
+          "create": "an owner account was created"
         }
       }
     },
@@ -1346,6 +1397,103 @@
     "theme": {
       "dark": "Dark mode",
       "light": "Light mode"
+    },
+    "owner": {
+      "overviewTitle": "Owner panel",
+      "overviewHint": "What needs attention right now. Everything you do in this panel is recorded too.",
+      "checkNow": "Check now",
+      "checkDone": "Check finished. New violations: {{created}}, closed: {{resolved}}, passed on: {{escalated}}",
+      "openViolations": "Open violations",
+      "violationsToday": "Violations today",
+      "actionsToday": "Journal entries today",
+      "reaction": "Average reaction time",
+      "minutes": "{{count}} min",
+      "latestOpen": "Open violations",
+      "showAll": "Show all",
+      "noOpen": "No open violations",
+      "topOffenders": "Most violations (30 days)",
+      "noOffenders": "No violations in 30 days",
+      "journalTitle": "Action journal",
+      "journalHint": "Every action at the school: who, what, when, from where, before and after. Click a row for details.",
+      "myLogTitle": "My journal",
+      "myLogHint": "What the owners looked at and changed in the panel. This journal cannot be erased.",
+      "role": "Role",
+      "allRoles": "All roles",
+      "ip": "IP address",
+      "exportCsv": "Download CSV",
+      "system": "System",
+      "oldValue": "Before",
+      "newValue": "After",
+      "details": "Details",
+      "reason": "Reason",
+      "browser": "Browser",
+      "openHistory": "History of this object",
+      "historyTitle": "History of an object",
+      "historyHint": "Every change of one grade, mark or account from the beginning until today.",
+      "backToJournal": "Back to the journal",
+      "violationsTitle": "Violations",
+      "violationsHint": "The chain: rule, warning, reaction, closing. A violation can be closed by hand only with a comment.",
+      "tab": {
+        "active": "Open",
+        "resolved": "Fixed",
+        "dismissed": "False alarms",
+        "all": "All"
+      },
+      "noViolations": "No violations",
+      "openProfile": "Staff profile",
+      "event": {
+        "detected": "Violation detected",
+        "notified": "Warning: {{who}} ({{channel}})",
+        "escalated": "Passed on: {{who}} ({{channel}})",
+        "acknowledged": "Acknowledged: {{who}}",
+        "resolved": "Closed as fixed",
+        "dismissed": "Closed as a false alarm"
+      },
+      "channel": {
+        "bell": "bell",
+        "telegram": "Telegram"
+      },
+      "auto": "automatically",
+      "closeComment": "Comment (required to close)",
+      "acknowledge": "Acknowledge",
+      "markResolved": "Fixed",
+      "markDismissed": "False alarm",
+      "reactionTime": "Time from detection to closing: {{count}} min",
+      "staffTitle": "Staff",
+      "staffHint": "Teachers, academic managers, financiers and admins with the number of their violations.",
+      "openCount": "Open",
+      "totalCount": "Total",
+      "backToStaff": "Back to staff",
+      "devices": "Sign-ins and devices",
+      "latestActions": "Latest actions",
+      "rulesTitle": "Rules",
+      "rulesHint": "Time thresholds and the chain of warnings. Every change is written to the journal.",
+      "enabled": "Rule is on",
+      "severity": "Severity",
+      "severities": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+        "critical": "Critical"
+      },
+      "levels": "Whom to tell and when",
+      "afterMinutes": "Minutes after the lesson starts:",
+      "removeLevel": "Remove step",
+      "addLevel": "Add step",
+      "save": "Save",
+      "rule": {
+        "ATT_LATE": "Attendance not marked"
+      },
+      "ruleHint": {
+        "ATT_LATE": "The lesson started but the teacher has not marked every student. The first step is a reminder to the teacher. The next steps: if nobody reacted, the warning goes further."
+      },
+      "status": {
+        "open": "Open",
+        "acknowledged": "Acknowledged",
+        "escalated": "Passed on",
+        "resolved": "Fixed",
+        "dismissed": "False alarm"
+      }
     }
   }
 }

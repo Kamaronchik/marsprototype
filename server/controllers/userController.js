@@ -57,9 +57,16 @@ const handleDbError = (error, res) => {
   return res.status(500).json({ message: 'Database error' });
 };
 
+// The Owner checks the Admin, so the Admin cannot see, change or delete an Owner account.
+// An Owner is created only from the command line: npm run create-owner.
+const isOwnerAccount = async (id) => {
+  const { data } = await supabase.from('users').select('role').eq('id', id).maybeSingle();
+  return data?.role === 'Owner';
+};
+
 const listUsers = async (req, res) => {
   const { data, error } = await supabase
-    .from('users').select(COLUMNS).order('created_at', { ascending: false });
+    .from('users').select(COLUMNS).neq('role', 'Owner').order('created_at', { ascending: false });
   if (error) return handleDbError(error, res);
   res.json({ users: data.map(toClient) });
 };
@@ -105,6 +112,7 @@ const createUser = async (req, res) => {
 const updateUser = async (req, res) => {
   const { id } = req.params;
   const { username, email, fullName, password, role, status } = req.body;
+  if (await isOwnerAccount(id)) return res.status(404).json({ message: 'User not found' });
 
   const problem = validate({ username, email, fullName, password, role }, { partial: true });
   if (problem) return res.status(400).json({ message: problem });
@@ -200,6 +208,7 @@ const deleteUser = async (req, res) => {
   if (id === req.user.id) {
     return res.status(400).json({ message: 'You cannot delete your own account' });
   }
+  if (await isOwnerAccount(id)) return res.status(404).json({ message: 'User not found' });
   const { data: removed } = await supabase.from('users').select('full_name, role').eq('id', id).maybeSingle();
   const { error } = await supabase.from('users').delete().eq('id', id);
   if (error) return handleDbError(error, res);

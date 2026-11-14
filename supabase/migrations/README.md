@@ -30,7 +30,8 @@ applied to a real database.
 | 015 | `015_expenses.sql` | school expenses |
 | 016 | `016_careers.sql` | job applications, notes, private "resumes" bucket |
 | 017 | `017_audit_indexes.sql` | indexes for the audit page |
-| 018+ | later files | see the list in this folder |
+| 018 | `018_audit_system.sql` | Owner role, richer audit_log with DB triggers, rules, violations |
+| 019+ | later files | see the list in this folder |
 
 4. Put the keys into `.env` (see `.env.example`): `SUPABASE_URL` and `SUPABASE_SECRET_KEY`
    (Project settings -> API -> `service_role`). The secret key stays on the server only.

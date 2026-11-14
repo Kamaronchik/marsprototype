@@ -4,6 +4,7 @@ const emailService = require('../services/emailService');
 const db = require('../databaseService');
 const supabase = require('../config/supabase');
 const { hashCode, generateCode } = require('../utils/codes');
+const { logAction } = require('../utils/audit');
 
 const hashToken = (token) => {
   return crypto.createHash('sha256').update(token).digest('hex');
@@ -47,6 +48,7 @@ const login = async (req, res) => {
     const emailMatch = noEmailAdmin ||
       (!!user.email && !!email && user.email.toLowerCase() === String(email).trim().toLowerCase());
     if (!isMatch || !emailMatch) {
+      await logAction(user.id, 'auth.login_failed', 'user', user.id);
       return res.status(401).json({ message: 'Invalid username or password' });
     }
 
@@ -69,6 +71,7 @@ const login = async (req, res) => {
       await db.createSession(sessionHash, user.id, deviceHash, expiresAt);
 
       res.cookie('sessionId', sessionToken, getCookieOptions(24 * 60 * 60 * 1000));
+      await logAction(user.id, 'auth.login', 'user', user.id);
 
       return res.status(200).json({
         message: 'Login successful',
@@ -165,6 +168,7 @@ const verifyDevice = async (req, res) => {
     await db.createSession(sessionHash, userId, deviceHash, expiresAt);
 
     res.cookie('sessionId', sessionToken, getCookieOptions(24 * 60 * 60 * 1000));
+    await logAction(userId, 'auth.login', 'user', userId, { newDevice: true });
 
     res.status(200).json({
       message: 'Device verified successfully',

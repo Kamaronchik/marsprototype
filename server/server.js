@@ -35,6 +35,9 @@ const academicRoutes = require('./routes/academicRoutes');
 const subjectRoutes = require('./routes/subjectRoutes');
 const auditRoutes = require('./routes/auditRoutes');
 const careersRoutes = require('./routes/careersRoutes');
+const ownerRoutes = require('./routes/ownerRoutes');
+const cronRoutes = require('./routes/cronRoutes');
+const { requestContext } = require('./utils/requestContext');
 
 const app = express();
 
@@ -52,6 +55,8 @@ app.use(cors({
 }));
 app.use(cookieParser());
 app.use(express.json());
+// The IP and the browser of every request go into the audit log.
+app.use(requestContext);
 
 // API Routes
 app.use('/api/users', userRoutes);
@@ -79,6 +84,8 @@ app.use('/api/academic', academicRoutes);
 app.use('/api/subjects', subjectRoutes);
 app.use('/api/audit', auditRoutes);
 app.use('/api/careers', careersRoutes);
+app.use('/api/owner', ownerRoutes);
+app.use('/api/cron', cronRoutes);
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'Mars Space Backend is running' });

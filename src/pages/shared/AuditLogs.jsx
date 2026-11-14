@@ -4,36 +4,14 @@ import PageHeader from '../../components/PageHeader';
 import { SkeletonText } from '../../components/Skeleton';
 import { useFetch } from '../../lib/useFetch';
 import { formatDateTime } from '../../lib/format';
+import { useAuditSentence } from '../../lib/useAuditSentence';
 
 const PAGE_SIZE = 25;
-
-// "Who did what": the action code is turned into a plain sentence. Unknown codes are shown as they are.
-const useSentence = () => {
-  const { t } = useTranslation();
-  const word = (value) => (typeof value === 'string' ? t(`audit.values.${value}`, { defaultValue: value }) : value);
-
-  return (entry) => {
-    const d = entry.details ?? {};
-    return t(`audit.actions.${entry.action}`, {
-      defaultValue: entry.action,
-      target: entry.targetName ?? d.name ?? '',
-      from: word(d.from),
-      to: word(d.to),
-      status: word(d.status),
-      role: word(d.role),
-      amount: d.amount ?? d.after?.amount ?? '',
-      title: d.title ?? '',
-      date: d.date ?? '',
-      group: d.groupName ?? '',
-      category: d.category ? t(`expenses.categories.${d.category}`, { defaultValue: d.category }) : '',
-    });
-  };
-};
 
 // Admin, Academic Manager and Financier. The server shows each role only its own area.
 const AuditLogs = () => {
   const { t, i18n } = useTranslation();
-  const sentence = useSentence();
+  const sentence = useAuditSentence();
   const [filters, setFilters] = useState({ userId: '', action: '', from: '', to: '' });
   const [page, setPage] = useState(1);
 
