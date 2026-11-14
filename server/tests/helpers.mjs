@@ -44,3 +44,10 @@ export const setup = async () => {
 };
 
 export const teardown = () => seed.blockTestUsers();
+
+// True when a table (or a column of it) exists, so tests of a new migration are skipped until it is applied.
+export const tableExists = async (table, column = '*') => {
+  if (!hasDatabase) return false;
+  const { error } = await supabase.from(table).select(column).limit(1);
+  return !error;
+};
