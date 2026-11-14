@@ -4,13 +4,17 @@ const { logAction } = require('../utils/audit');
 const { addStudentToGroup } = require('../utils/groups');
 const { ROOMS, WEEKDAYS, SLOTS, LESSON_MINUTES, BREAK_MINUTES, DAY_OPEN, DAY_CLOSE, toTime } = require('../utils/schedule');
 
-const COLUMNS = 'id, name, teacher_id, room, weekdays, start_time, monthly_price, status, created_at, teacher:users!groups_teacher_id_fkey(full_name), group_students(count)';
+const { toSubject } = require('../utils/subjects');
+
+const COLUMNS = 'id, name, teacher_id, subject_id, room, weekdays, start_time, monthly_price, status, created_at, teacher:users!groups_teacher_id_fkey(full_name), subject:subjects(id, name, name_ru, name_uz, name_en), group_students(count)';
 
 const toClient = (g) => ({
   id: g.id,
   name: g.name,
   teacherId: g.teacher_id,
   teacherName: g.teacher?.full_name ?? null,
+  subjectId: g.subject_id,
+  subject: g.subject ? toSubject(g.subject) : null,
   room: g.room,
   weekdays: g.weekdays,
   startTime: g.start_time ? g.start_time.slice(0, 5) : null,
@@ -66,6 +70,14 @@ const teacherExists = async (teacherId) => {
   return !!data;
 };
 
+// subjectId may be empty (no subject) or the id of an existing subject.
+const subjectProblem = async (subjectId) => {
+  if (subjectId === undefined || subjectId === null || subjectId === '') return null;
+  if (!isUuid(subjectId)) return 'Invalid subject';
+  const { data } = await supabase.from('subjects').select('id').eq('id', subjectId).maybeSingle();
+  return data ? null : 'Subject not found';
+};
+
 // Lists for the "create group" form: rooms, lesson times, weekdays.
 const getOptions = (req, res) => {
   res.json({
@@ -93,8 +105,9 @@ const listGroups = async (req, res) => {
 };
 
 const createGroup = async (req, res) => {
-  const { name, teacherId, room, weekdays, startTime, monthlyPrice } = req.body;
-  const problem = validate({ name, teacherId, room, weekdays, startTime, monthlyPrice }, { partial: false });
+  const { name, teacherId, room, weekdays, startTime, monthlyPrice, subjectId } = req.body;
+  const problem = validate({ name, teacherId, room, weekdays, startTime, monthlyPrice }, { partial: false })
+    || await subjectProblem(subjectId);
   if (problem) return res.status(400).json({ message: problem });
   if (!(await teacherExists(teacherId))) return res.status(400).json({ message: 'Teacher not found' });
 
@@ -103,6 +116,7 @@ const createGroup = async (req, res) => {
     .insert({
       name: name.trim(),
       teacher_id: teacherId,
+      subject_id: subjectId || null,
       room,
       weekdays: [...weekdays].sort((a, b) => a - b),
       start_time: startTime,
@@ -120,8 +134,9 @@ const updateGroup = async (req, res) => {
   const { id } = req.params;
   if (!isUuid(id)) return res.status(400).json({ message: 'Invalid group id' });
 
-  const { name, teacherId, room, weekdays, startTime, monthlyPrice } = req.body;
-  const problem = validate({ name, teacherId, room, weekdays, startTime, monthlyPrice }, { partial: true });
+  const { name, teacherId, room, weekdays, startTime, monthlyPrice, subjectId } = req.body;
+  const problem = validate({ name, teacherId, room, weekdays, startTime, monthlyPrice }, { partial: true })
+    || await subjectProblem(subjectId);
   if (problem) return res.status(400).json({ message: problem });
   if (teacherId !== undefined && !(await teacherExists(teacherId))) {
     return res.status(400).json({ message: 'Teacher not found' });
@@ -130,6 +145,7 @@ const updateGroup = async (req, res) => {
   const updates = {};
   if (name !== undefined) updates.name = name.trim();
   if (teacherId !== undefined) updates.teacher_id = teacherId;
+  if (subjectId !== undefined) updates.subject_id = subjectId || null;
   if (room !== undefined) updates.room = room;
   if (weekdays !== undefined) updates.weekdays = [...weekdays].sort((a, b) => a - b);
   if (startTime !== undefined) updates.start_time = startTime;

@@ -83,4 +83,28 @@ const deleteSlot = async (req, res) => {
   res.json({ message: 'Deleted' });
 };
 
-module.exports = { listSchedule, createSlot, updateSlot, deleteSlot };
+// "My schedule" of a student (their groups) or a teacher (their own groups): the week, day by day.
+const listMine = async (req, res) => {
+  try {
+    let filter = { teacherId: req.user.id };
+    if (req.user.role === 'Student') {
+      const { data, error } = await supabase.from('group_students').select('group_id').eq('student_id', req.user.id);
+      if (error) return handleDbError(error, res);
+      filter = { groupIds: data.map((m) => m.group_id) };
+      if (!filter.groupIds.length) return res.json({ days: WEEKDAYS.map((weekday) => ({ weekday, lessons: [] })) });
+    }
+    const slots = await loadSlots(filter);
+    res.json({
+      days: WEEKDAYS.map((weekday) => ({
+        weekday,
+        lessons: slots.filter((s) => s.weekday === weekday).map(({ groupId, groupName, subject, room, startTime, endTime, teacherName }) => (
+          { groupId, groupName, subject, room, startTime, endTime, teacherName }
+        )),
+      })),
+    });
+  } catch (error) {
+    handleDbError(error, res);
+  }
+};
+
+module.exports = { listSchedule, createSlot, updateSlot, deleteSlot, listMine };

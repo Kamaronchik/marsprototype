@@ -3,7 +3,7 @@ const router = express.Router();
 const { authMiddleware, requireRole } = require('../middleware/deviceMiddleware');
 const { limiter } = require('../utils/rateLimit');
 const {
-  getDashboard, getRiskStudents, getTeachers, transferStudent, assignTeacher, listTeacherNames,
+  getDashboard, getRiskStudents, getTeachers, transferStudent, assignTeacher, assignSubject, listTeacherNames,
 } = require('../controllers/academicController');
 const { getReport, refreshReport, makeDraft, sendMessage } = require('../controllers/aiReportController');
 
@@ -19,6 +19,7 @@ router.get('/teacher-names', listTeacherNames);
 
 router.post('/transfer', transferStudent);
 router.patch('/groups/:id/teacher', assignTeacher);
+router.patch('/groups/:id/subject', assignSubject);
 
 router.get('/reports/:type/:id', getReport);
 router.post('/reports/:type/:id/refresh', aiLimiter, refreshReport);

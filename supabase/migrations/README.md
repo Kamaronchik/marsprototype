@@ -26,7 +26,11 @@ applied to a real database.
 | 011 | `011_learning.sql` | homework, submissions, grades |
 | 012 | `012_balance.sql` | student balance and the lesson price |
 | 013 | `013_academic_manager.sql` | AcademicManager role, schedule, lessons, ratings, AI reports |
-| 014+ | later files | see the list in this folder |
+| 014 | `014_subjects.sql` | subjects and groups.subject_id |
+| 015 | `015_expenses.sql` | school expenses |
+| 016 | `016_careers.sql` | job applications, notes, private "resumes" bucket |
+| 017 | `017_audit_indexes.sql` | indexes for the audit page |
+| 018+ | later files | see the list in this folder |
 
 4. Put the keys into `.env` (see `.env.example`): `SUPABASE_URL` and `SUPABASE_SECRET_KEY`
    (Project settings -> API -> `service_role`). The secret key stays on the server only.

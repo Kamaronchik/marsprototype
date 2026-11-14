@@ -6,9 +6,20 @@ const { notify } = require('../utils/notify');
 const { dashboard, riskStudents, teacherStats } = require('../utils/academicStats');
 
 // The dashboard of the academic manager: plain numbers.
+// Analytics can be limited to one subject: ?subjectId=<uuid>
+const readSubject = (req, res) => {
+  const { subjectId } = req.query;
+  if (subjectId !== undefined && !isUuid(subjectId)) {
+    res.status(400).json({ message: 'Invalid subject' });
+    return false;
+  }
+  return true;
+};
+
 const getDashboard = async (req, res) => {
+  if (!readSubject(req, res)) return;
   try {
-    res.json(await dashboard());
+    res.json(await dashboard(req.query.subjectId));
   } catch (error) {
     handleDbError(error, res);
   }
@@ -16,8 +27,9 @@ const getDashboard = async (req, res) => {
 
 // Students at risk. Counted by code from attendance and marks.
 const getRiskStudents = async (req, res) => {
+  if (!readSubject(req, res)) return;
   try {
-    res.json({ students: await riskStudents() });
+    res.json({ students: await riskStudents(req.query.subjectId) });
   } catch (error) {
     handleDbError(error, res);
   }
@@ -25,8 +37,9 @@ const getRiskStudents = async (req, res) => {
 
 // Teachers: average rating, checked homework, lessons without a topic, anonymous reviews.
 const getTeachers = async (req, res) => {
+  if (!readSubject(req, res)) return;
   try {
-    res.json({ teachers: await teacherStats() });
+    res.json({ teachers: await teacherStats(req.query.subjectId) });
   } catch (error) {
     handleDbError(error, res);
   }
@@ -82,6 +95,24 @@ const assignTeacher = async (req, res) => {
   res.json({ message: 'Teacher assigned' });
 };
 
+// Gives a group its subject (or takes it away: subjectId = null).
+const assignSubject = async (req, res) => {
+  const { id } = req.params;
+  const { subjectId = null } = req.body;
+  if (!isUuid(id) || (subjectId !== null && !isUuid(subjectId))) return res.status(400).json({ message: 'Invalid id' });
+
+  if (subjectId) {
+    const { data: subject } = await supabase.from('subjects').select('id').eq('id', subjectId).maybeSingle();
+    if (!subject) return res.status(404).json({ message: 'Subject not found' });
+  }
+  const { data, error } = await supabase.from('groups').update({ subject_id: subjectId }).eq('id', id).select('id').maybeSingle();
+  if (error) return handleDbError(error, res);
+  if (!data) return res.status(404).json({ message: 'Group not found' });
+
+  await logAction(req.user.id, 'group.assign_subject', 'group', id, { subjectId });
+  res.json({ message: 'Subject assigned' });
+};
+
 // Teachers for the "assign teacher" list: id and name only.
 const listTeacherNames = async (req, res) => {
   const { data, error } = await supabase
@@ -90,4 +121,4 @@ const listTeacherNames = async (req, res) => {
   res.json({ teachers: data.map((t) => ({ id: t.id, fullName: t.full_name })) });
 };
 
-module.exports = { getDashboard, getRiskStudents, getTeachers, transferStudent, assignTeacher, listTeacherNames };
+module.exports = { getDashboard, getRiskStudents, getTeachers, transferStudent, assignTeacher, assignSubject, listTeacherNames };

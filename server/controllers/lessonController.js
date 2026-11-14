@@ -6,10 +6,11 @@ const { isDate, isMarkingOpen, loadTeacherGroups } = require('../utils/attendanc
 const { slotsOnDate } = require('../utils/lessonDay');
 const { saveMark } = require('../utils/saveMark');
 const { createHomeworkRecord } = require('../utils/createHomework');
+const { logAction } = require('../utils/audit');
 
 const MAX_TOPIC = 200;
 const MAX_NOTES = 2000;
-const STATUSES = ['present', 'absent'];
+const STATUSES = ['present', 'late', 'absent'];
 
 const byName = (a, b) => a.fullName.localeCompare(b.fullName);
 
@@ -143,6 +144,7 @@ const createLesson = async (req, res) => {
     homeworkId = result.id;
   }
 
+  await logAction(req.user.id, 'lesson.create', 'group', groupId, { date, topic: topic.trim() });
   res.status(201).json({ id: lesson.id, homeworkId });
 };
 
@@ -182,6 +184,7 @@ const listLessons = async (req, res) => {
       teacherId: l.teacher_id,
       teacherName: l.teacher?.full_name ?? null,
       present: l.marks.filter((m) => m.status === 'present').length,
+      late: l.marks.filter((m) => m.status === 'late').length,
       absent: l.marks.filter((m) => m.status === 'absent').length,
       homeworkCount: l.homework.length,
       ratingCount: l.ratings.length,

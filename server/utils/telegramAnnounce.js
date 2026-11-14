@@ -13,7 +13,8 @@ const announceAttendance = async ({ studentId, attendanceId, status, groupName, 
       .from('telegram_links').select('user_id, chat_id, language').eq('user_id', studentId).maybeSingle();
     if (!link) return;
 
-    if (status === 'present') {
+    // A student who is present or late came to the lesson: only an absence is questioned.
+    if (status !== 'absent') {
       await supabase.from('telegram_absences').update({ status: 'cancelled' }).eq('attendance_id', attendanceId).eq('status', 'asked');
       await sayTo(deps, link, 'cameNotice', { group: groupName, date });
       return;

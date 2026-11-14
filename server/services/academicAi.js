@@ -30,7 +30,7 @@ const summarizeStudent = async ({ studentId, language, ask = askGemini }) => {
   ].join('\n');
   const text = [
     `Student id: ${studentId}`,
-    `Last 30 days: ${facts.present30} lessons attended, ${facts.absences30} missed.`,
+    `Last 30 days: ${facts.present30} lessons on time, ${facts.late30} late, ${facts.absences30} missed.`,
     `Latest marks (percent): ${facts.grades.map((g) => `${g.title} (${g.kind}) ${g.percent}%`).join('; ') || 'none'}`,
     `Recent lesson topics: ${facts.recentTopics.join('; ') || 'none'}`,
   ].join('\n');

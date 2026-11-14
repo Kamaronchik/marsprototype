@@ -7,7 +7,7 @@ const {
   isDate, addDays, weekdayOf, isMarkingOpen, lessonEnd, buildStats, loadTeacherGroups, remindUnmarked,
 } = require('../utils/attendance');
 
-const STATUSES = ['present', 'absent'];
+const STATUSES = ['present', 'late', 'absent'];
 
 const byName = (a, b) => a.fullName.localeCompare(b.fullName);
 
@@ -76,13 +76,13 @@ const getToday = async (req, res) => {
   });
 };
 
-// Tick (present) or cross (absent) for one student.
+// Tick (present), clock (late) or cross (absent) for one student.
 // Teacher: own group, today only, while the school is open.
 // Admin: any group, any past or current date (a correction).
 const markAttendance = async (req, res) => {
   const { groupId, studentId, status } = req.body;
   if (!isUuid(groupId) || !isUuid(studentId)) return res.status(400).json({ message: 'Invalid group or student' });
-  if (!STATUSES.includes(status)) return res.status(400).json({ message: 'Status must be present or absent' });
+  if (!STATUSES.includes(status)) return res.status(400).json({ message: 'Status must be present, late or absent' });
 
   const now = tashkentNow();
   const isAdmin = req.user.role === 'Admin';

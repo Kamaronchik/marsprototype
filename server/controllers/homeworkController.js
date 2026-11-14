@@ -4,6 +4,7 @@ const { isUuid } = require('../utils/validate');
 const { isDate } = require('../utils/attendance');
 const { tashkentNow } = require('../utils/schedule');
 const { notify } = require('../utils/notify');
+const { logAction } = require('../utils/audit');
 const { createHomeworkRecord } = require('../utils/createHomework');
 
 const MAX_TEXT = 5000;
@@ -176,6 +177,7 @@ const gradeSubmission = async (req, res) => {
   }, { onConflict: 'submission_id' });
   if (gradeError) return handleDbError(gradeError, res);
 
+  await logAction(req.user.id, 'homework.grade', 'user', submission.student_id, { title: homework.title, score, maxScore: homework.max_score });
   await notify(
     submission.student_id,
     'homework.graded',

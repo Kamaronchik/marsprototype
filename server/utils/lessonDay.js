@@ -1,16 +1,19 @@
 const supabase = require('../config/supabase');
 const { LESSON_MINUTES, toMinutes, toTime } = require('./schedule');
 const { weekdayOf } = require('./attendance');
+const { toSubject } = require('./subjects');
 
-const GROUP_COLUMNS = 'id, name, room, teacher_id, weekdays, start_time, created_at, teacher:users!groups_teacher_id_fkey(full_name)';
+const GROUP_COLUMNS = 'id, name, room, teacher_id, weekdays, start_time, created_at, teacher:users!groups_teacher_id_fkey(full_name), subject:subjects(id, name, name_ru, name_uz, name_en)';
 
 // Every planned lesson slot of the school: [{ groupId, groupName, teacherId, teacherName, room, weekday, startTime, endTime, scheduleId }].
 // The schedule table is the source. A group with no rows there falls back to its own weekdays and start_time,
 // so groups made before the schedule table existed still show up.
-const loadSlots = async ({ teacherId = null, groupId = null } = {}) => {
+const loadSlots = async ({ teacherId = null, groupId = null, subjectId = null, groupIds = null } = {}) => {
   let groupsQuery = supabase.from('groups').select(GROUP_COLUMNS).eq('status', 'active');
   if (teacherId) groupsQuery = groupsQuery.eq('teacher_id', teacherId);
   if (groupId) groupsQuery = groupsQuery.eq('id', groupId);
+  if (subjectId) groupsQuery = groupsQuery.eq('subject_id', subjectId);
+  if (groupIds) groupsQuery = groupsQuery.in('id', groupIds);
   const { data: groups, error } = await groupsQuery;
   if (error) throw error;
   if (!groups.length) return [];
@@ -24,7 +27,7 @@ const loadSlots = async ({ teacherId = null, groupId = null } = {}) => {
     const own = rows.filter((r) => r.group_id === group.id);
     const base = {
       groupId: group.id, groupName: group.name, teacherId: group.teacher_id,
-      teacherName: group.teacher?.full_name ?? null, room: group.room, groupCreated: group.created_at.slice(0, 10),
+      teacherName: group.teacher?.full_name ?? null, subject: group.subject ? toSubject(group.subject) : null, room: group.room, groupCreated: group.created_at.slice(0, 10),
     };
     if (own.length) {
       for (const r of own) {

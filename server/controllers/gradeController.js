@@ -2,6 +2,7 @@ const supabase = require('../config/supabase');
 const { handleDbError } = require('../utils/apiErrors');
 const { isUuid } = require('../utils/validate');
 const { notify } = require('../utils/notify');
+const { logAction } = require('../utils/audit');
 
 const MANUAL_KINDS = ['lesson', 'test', 'project'];
 
@@ -61,6 +62,7 @@ const addGrade = async (req, res) => {
     .single();
   if (error) return handleDbError(error, res);
 
+  await logAction(req.user.id, 'grade.add', 'grade', data.id, { studentId, groupId, title: name, score, maxScore: max });
   await notify(studentId, 'grade.added', { title: name, score, maxScore: max, groupName: group.name }, { link: '/student/grades' });
   res.status(201).json({ id: data.id });
 };
@@ -110,6 +112,7 @@ const deleteGrade = async (req, res) => {
 
   const { error } = await supabase.from('grades').delete().eq('id', id);
   if (error) return handleDbError(error, res);
+  await logAction(req.user.id, 'grade.delete', 'grade', id, { groupId: grade.group_id });
   res.json({ message: 'Mark deleted' });
 };
 

@@ -32,6 +32,8 @@ const lessonRoutes = require('./routes/lessonRoutes');
 const scheduleRoutes = require('./routes/scheduleRoutes');
 const ratingRoutes = require('./routes/ratingRoutes');
 const academicRoutes = require('./routes/academicRoutes');
+const subjectRoutes = require('./routes/subjectRoutes');
+const auditRoutes = require('./routes/auditRoutes');
 
 const app = express();
 
@@ -70,6 +72,8 @@ app.use('/api/lessons', lessonRoutes);
 app.use('/api/schedule', scheduleRoutes);
 app.use('/api/ratings', ratingRoutes);
 app.use('/api/academic', academicRoutes);
+app.use('/api/subjects', subjectRoutes);
+app.use('/api/audit', auditRoutes);
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'Mars Space Backend is running' });

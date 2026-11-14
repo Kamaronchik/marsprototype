@@ -11,7 +11,7 @@ const buildSystemPrompt = ({ name, language, overview }) => {
   const facts = [
     `Student: ${name}`,
     `Rank: ${rank.key}, ${rank.xp} XP`,
-    `Attendance: ${readiness.present} attended, ${readiness.absent} missed, ${readiness.percent ?? 'n/a'}%`,
+    `Attendance: ${readiness.present} on time, ${readiness.late ?? 0} late, ${readiness.absent} missed, ${readiness.percent ?? 'n/a'}%`,
     `Battles won: ${battles.wins} of ${battles.played} played`,
     `Groups: ${crews.map((g) => `${g.name} (teacher ${g.teacherName ?? 'unknown'}, room ${g.room}, starts ${g.startTime})`).join('; ') || 'none'}`,
     `Next lesson: ${describeNext(nextLaunch)}`,
