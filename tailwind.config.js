@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 
-// Every colour is a CSS variable holding "R G B", so a style (theme) is only a different set of
-// variables on <html data-theme="...">; see src/index.css. The "<alpha-value>" part keeps
+// Every colour is a CSS variable holding "R G B", so light and dark mode are only two sets of
+// variables on <html data-theme="light|dark">; see src/index.css. The "<alpha-value>" part keeps
 // classes like bg-card/70 working.
 const token = (name) => `rgb(var(--${name}) / <alpha-value>)`;
 
@@ -22,7 +22,7 @@ export default {
         ink: token('ink'),
         'ink-soft': token('ink-soft'),
         'ink-faint': token('ink-faint'),
-        // The accent of the style (rust in Mars, violet in Orbit, green in Terminal)
+        // The accent colour (rust)
         mars: token('mars'),
         'mars-deep': token('mars-deep'),
         'mars-tint': token('mars-tint'),
@@ -43,7 +43,6 @@ export default {
         display: ['var(--font-display)', 'Georgia', 'serif'],
         mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
       },
-      // Corners and shadows change with the style too (Terminal is sharp, Orbit is round).
       borderRadius: {
         md: 'var(--r-md)',
         lg: 'var(--r-lg)',

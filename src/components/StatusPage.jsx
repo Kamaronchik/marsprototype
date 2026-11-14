@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { homePath } from '../lib/roleHome';
 import Logo from './Logo';
 import LanguageSwitch from './LanguageSwitch';
-import DesignSwitch from './DesignSwitch';
+import ThemeToggle from './ThemeToggle';
 
 // Full-page message for 404 / no access. title and text are translation keys.
 // A signed-in person goes back to their own cabinet, a visitor to the login page.
@@ -15,7 +15,7 @@ const StatusPage = ({ code, title, text }) => {
     <div className="flex min-h-screen flex-col items-center px-6 py-10">
       <div className="flex w-full max-w-5xl items-center justify-between">
         <Logo />
-        <div className="flex items-center gap-4"><DesignSwitch /><LanguageSwitch /></div>
+        <div className="flex items-center gap-4"><ThemeToggle /><LanguageSwitch /></div>
       </div>
       <div className="my-auto max-w-md py-10 text-center">
         <p className="font-display text-7xl font-semibold text-mars">{code}</p>

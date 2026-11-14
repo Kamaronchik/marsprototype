@@ -7,7 +7,7 @@ import { ArrowLeft, Loader2, RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Logo from '../../components/Logo';
 import LanguageSwitch from '../../components/LanguageSwitch';
-import DesignSwitch from '../../components/DesignSwitch';
+import ThemeToggle from '../../components/ThemeToggle';
 import { messageText } from '../../lib/api';
 import { homePath } from '../../lib/roleHome';
 
@@ -139,7 +139,7 @@ const DeviceVerificationPage = () => {
     <div className="flex min-h-screen flex-col items-center px-6 py-10">
       <div className="flex w-full max-w-5xl items-center justify-between">
         <Logo />
-        <div className="flex items-center gap-4"><DesignSwitch /><LanguageSwitch /></div>
+        <div className="flex items-center gap-4"><ThemeToggle /><LanguageSwitch /></div>
       </div>
 
       <div className="my-auto w-full max-w-md py-10">

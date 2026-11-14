@@ -880,12 +880,6 @@
       "invalid_form": "Shakl noto'g'ri",
       "only_the_admin_can_change_a_mark": "Belgini faqat administrator o'zgartira oladi"
     },
-    "theme": {
-      "label": "Uslub",
-      "mars": "Mars: iliq qog'oz",
-      "orbit": "Orbit: chuqur kosmos",
-      "terminal": "Terminal: kod muharriri"
-    },
     "ranks": {
       "cadet": "Kursant",
       "pilot": "Uchuvchi",
@@ -898,16 +892,6 @@
       "teacher": "Komandir stansiyasi",
       "finance": "Logistika bo'limi",
       "academic": "O'quv bo'limi"
-    },
-    "design": {
-      "label": "Dizayn",
-      "cockpit": "Kabina: panel va dok",
-      "base": "Mars bazasi: yon panel va manzara",
-      "console": "Konsol: kod muharriri"
-    },
-    "console": {
-      "explorer": "Tadqiqotchi",
-      "rank": "unvon"
     },
     "home": {
       "navigation": "Asosiy navigatsiya",
@@ -1350,6 +1334,10 @@
       "tempPassword": "Vaqtinchalik parol",
       "shownOnce": "Parol bir marta ko'rsatiladi. Uni insonga bering va almashtirishni so'rang.",
       "empty": "Arizalar yo'q"
+    },
+    "theme": {
+      "dark": "Qorong'i rejim",
+      "light": "Yorug' rejim"
     }
   }
 }

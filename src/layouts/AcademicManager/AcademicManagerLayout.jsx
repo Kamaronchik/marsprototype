@@ -1,6 +1,5 @@
 import { LayoutDashboard, CalendarDays, BookOpenText, AlertTriangle, GraduationCap, Users, BookMarked, Briefcase, ScrollText } from 'lucide-react';
-import TopNavShell from '../../shells/TopNavShell';
-import { useRoleLook } from '../../lib/useRoleLook';
+import AppShell from '../../shells/AppShell';
 
 const menuItems = [
   { label: 'nav.overview', path: '/academic', icon: LayoutDashboard },
@@ -14,9 +13,6 @@ const menuItems = [
   { label: 'nav.audit', path: '/academic/audit', icon: ScrollText },
 ];
 
-const AcademicManagerLayout = () => {
-  useRoleLook('AcademicManager');
-  return <TopNavShell menuItems={menuItems} home="/academic" eyebrow="eyebrow.academic" />;
-};
+const AcademicManagerLayout = () => <AppShell menuItems={menuItems} eyebrow="eyebrow.academic" />;
 
 export default AcademicManagerLayout;

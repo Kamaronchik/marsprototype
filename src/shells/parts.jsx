@@ -3,17 +3,17 @@ import { useTranslation } from 'react-i18next';
 import { LogOut } from 'lucide-react';
 import NotificationBell from '../components/NotificationBell';
 import LanguageSwitch from '../components/LanguageSwitch';
-import DesignSwitch from '../components/DesignSwitch';
+import ThemeToggle from '../components/ThemeToggle';
 import { useLogout } from '../lib/useLogout';
 
 // Pieces that every shell (page frame) uses in its own place.
 
-// Bell, language, and (for students) the design switch.
-export const ShellTools = ({ withDesign = false, bellAlign = 'right' }) => (
+// Bell, language and the dark mode button.
+export const ShellTools = ({ bellAlign = 'right' }) => (
   <div className="flex items-center gap-3">
     <NotificationBell align={bellAlign} />
     <LanguageSwitch />
-    {withDesign && <DesignSwitch />}
+    <ThemeToggle />
   </div>
 );
 

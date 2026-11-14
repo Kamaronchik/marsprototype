@@ -1,13 +1,9 @@
-import { lazy, Suspense } from 'react';
-import { useDesign } from '../../lib/useDesign';
+import { Suspense, lazy } from 'react';
 import { SkeletonText, SkeletonCard, SkeletonList } from '../../components/Skeleton';
 import LessonRating from '../../components/LessonRating';
 
-// The home screen of the design the student has chosen. Only the one actually shown is downloaded.
-const CockpitHome = lazy(() => import('./CockpitHome'));
+// The home screen is downloaded only when the student opens it.
 const BaseHome = lazy(() => import('./BaseHome'));
-const ConsoleHome = lazy(() => import('./ConsoleHome'));
-const HOMES = { cockpit: CockpitHome, base: BaseHome, console: ConsoleHome };
 
 const HomeSkeleton = () => (
   <div className="space-y-6">
@@ -19,16 +15,13 @@ const HomeSkeleton = () => (
   </div>
 );
 
-const StudentHome = () => {
-  const Home = HOMES[useDesign()];
-  return (
-    <>
-      <LessonRating />
-      <Suspense fallback={<HomeSkeleton />}>
-        <Home />
-      </Suspense>
-    </>
-  );
-};
+const StudentHome = () => (
+  <>
+    <LessonRating />
+    <Suspense fallback={<HomeSkeleton />}>
+      <BaseHome />
+    </Suspense>
+  </>
+);
 
 export default StudentHome;

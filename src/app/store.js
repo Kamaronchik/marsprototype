@@ -3,7 +3,6 @@ import authReducer, { logout } from '../features/auth/authSlice';
 import usersReducer from '../features/users/usersSlice';
 import { clearFetchCache } from '../lib/useFetch';
 import { SESSION_EXPIRED } from '../lib/api';
-import { applyRoleLook } from '../lib/theme';
 import cartReducer, { loadCart, saveCart } from '../features/cart/cartSlice';
 
 // Only the shopping cart is kept in the browser. Everything else comes from the server
@@ -41,5 +40,4 @@ store.subscribe(() => {
 window.addEventListener(SESSION_EXPIRED, () => {
   if (!store.getState().auth.isAuthenticated) return;
   store.dispatch(logout());
-  applyRoleLook(null);
 });

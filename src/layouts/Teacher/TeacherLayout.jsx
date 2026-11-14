@@ -1,6 +1,5 @@
 import { LayoutDashboard, Users, ClipboardCheck, Coins, BookOpenCheck, Award, BookOpenText, CalendarDays } from 'lucide-react';
-import TopNavShell from '../../shells/TopNavShell';
-import { useRoleLook } from '../../lib/useRoleLook';
+import AppShell from '../../shells/AppShell';
 
 const menuItems = [
   { label: 'nav.today', path: '/teacher', icon: LayoutDashboard },
@@ -13,9 +12,6 @@ const menuItems = [
   { label: 'nav.coins', path: '/teacher/coins', icon: Coins },
 ];
 
-const TeacherLayout = () => {
-  useRoleLook('Teacher');
-  return <TopNavShell menuItems={menuItems} />;
-};
+const TeacherLayout = () => <AppShell menuItems={menuItems} eyebrow="eyebrow.teacher" />;
 
 export default TeacherLayout;

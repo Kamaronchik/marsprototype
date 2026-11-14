@@ -6,15 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Fonts: Inter and JetBrains Mono here, the display font of the chosen look is added by src/lib/theme.js. -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Fraunces:opsz,wght@9..144,500;9..144,600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
     <title>Mars Space</title>
-    <!-- Puts the chosen style on the page before it is drawn, so there is no flash of the wrong one. -->
+    <!-- Puts the light or dark mode on the page before it is drawn, so there is no flash of the wrong one. -->
     <script>
+      var mode = 'light';
       try {
-        var style = localStorage.getItem('mars-theme');
-        if (['mars', 'orbit', 'terminal', 'control', 'station', 'bay'].indexOf(style) > -1) document.documentElement.setAttribute('data-theme', style);
-      } catch (error) { /* private mode: the default style is used */ }
+        var stored = localStorage.getItem('mars-theme');
+        if (stored === 'light' || stored === 'dark') mode = stored;
+        else if (window.matchMedia('(prefers-color-scheme: dark)').matches) mode = 'dark';
+      } catch (error) { /* private mode: the system setting is used */ }
+      document.documentElement.setAttribute('data-theme', mode);
     </script>
   </head>
   <body>

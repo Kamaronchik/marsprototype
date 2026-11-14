@@ -880,12 +880,6 @@
       "invalid_form": "Invalid form",
       "only_the_admin_can_change_a_mark": "Only the Admin can change a mark"
     },
-    "theme": {
-      "label": "Style",
-      "mars": "Mars: warm paper",
-      "orbit": "Orbit: deep space",
-      "terminal": "Terminal: code editor"
-    },
     "ranks": {
       "cadet": "Cadet",
       "pilot": "Pilot",
@@ -898,16 +892,6 @@
       "teacher": "Commander's station",
       "finance": "Logistics bay",
       "academic": "Study office"
-    },
-    "design": {
-      "label": "Design",
-      "cockpit": "Cockpit: a HUD and a dock",
-      "base": "Mars Base: a rail and a landscape",
-      "console": "Console: a code editor"
-    },
-    "console": {
-      "explorer": "Explorer",
-      "rank": "rank"
     },
     "home": {
       "navigation": "Main navigation",
@@ -1350,6 +1334,10 @@
       "tempPassword": "Temporary password",
       "shownOnce": "The password is shown once. Give it to the person and ask them to change it.",
       "empty": "No applications"
+    },
+    "theme": {
+      "dark": "Dark mode",
+      "light": "Light mode"
     }
   }
 }

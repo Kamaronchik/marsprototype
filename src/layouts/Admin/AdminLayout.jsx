@@ -1,6 +1,5 @@
 import { LayoutDashboard, Users, GraduationCap, Layers, ClipboardCheck, CreditCard, Wallet, Gift, PackageCheck, Coins, Trophy, Settings, History, Send, BookMarked, Receipt, BarChart3, Briefcase, ScrollText } from 'lucide-react';
-import ControlShell from '../../shells/ControlShell';
-import { useRoleLook } from '../../lib/useRoleLook';
+import AppShell from '../../shells/AppShell';
 
 const sections = [
   { label: 'nav.sectionMain', items: [
@@ -34,9 +33,6 @@ const sections = [
   ] },
 ];
 
-const AdminLayout = () => {
-  useRoleLook('Admin');
-  return <ControlShell sections={sections} />;
-};
+const AdminLayout = () => <AppShell sections={sections} eyebrow="eyebrow.admin" search />;
 
 export default AdminLayout;
