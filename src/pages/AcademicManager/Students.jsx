@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import PageHeader from '../../components/PageHeader';
+import SubjectFilter from '../../components/SubjectFilter';
 import AiPanel from '../../components/AiPanel';
 import { SkeletonCard } from '../../components/Skeleton';
 import { useFetch } from '../../lib/useFetch';
@@ -9,7 +10,8 @@ import { useFetch } from '../../lib/useFetch';
 // The server counts who is on the list; the AI block under a student only explains it.
 const Students = () => {
   const { t } = useTranslation();
-  const { data, loading } = useFetch('/api/academic/students/risk');
+  const [subjectId, setSubjectId] = useState('');
+  const { data, loading } = useFetch(`/api/academic/students/risk${subjectId ? `?subjectId=${subjectId}` : ''}`);
   const [openId, setOpenId] = useState(null);
   const students = data?.students ?? [];
 
@@ -17,6 +19,7 @@ const Students = () => {
     <>
       <PageHeader title={t('nav.atRisk')}>{t('academic.riskHint')}</PageHeader>
 
+      <SubjectFilter value={subjectId} onChange={setSubjectId} />
       {loading && <SkeletonCard lines={4} />}
       {!loading && students.length === 0 && <p className="text-sm text-ink-soft">{t('academic.noRisk')}</p>}
 
@@ -30,6 +33,7 @@ const Students = () => {
               </div>
               <div className="flex flex-wrap items-center gap-2 text-xs font-semibold">
                 {s.reasons.includes('absences') && <span className="rounded-md bg-brick-tint px-2 py-1 text-brick">{t('academic.absences', { count: s.absences })}</span>}
+                {s.reasons.includes('lates') && <span className="rounded-md bg-ochre-tint px-2 py-1 text-ochre">{t('academic.lates', { count: s.lates })}</span>}
                 {s.reasons.includes('falling') && <span className="rounded-md bg-ochre-tint px-2 py-1 text-ochre">{t('academic.falling', { from: s.previousAverage, to: s.recentAverage })}</span>}
                 <button className="btn-quiet !py-1.5" onClick={() => setOpenId(openId === s.studentId ? null : s.studentId)}>{t('academic.analysis')}</button>
               </div>

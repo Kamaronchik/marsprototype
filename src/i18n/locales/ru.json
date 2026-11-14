@@ -78,7 +78,13 @@
       "schedule": "Расписание",
       "lessons": "Уроки",
       "atRisk": "Зона риска",
-      "teachers": "Учителя"
+      "teachers": "Учителя",
+      "mySchedule": "Моё расписание",
+      "subjects": "Предметы",
+      "applications": "Заявки",
+      "expenses": "Расходы",
+      "reports": "Отчёты",
+      "audit": "Журнал действий"
     },
     "bell": {
       "title": "Уведомления",
@@ -108,7 +114,8 @@
       "homework_submitted": "{{student}} сдал(а) задание «{{title}}»",
       "grade_added": "Новая оценка в {{groupName}}: {{title}}, {{score}} / {{maxScore}}",
       "academic_message": "{{text}}",
-      "lesson_rate": "Как прошли уроки на этой неделе? Оцените урок «{{topic}}» ({{groupName}}) на главной странице."
+      "lesson_rate": "Как прошли уроки на этой неделе? Оцените урок «{{topic}}» ({{groupName}}) на главной странице.",
+      "attendance_late": "Вас отметили опоздавшим в группе {{groupName}}, {{date}}"
     },
     "errors": {
       "ROOM_BUSY": "Этот кабинет в это время уже занят",
@@ -240,7 +247,9 @@
       "teacher": "Учитель",
       "date": "Дата",
       "room": "Кабинет",
-      "lesson": "Занятие"
+      "lesson": "Занятие",
+      "late": "Опоздал",
+      "markLate": "Отметить опоздание"
     },
     "auth": {
       "login": "Войти",
@@ -590,7 +599,8 @@
       "forbiddenTitle": "Эта страница не для вашего аккаунта",
       "forbiddenText": "У вашей роли здесь нет доступа. Если это ошибка, обратитесь к администратору.",
       "notFoundTitle": "Мы не нашли эту страницу",
-      "notFoundText": "Возможно, ссылка устарела или в ней опечатка."
+      "notFoundText": "Возможно, ссылка устарела или в ней опечатка.",
+      "toCabinet": "В мой кабинет"
     },
     "comingSoon": {
       "title": "Здесь пока пусто",
@@ -843,7 +853,34 @@
       "score_must_be_from_1_to_5": "Оценка должна быть от 1 до 5",
       "lesson_not_found": "Урок не найден",
       "you_already_rated_this_lesson": "Вы уже оценили этот урок",
-      "you_can_rate_a_lesson_once_a_week": "Оценивать урок можно раз в неделю"
+      "you_can_rate_a_lesson_once_a_week": "Оценивать урок можно раз в неделю",
+      "a_subject_with_this_name_already_exists": "Предмет с таким названием уже есть",
+      "accept_the_candidate_first": "Сначала примите кандидата",
+      "account_is_not_active": "Аккаунт не активен",
+      "application_not_found": "Заявка не найдена",
+      "application_received": "Заявка принята",
+      "choose_a_vacancy": "Выберите вакансию",
+      "contact_is_required_phone_telegram_or_e_mail": "Укажите контакт (телефон, Telegram или e-mail)",
+      "expense_deleted": "Расход удалён",
+      "expense_not_found": "Расход не найден",
+      "invalid_expense_category": "Неверная категория расхода",
+      "invalid_subject": "Неверный предмет",
+      "month_must_look_like_2026_11": "Месяц должен выглядеть так: 2026-11",
+      "name_is_required": "Укажите имя",
+      "note_text_is_required": "Напишите текст заметки",
+      "only_the_admin_can_accept_a_candidate": "Принять кандидата может только администратор",
+      "only_the_admin_can_change_an_accepted_candidate": "Изменить принятого кандидата может только администратор",
+      "status_must_be_present_late_or_absent": "Статус: пришёл, опоздал или отсутствовал",
+      "subject_assigned": "Предмет назначен",
+      "subject_deleted": "Предмет удалён",
+      "subject_not_found": "Предмет не найден",
+      "the_account_was_already_created": "Аккаунт уже создан",
+      "the_resume_must_be_a_pdf_or_word_file": "Резюме должно быть файлом PDF или Word",
+      "this_application_has_no_resume": "В этой заявке нет резюме",
+      "too_many_applications_try_again_later": "Слишком много заявок. Попробуйте позже.",
+      "the_resume_is_too_big_up_to_4_mb": "Резюме слишком большое (до 4 МБ)",
+      "invalid_form": "Неверная форма",
+      "only_the_admin_can_change_a_mark": "Только администратор может изменить отметку"
     },
     "theme": {
       "label": "Стиль",
@@ -1093,7 +1130,230 @@
       "reviews": "Анонимные отзывы",
       "groupsHint": "Смените учителя группы или переведите ученика в другую группу.",
       "moved": "Ученик переведён",
-      "moveTo": "Перевести в..."
+      "moveTo": "Перевести в...",
+      "lates_one": "Опозданий за 2 недели: {{count}}",
+      "lates_few": "Опозданий за 2 недели: {{count}}",
+      "lates_many": "Опозданий за 2 недели: {{count}}",
+      "lates_other": "Опозданий за 2 недели: {{count}}"
+    },
+    "schedule": {
+      "mineHint": "Ваши уроки на неделю.",
+      "today": "Сегодня",
+      "noLessons": "Уроков нет"
+    },
+    "subjects": {
+      "title": "Предметы",
+      "hint": "У одной группы один предмет. Предмет виден в группе, у учителя и у ученика.",
+      "add": "Добавить предмет",
+      "edit": "Изменить предмет",
+      "empty": "Предметов пока нет",
+      "name": "Название",
+      "nameRu": "По-русски",
+      "nameUz": "По-узбекски",
+      "nameEn": "По-английски",
+      "translationsHint": "Переводы необязательны: без перевода показывается основное название.",
+      "groupsCount_one": "{{count}} группа",
+      "groupsCount_few": "{{count}} группы",
+      "groupsCount_many": "{{count}} групп",
+      "groupsCount_other": "{{count}} группы",
+      "deleteTitle": "Удалить предмет?",
+      "deleteConfirm": "Удалить «{{name}}»? Группы останутся, у них просто не будет предмета.",
+      "subject": "Предмет",
+      "none": "Без предмета",
+      "all": "Все предметы"
+    },
+    "expenses": {
+      "title": "Расходы",
+      "hint": "Деньги, которые школа тратит: аренда, реклама и так далее.",
+      "add": "Добавить расход",
+      "edit": "Изменить расход",
+      "saved": "Расход сохранён",
+      "month": "Месяц",
+      "category": "Категория",
+      "allCategories": "Все категории",
+      "allMonths": "Все месяцы",
+      "total": "Итого",
+      "comment": "Комментарий",
+      "empty": "Расходов по этому фильтру нет",
+      "deleteTitle": "Удалить расход?",
+      "deleteConfirm": "Удалить расход «{{category}}», {{amount}}? Это нельзя отменить.",
+      "salariesHint": "Зарплаты учителей вносятся на странице «Зарплаты». Эта категория для остальных сотрудников.",
+      "categories": {
+        "rent": "Аренда",
+        "salaries": "Зарплаты",
+        "advertising": "Реклама",
+        "utilities": "Коммунальные",
+        "materials": "Материалы",
+        "other": "Другое"
+      }
+    },
+    "reports": {
+      "title": "Отчёт",
+      "hint": "Доход, расходы, прибыль и долги за день, месяц или любой период.",
+      "period": "Период",
+      "day": "День",
+      "month": "Месяц",
+      "range": "Выбранный период",
+      "badPeriod": "Выберите период: начало не должно быть позже конца.",
+      "income": "Доход (оплаты учеников)",
+      "expenses": "Расходы по категориям",
+      "expensesTotal": "Расходы всего",
+      "teacherSalaries": "Зарплаты учителей",
+      "profit": "Прибыль",
+      "students": "Ученики",
+      "debtors": "Должники",
+      "activeStudents": "Активные ученики",
+      "excel": "Excel",
+      "print": "Печать / PDF",
+      "exportFailed": "Не удалось создать файл Excel"
+    },
+    "audit": {
+      "title": "Журнал действий",
+      "hint": "Кто, когда и что сделал. Вы видите действия своей области.",
+      "user": "Пользователь",
+      "allUsers": "Все пользователи",
+      "action": "Код действия",
+      "when": "Когда",
+      "who": "Кто",
+      "what": "Что произошло",
+      "system": "Сайт вакансий",
+      "empty": "Записей нет",
+      "page": "Страница {{page}} из {{pages}}",
+      "prev": "Назад",
+      "next": "Дальше",
+      "values": {
+        "present": "пришёл",
+        "late": "опоздал",
+        "absent": "отсутствовал",
+        "active": "активен",
+        "blocked": "заблокирован",
+        "frozen": "заморожен",
+        "Admin": "админ",
+        "Teacher": "учитель",
+        "Financier": "финансист",
+        "Student": "ученик",
+        "AcademicManager": "завуч"
+      },
+      "actions": {
+        "user": {
+          "create": "создал аккаунт ({{role}}) для {{target}}",
+          "update": "изменил данные {{target}}",
+          "role_change": "изменил роль {{target}}: {{from}} → {{to}}",
+          "status_change": "изменил статус {{target}}: {{from}} → {{to}}",
+          "password_change": "сменил пароль {{target}}",
+          "delete": "удалил аккаунт {{target}}"
+        },
+        "attendance": {
+          "mark": "отметил: {{target}} — {{status}} ({{group}}, {{date}})",
+          "change": "изменил отметку {{target}}: {{from}} → {{to}} ({{group}}, {{date}})"
+        },
+        "grade": {
+          "add": "поставил оценку «{{title}}»",
+          "delete": "удалил оценку"
+        },
+        "homework": {
+          "grade": "проверил ДЗ «{{title}}» ученика {{target}}"
+        },
+        "lesson": {
+          "create": "провёл урок в группе {{target}}: {{title}}"
+        },
+        "group": {
+          "create": "создал группу {{target}}",
+          "update": "изменил группу {{target}}",
+          "archive": "архивировал группу {{target}}",
+          "add_student": "добавил ученика в группу {{target}}",
+          "remove_student": "убрал ученика из группы {{target}}",
+          "transfer_student": "перевёл ученика в группу {{target}}",
+          "assign_teacher": "сменил учителя группы {{target}}",
+          "assign_subject": "изменил предмет группы {{target}}"
+        },
+        "schedule": {
+          "create": "добавил урок в расписание",
+          "update": "изменил расписание",
+          "delete": "убрал урок из расписания"
+        },
+        "subject": {
+          "create": "создал предмет {{target}}",
+          "update": "изменил предмет {{target}}",
+          "delete": "удалил предмет {{target}}"
+        },
+        "academic": {
+          "message": "отправил сообщение"
+        },
+        "payment": {
+          "create": "записал платёж на {{amount}}",
+          "remind_debtors": "напомнил должникам"
+        },
+        "salary": {
+          "create": "записал зарплату учителя на {{amount}}"
+        },
+        "expense": {
+          "create": "добавил расход «{{category}}», {{amount}}",
+          "update": "изменил расход",
+          "delete": "удалил расход «{{category}}», {{amount}}"
+        },
+        "balance": {
+          "topup": "пополнил баланс {{target}} на {{amount}}"
+        },
+        "student": {
+          "payment_status": "изменил статус оплаты {{target}}"
+        },
+        "application": {
+          "receive": "Пришла новая заявка на вакансию",
+          "note": "написал заметку о кандидате",
+          "status": "изменил статус кандидата: {{from}} → {{to}}",
+          "view_resume": "открыл резюме кандидата",
+          "create_account": "создал аккаунт для кандидата"
+        },
+        "coins": {
+          "award": "начислил коины {{target}}",
+          "grant": "добавил коины в пул учителя",
+          "monthly_topup": "запустил ежемесячное пополнение пулов учителей"
+        },
+        "order": {
+          "create": "купил награду",
+          "deliver": "выдал заказ",
+          "cancel": "отменил заказ"
+        },
+        "product": {
+          "create": "добавил товар",
+          "update": "изменил товар",
+          "archive": "архивировал товар",
+          "delete": "удалил товар"
+        },
+        "translation": {
+          "save": "изменил текст сайта",
+          "reset": "вернул текст сайта к исходному"
+        }
+      }
+    },
+    "applications": {
+      "title": "Заявки на вакансии",
+      "hint": "Люди, которые откликнулись на сайте вакансий. Смотрите, пишите заметки, ведите по шагам.",
+      "contact": "Контакт",
+      "position": "Вакансия",
+      "received": "Получена",
+      "status": "Статус",
+      "allStatuses": "Все статусы",
+      "statuses": {
+        "new": "Новая",
+        "viewed": "Просмотрена",
+        "interview": "Собеседование",
+        "accepted": "Принят",
+        "rejected": "Отказ"
+      },
+      "resume": "Открыть резюме",
+      "notes": "Заметки",
+      "noNotes": "Заметок пока нет",
+      "notePlaceholder": "Напишите заметку",
+      "addNote": "Добавить",
+      "createAccount": "Создать аккаунт",
+      "accountCreated": "Аккаунт уже создан.",
+      "accountHint": "Аккаунт создаётся только после нажатия кнопки. Вам покажут одноразовый пароль.",
+      "accountReady": "Аккаунт готов",
+      "tempPassword": "Временный пароль",
+      "shownOnce": "Пароль показан один раз. Передайте его человеку и попросите сменить.",
+      "empty": "Заявок нет"
     }
   }
 }

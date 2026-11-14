@@ -78,7 +78,13 @@
       "schedule": "Schedule",
       "lessons": "Lessons",
       "atRisk": "At risk",
-      "teachers": "Teachers"
+      "teachers": "Teachers",
+      "mySchedule": "My schedule",
+      "subjects": "Subjects",
+      "applications": "Applications",
+      "expenses": "Expenses",
+      "reports": "Reports",
+      "audit": "Audit log"
     },
     "bell": {
       "title": "Notifications",
@@ -108,7 +114,8 @@
       "homework_submitted": "{{student}} sent homework \"{{title}}\"",
       "grade_added": "New mark in {{groupName}}: {{title}}, {{score}} / {{maxScore}}",
       "academic_message": "{{text}}",
-      "lesson_rate": "How were the lessons this week? Rate the lesson \"{{topic}}\" ({{groupName}}) on your home page."
+      "lesson_rate": "How were the lessons this week? Rate the lesson \"{{topic}}\" ({{groupName}}) on your home page.",
+      "attendance_late": "You were marked late in {{groupName}} on {{date}}"
     },
     "errors": {
       "ROOM_BUSY": "This room is already taken at that time",
@@ -238,7 +245,9 @@
       "teacher": "Teacher",
       "date": "Date",
       "room": "Room",
-      "lesson": "Lesson"
+      "lesson": "Lesson",
+      "late": "Late",
+      "markLate": "Mark late"
     },
     "auth": {
       "login": "Sign in",
@@ -588,7 +597,8 @@
       "forbiddenTitle": "This page is not for your account",
       "forbiddenText": "Your role does not have access here. If you think that is a mistake, ask an administrator.",
       "notFoundTitle": "We could not find that page",
-      "notFoundText": "The link may be old or mistyped."
+      "notFoundText": "The link may be old or mistyped.",
+      "toCabinet": "Go to my cabinet"
     },
     "comingSoon": {
       "title": "Nothing here yet",
@@ -841,7 +851,34 @@
       "score_must_be_from_1_to_5": "Score must be from 1 to 5",
       "lesson_not_found": "Lesson not found",
       "you_already_rated_this_lesson": "You already rated this lesson",
-      "you_can_rate_a_lesson_once_a_week": "You can rate a lesson once a week"
+      "you_can_rate_a_lesson_once_a_week": "You can rate a lesson once a week",
+      "a_subject_with_this_name_already_exists": "A subject with this name already exists",
+      "accept_the_candidate_first": "Accept the candidate first",
+      "account_is_not_active": "Account is not active",
+      "application_not_found": "Application not found",
+      "application_received": "Application received",
+      "choose_a_vacancy": "Choose a vacancy",
+      "contact_is_required_phone_telegram_or_e_mail": "Contact is required (phone, Telegram or e-mail)",
+      "expense_deleted": "Expense deleted",
+      "expense_not_found": "Expense not found",
+      "invalid_expense_category": "Invalid expense category",
+      "invalid_subject": "Invalid subject",
+      "month_must_look_like_2026_11": "Month must look like 2026-11",
+      "name_is_required": "Name is required",
+      "note_text_is_required": "Note text is required",
+      "only_the_admin_can_accept_a_candidate": "Only the Admin can accept a candidate",
+      "only_the_admin_can_change_an_accepted_candidate": "Only the Admin can change an accepted candidate",
+      "status_must_be_present_late_or_absent": "Status must be present, late or absent",
+      "subject_assigned": "Subject assigned",
+      "subject_deleted": "Subject deleted",
+      "subject_not_found": "Subject not found",
+      "the_account_was_already_created": "The account was already created",
+      "the_resume_must_be_a_pdf_or_word_file": "The resume must be a PDF or Word file",
+      "this_application_has_no_resume": "This application has no resume",
+      "too_many_applications_try_again_later": "Too many applications. Try again later.",
+      "the_resume_is_too_big_up_to_4_mb": "The resume is too big (up to 4 MB)",
+      "invalid_form": "Invalid form",
+      "only_the_admin_can_change_a_mark": "Only the Admin can change a mark"
     },
     "theme": {
       "label": "Style",
@@ -1089,7 +1126,230 @@
       "reviews": "Anonymous reviews",
       "groupsHint": "Change the teacher of a group or move a student to another group.",
       "moved": "Student moved",
-      "moveTo": "Move to..."
+      "moveTo": "Move to...",
+      "lates_one": "Late {{count}} time in 2 weeks",
+      "lates_few": "Late {{count}} times in 2 weeks",
+      "lates_many": "Late {{count}} times in 2 weeks",
+      "lates_other": "Late {{count}} times in 2 weeks"
+    },
+    "schedule": {
+      "mineHint": "Your lessons for the week.",
+      "today": "Today",
+      "noLessons": "No lessons"
+    },
+    "subjects": {
+      "title": "Subjects",
+      "hint": "One group has one subject. The subject is shown in the group, to the teacher and to the student.",
+      "add": "Add subject",
+      "edit": "Edit subject",
+      "empty": "No subjects yet",
+      "name": "Name",
+      "nameRu": "In Russian",
+      "nameUz": "In Uzbek",
+      "nameEn": "In English",
+      "translationsHint": "Translations are optional: without one, the main name is shown.",
+      "groupsCount_one": "{{count}} group",
+      "groupsCount_few": "{{count}} groups",
+      "groupsCount_many": "{{count}} groups",
+      "groupsCount_other": "{{count}} groups",
+      "deleteTitle": "Delete the subject?",
+      "deleteConfirm": "Delete \"{{name}}\"? Its groups stay, they just have no subject.",
+      "subject": "Subject",
+      "none": "No subject",
+      "all": "All subjects"
+    },
+    "expenses": {
+      "title": "Expenses",
+      "hint": "Money the school spends: rent, advertising and so on.",
+      "add": "Add expense",
+      "edit": "Edit expense",
+      "saved": "Expense saved",
+      "month": "Month",
+      "category": "Category",
+      "allCategories": "All categories",
+      "allMonths": "All months",
+      "total": "Total",
+      "comment": "Comment",
+      "empty": "No expenses for this filter",
+      "deleteTitle": "Delete the expense?",
+      "deleteConfirm": "Delete the expense \"{{category}}\", {{amount}}? This cannot be undone.",
+      "salariesHint": "Teachers' salaries are added on the Salaries page. Use this category for other staff.",
+      "categories": {
+        "rent": "Rent",
+        "salaries": "Salaries",
+        "advertising": "Advertising",
+        "utilities": "Utilities",
+        "materials": "Materials",
+        "other": "Other"
+      }
+    },
+    "reports": {
+      "title": "Report",
+      "hint": "Income, expenses, profit and debts for a day, a month or any period.",
+      "period": "Period",
+      "day": "Day",
+      "month": "Month",
+      "range": "Chosen period",
+      "badPeriod": "Choose the period: the start must not be after the end.",
+      "income": "Income (student payments)",
+      "expenses": "Expenses by category",
+      "expensesTotal": "Expenses total",
+      "teacherSalaries": "Teacher salaries",
+      "profit": "Profit",
+      "students": "Students",
+      "debtors": "Debtors",
+      "activeStudents": "Active students",
+      "excel": "Excel",
+      "print": "Print / PDF",
+      "exportFailed": "Could not make the Excel file"
+    },
+    "audit": {
+      "title": "Audit log",
+      "hint": "Who did what and when. You see the actions of your own area.",
+      "user": "User",
+      "allUsers": "All users",
+      "action": "Action code",
+      "when": "When",
+      "who": "Who",
+      "what": "What happened",
+      "system": "Careers site",
+      "empty": "No entries",
+      "page": "Page {{page}} of {{pages}}",
+      "prev": "Back",
+      "next": "Next",
+      "values": {
+        "present": "present",
+        "late": "late",
+        "absent": "absent",
+        "active": "active",
+        "blocked": "blocked",
+        "frozen": "frozen",
+        "Admin": "Admin",
+        "Teacher": "Teacher",
+        "Financier": "Financier",
+        "Student": "Student",
+        "AcademicManager": "Academic manager"
+      },
+      "actions": {
+        "user": {
+          "create": "created an account ({{role}}) for {{target}}",
+          "update": "changed the profile of {{target}}",
+          "role_change": "changed the role of {{target}}: {{from}} → {{to}}",
+          "status_change": "changed the status of {{target}}: {{from}} → {{to}}",
+          "password_change": "changed the password of {{target}}",
+          "delete": "deleted the account of {{target}}"
+        },
+        "attendance": {
+          "mark": "marked {{target}} as {{status}} ({{group}}, {{date}})",
+          "change": "changed the mark of {{target}}: {{from}} → {{to}} ({{group}}, {{date}})"
+        },
+        "grade": {
+          "add": "gave a mark \"{{title}}\"",
+          "delete": "deleted a mark"
+        },
+        "homework": {
+          "grade": "graded the homework \"{{title}}\" of {{target}}"
+        },
+        "lesson": {
+          "create": "held a lesson in {{target}}: {{title}}"
+        },
+        "group": {
+          "create": "created the group {{target}}",
+          "update": "changed the group {{target}}",
+          "archive": "archived the group {{target}}",
+          "add_student": "added a student to the group {{target}}",
+          "remove_student": "removed a student from the group {{target}}",
+          "transfer_student": "moved a student to the group {{target}}",
+          "assign_teacher": "changed the teacher of the group {{target}}",
+          "assign_subject": "changed the subject of the group {{target}}"
+        },
+        "schedule": {
+          "create": "added a lesson to the schedule",
+          "update": "changed the schedule",
+          "delete": "removed a lesson from the schedule"
+        },
+        "subject": {
+          "create": "created the subject {{target}}",
+          "update": "changed the subject {{target}}",
+          "delete": "deleted the subject {{target}}"
+        },
+        "academic": {
+          "message": "sent a message"
+        },
+        "payment": {
+          "create": "recorded a payment of {{amount}}",
+          "remind_debtors": "reminded the debtors"
+        },
+        "salary": {
+          "create": "recorded a teacher salary of {{amount}}"
+        },
+        "expense": {
+          "create": "added an expense \"{{category}}\", {{amount}}",
+          "update": "changed an expense",
+          "delete": "deleted an expense \"{{category}}\", {{amount}}"
+        },
+        "balance": {
+          "topup": "topped up the balance of {{target}} by {{amount}}"
+        },
+        "student": {
+          "payment_status": "changed the payment status of {{target}}"
+        },
+        "application": {
+          "receive": "A new job application came",
+          "note": "wrote a note about a candidate",
+          "status": "changed the status of a candidate: {{from}} → {{to}}",
+          "view_resume": "opened the resume of a candidate",
+          "create_account": "created an account for a candidate"
+        },
+        "coins": {
+          "award": "gave coins to {{target}}",
+          "grant": "gave coins to a teacher pool",
+          "monthly_topup": "ran the monthly top-up of teacher pools"
+        },
+        "order": {
+          "create": "bought a reward",
+          "deliver": "handed over an order",
+          "cancel": "cancelled an order"
+        },
+        "product": {
+          "create": "added a product",
+          "update": "changed a product",
+          "archive": "archived a product",
+          "delete": "deleted a product"
+        },
+        "translation": {
+          "save": "changed a text of the site",
+          "reset": "reset a text of the site"
+        }
+      }
+    },
+    "applications": {
+      "title": "Job applications",
+      "hint": "People who applied through the Careers site. Look, write notes, follow the steps.",
+      "contact": "Contact",
+      "position": "Vacancy",
+      "received": "Received",
+      "status": "Status",
+      "allStatuses": "All statuses",
+      "statuses": {
+        "new": "New",
+        "viewed": "Viewed",
+        "interview": "Interview",
+        "accepted": "Accepted",
+        "rejected": "Rejected"
+      },
+      "resume": "Open the resume",
+      "notes": "Notes",
+      "noNotes": "No notes yet",
+      "notePlaceholder": "Write a note",
+      "addNote": "Add",
+      "createAccount": "Create account",
+      "accountCreated": "The account was already created.",
+      "accountHint": "The account is made only after you press the button. A one-time password will be shown to you.",
+      "accountReady": "The account is ready",
+      "tempPassword": "Temporary password",
+      "shownOnce": "The password is shown once. Give it to the person and ask them to change it.",
+      "empty": "No applications"
     }
   }
 }

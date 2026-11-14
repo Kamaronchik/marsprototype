@@ -78,7 +78,13 @@
       "schedule": "Jadval",
       "lessons": "Darslar",
       "atRisk": "Xavf guruhi",
-      "teachers": "O'qituvchilar"
+      "teachers": "O'qituvchilar",
+      "mySchedule": "Mening jadvalim",
+      "subjects": "Fanlar",
+      "applications": "Arizalar",
+      "expenses": "Xarajatlar",
+      "reports": "Hisobotlar",
+      "audit": "Harakatlar jurnali"
     },
     "bell": {
       "title": "Bildirishnomalar",
@@ -108,7 +114,8 @@
       "homework_submitted": "{{student}} «{{title}}» vazifasini topshirdi",
       "grade_added": "{{groupName}} guruhida yangi baho: {{title}}, {{score}} / {{maxScore}}",
       "academic_message": "{{text}}",
-      "lesson_rate": "Bu hafta darslar qanday o'tdi? Bosh sahifada «{{topic}}» ({{groupName}}) darsini baholang."
+      "lesson_rate": "Bu hafta darslar qanday o'tdi? Bosh sahifada «{{topic}}» ({{groupName}}) darsini baholang.",
+      "attendance_late": "Siz {{groupName}} guruhida {{date}} kuni kechikdi deb belgilandingiz"
     },
     "errors": {
       "ROOM_BUSY": "Bu xona shu vaqtda band",
@@ -238,7 +245,9 @@
       "teacher": "O'qituvchi",
       "date": "Sana",
       "room": "Xona",
-      "lesson": "Dars"
+      "lesson": "Dars",
+      "late": "Kechikdi",
+      "markLate": "Kechikdi deb belgilash"
     },
     "auth": {
       "login": "Kirish",
@@ -588,7 +597,8 @@
       "forbiddenTitle": "Bu sahifa sizning akkauntingiz uchun emas",
       "forbiddenText": "Sizning rolingiz bu yerga kira olmaydi. Agar bu xato bo'lsa, administratorga murojaat qiling.",
       "notFoundTitle": "Bu sahifani topa olmadik",
-      "notFoundText": "Havola eskirgan yoki xato yozilgan bo'lishi mumkin."
+      "notFoundText": "Havola eskirgan yoki xato yozilgan bo'lishi mumkin.",
+      "toCabinet": "Kabinetimga"
     },
     "comingSoon": {
       "title": "Bu yerda hozircha hech narsa yo'q",
@@ -841,7 +851,34 @@
       "score_must_be_from_1_to_5": "Baho 1 dan 5 gacha bo'lishi kerak",
       "lesson_not_found": "Dars topilmadi",
       "you_already_rated_this_lesson": "Siz bu darsni allaqachon baholagansiz",
-      "you_can_rate_a_lesson_once_a_week": "Darsni haftada bir marta baholash mumkin"
+      "you_can_rate_a_lesson_once_a_week": "Darsni haftada bir marta baholash mumkin",
+      "a_subject_with_this_name_already_exists": "Bunday nomli fan allaqachon bor",
+      "accept_the_candidate_first": "Avval nomzodni qabul qiling",
+      "account_is_not_active": "Akkaunt faol emas",
+      "application_not_found": "Ariza topilmadi",
+      "application_received": "Ariza qabul qilindi",
+      "choose_a_vacancy": "Vakansiyani tanlang",
+      "contact_is_required_phone_telegram_or_e_mail": "Aloqa ma'lumotini kiriting (telefon, Telegram yoki e-mail)",
+      "expense_deleted": "Xarajat o'chirildi",
+      "expense_not_found": "Xarajat topilmadi",
+      "invalid_expense_category": "Xarajat toifasi noto'g'ri",
+      "invalid_subject": "Fan noto'g'ri",
+      "month_must_look_like_2026_11": "Oy shunday ko'rinishda bo'lishi kerak: 2026-11",
+      "name_is_required": "Ismni kiriting",
+      "note_text_is_required": "Izoh matnini yozing",
+      "only_the_admin_can_accept_a_candidate": "Nomzodni faqat administrator qabul qila oladi",
+      "only_the_admin_can_change_an_accepted_candidate": "Qabul qilingan nomzodni faqat administrator o'zgartira oladi",
+      "status_must_be_present_late_or_absent": "Holat: keldi, kechikdi yoki kelmadi",
+      "subject_assigned": "Fan tayinlandi",
+      "subject_deleted": "Fan o'chirildi",
+      "subject_not_found": "Fan topilmadi",
+      "the_account_was_already_created": "Akkaunt allaqachon yaratilgan",
+      "the_resume_must_be_a_pdf_or_word_file": "Rezyume PDF yoki Word fayli bo'lishi kerak",
+      "this_application_has_no_resume": "Bu arizada rezyume yo'q",
+      "too_many_applications_try_again_later": "Arizalar juda ko'p. Keyinroq urinib ko'ring.",
+      "the_resume_is_too_big_up_to_4_mb": "Rezyume juda katta (4 MB gacha)",
+      "invalid_form": "Shakl noto'g'ri",
+      "only_the_admin_can_change_a_mark": "Belgini faqat administrator o'zgartira oladi"
     },
     "theme": {
       "label": "Uslub",
@@ -1089,7 +1126,230 @@
       "reviews": "Anonim sharhlar",
       "groupsHint": "Guruh o'qituvchisini almashtiring yoki o'quvchini boshqa guruhga o'tkazing.",
       "moved": "O'quvchi o'tkazildi",
-      "moveTo": "O'tkazish..."
+      "moveTo": "O'tkazish...",
+      "lates_one": "2 haftada kechikish: {{count}}",
+      "lates_few": "2 haftada kechikish: {{count}}",
+      "lates_many": "2 haftada kechikish: {{count}}",
+      "lates_other": "2 haftada kechikish: {{count}}"
+    },
+    "schedule": {
+      "mineHint": "Haftalik darslaringiz.",
+      "today": "Bugun",
+      "noLessons": "Dars yo'q"
+    },
+    "subjects": {
+      "title": "Fanlar",
+      "hint": "Bitta guruhda bitta fan bor. Fan guruhda, o'qituvchida va o'quvchida ko'rinadi.",
+      "add": "Fan qo'shish",
+      "edit": "Fanni o'zgartirish",
+      "empty": "Hozircha fanlar yo'q",
+      "name": "Nomi",
+      "nameRu": "Ruscha",
+      "nameUz": "O'zbekcha",
+      "nameEn": "Inglizcha",
+      "translationsHint": "Tarjimalar majburiy emas: bo'lmasa, asosiy nom ko'rsatiladi.",
+      "groupsCount_one": "{{count}} guruh",
+      "groupsCount_few": "{{count}} guruh",
+      "groupsCount_many": "{{count}} guruh",
+      "groupsCount_other": "{{count}} guruh",
+      "deleteTitle": "Fan o'chirilsinmi?",
+      "deleteConfirm": "\"{{name}}\" o'chirilsinmi? Guruhlar qoladi, faqat fansiz bo'ladi.",
+      "subject": "Fan",
+      "none": "Fansiz",
+      "all": "Barcha fanlar"
+    },
+    "expenses": {
+      "title": "Xarajatlar",
+      "hint": "Maktab sarflaydigan pul: ijara, reklama va hokazo.",
+      "add": "Xarajat qo'shish",
+      "edit": "Xarajatni o'zgartirish",
+      "saved": "Xarajat saqlandi",
+      "month": "Oy",
+      "category": "Toifa",
+      "allCategories": "Barcha toifalar",
+      "allMonths": "Barcha oylar",
+      "total": "Jami",
+      "comment": "Izoh",
+      "empty": "Bu filtr bo'yicha xarajat yo'q",
+      "deleteTitle": "Xarajat o'chirilsinmi?",
+      "deleteConfirm": "\"{{category}}\" xarajati, {{amount}} o'chirilsinmi? Buni qaytarib bo'lmaydi.",
+      "salariesHint": "O'qituvchilar maoshi «Maoshlar» sahifasida kiritiladi. Bu toifa boshqa xodimlar uchun.",
+      "categories": {
+        "rent": "Ijara",
+        "salaries": "Maoshlar",
+        "advertising": "Reklama",
+        "utilities": "Kommunal xizmatlar",
+        "materials": "Materiallar",
+        "other": "Boshqa"
+      }
+    },
+    "reports": {
+      "title": "Hisobot",
+      "hint": "Kun, oy yoki istalgan davr uchun daromad, xarajat, foyda va qarzlar.",
+      "period": "Davr",
+      "day": "Kun",
+      "month": "Oy",
+      "range": "Tanlangan davr",
+      "badPeriod": "Davrni tanlang: boshlanish oxiridan keyin bo'lmasligi kerak.",
+      "income": "Daromad (o'quvchilar to'lovlari)",
+      "expenses": "Toifalar bo'yicha xarajatlar",
+      "expensesTotal": "Xarajatlar jami",
+      "teacherSalaries": "O'qituvchilar maoshi",
+      "profit": "Foyda",
+      "students": "O'quvchilar",
+      "debtors": "Qarzdorlar",
+      "activeStudents": "Faol o'quvchilar",
+      "excel": "Excel",
+      "print": "Chop etish / PDF",
+      "exportFailed": "Excel faylini yaratib bo'lmadi"
+    },
+    "audit": {
+      "title": "Harakatlar jurnali",
+      "hint": "Kim, qachon va nima qildi. Siz o'z sohangiz harakatlarini ko'rasiz.",
+      "user": "Foydalanuvchi",
+      "allUsers": "Barcha foydalanuvchilar",
+      "action": "Harakat kodi",
+      "when": "Qachon",
+      "who": "Kim",
+      "what": "Nima bo'ldi",
+      "system": "Vakansiyalar sayti",
+      "empty": "Yozuvlar yo'q",
+      "page": "{{page}}-sahifa, jami {{pages}}",
+      "prev": "Orqaga",
+      "next": "Keyingi",
+      "values": {
+        "present": "keldi",
+        "late": "kechikdi",
+        "absent": "kelmadi",
+        "active": "faol",
+        "blocked": "bloklangan",
+        "frozen": "muzlatilgan",
+        "Admin": "admin",
+        "Teacher": "o'qituvchi",
+        "Financier": "moliyachi",
+        "Student": "o'quvchi",
+        "AcademicManager": "o'quv bo'limi mudiri"
+      },
+      "actions": {
+        "user": {
+          "create": "{{target}} uchun akkaunt ({{role}}) yaratdi",
+          "update": "{{target}} ma'lumotlarini o'zgartirdi",
+          "role_change": "{{target}} rolini o'zgartirdi: {{from}} → {{to}}",
+          "status_change": "{{target}} holatini o'zgartirdi: {{from}} → {{to}}",
+          "password_change": "{{target}} parolini almashtirdi",
+          "delete": "{{target}} akkauntini o'chirdi"
+        },
+        "attendance": {
+          "mark": "{{target}} belgilandi: {{status}} ({{group}}, {{date}})",
+          "change": "{{target}} belgisini o'zgartirdi: {{from}} → {{to}} ({{group}}, {{date}})"
+        },
+        "grade": {
+          "add": "\"{{title}}\" bahosini qo'ydi",
+          "delete": "Bahoni o'chirdi"
+        },
+        "homework": {
+          "grade": "{{target}}ning «{{title}}» uy vazifasini tekshirdi"
+        },
+        "lesson": {
+          "create": "{{target}} guruhida dars o'tkazdi: {{title}}"
+        },
+        "group": {
+          "create": "{{target}} guruhini yaratdi",
+          "update": "{{target}} guruhini o'zgartirdi",
+          "archive": "{{target}} guruhini arxivladi",
+          "add_student": "{{target}} guruhiga o'quvchi qo'shdi",
+          "remove_student": "{{target}} guruhidan o'quvchini chiqardi",
+          "transfer_student": "O'quvchini {{target}} guruhiga ko'chirdi",
+          "assign_teacher": "{{target}} guruhi o'qituvchisini almashtirdi",
+          "assign_subject": "{{target}} guruhi fanini o'zgartirdi"
+        },
+        "schedule": {
+          "create": "Jadvalga dars qo'shdi",
+          "update": "Jadvalni o'zgartirdi",
+          "delete": "Jadvaldan darsni olib tashladi"
+        },
+        "subject": {
+          "create": "{{target}} fanini yaratdi",
+          "update": "{{target}} fanini o'zgartirdi",
+          "delete": "{{target}} fanini o'chirdi"
+        },
+        "academic": {
+          "message": "Xabar yubordi"
+        },
+        "payment": {
+          "create": "{{amount}} to'lovni yozdi",
+          "remind_debtors": "Qarzdorlarga eslatdi"
+        },
+        "salary": {
+          "create": "O'qituvchi maoshini yozdi: {{amount}}"
+        },
+        "expense": {
+          "create": "\"{{category}}\" xarajatini qo'shdi, {{amount}}",
+          "update": "Xarajatni o'zgartirdi",
+          "delete": "\"{{category}}\" xarajatini o'chirdi, {{amount}}"
+        },
+        "balance": {
+          "topup": "{{target}} balansini {{amount}} ga to'ldirdi"
+        },
+        "student": {
+          "payment_status": "{{target}} to'lov holatini o'zgartirdi"
+        },
+        "application": {
+          "receive": "Yangi vakansiya arizasi keldi",
+          "note": "Nomzod haqida izoh yozdi",
+          "status": "Nomzod holatini o'zgartirdi: {{from}} → {{to}}",
+          "view_resume": "Nomzod rezyumesini ochdi",
+          "create_account": "Nomzod uchun akkaunt yaratdi"
+        },
+        "coins": {
+          "award": "{{target}} ga koin berdi",
+          "grant": "O'qituvchi puliga koin qo'shdi",
+          "monthly_topup": "O'qituvchi pullarini oylik to'ldirishni ishga tushirdi"
+        },
+        "order": {
+          "create": "Sovg'a sotib oldi",
+          "deliver": "Buyurtmani topshirdi",
+          "cancel": "Buyurtmani bekor qildi"
+        },
+        "product": {
+          "create": "Mahsulot qo'shdi",
+          "update": "Mahsulotni o'zgartirdi",
+          "archive": "Mahsulotni arxivladi",
+          "delete": "Mahsulotni o'chirdi"
+        },
+        "translation": {
+          "save": "Sayt matnini o'zgartirdi",
+          "reset": "Sayt matnini asl holiga qaytardi"
+        }
+      }
+    },
+    "applications": {
+      "title": "Vakansiya arizalari",
+      "hint": "Vakansiyalar saytidan ariza yuborganlar. Ko'ring, izoh yozing, bosqichlar bo'yicha olib boring.",
+      "contact": "Aloqa",
+      "position": "Vakansiya",
+      "received": "Kelgan vaqti",
+      "status": "Holat",
+      "allStatuses": "Barcha holatlar",
+      "statuses": {
+        "new": "Yangi",
+        "viewed": "Ko'rilgan",
+        "interview": "Suhbat",
+        "accepted": "Qabul qilingan",
+        "rejected": "Rad etilgan"
+      },
+      "resume": "Rezyumeni ochish",
+      "notes": "Izohlar",
+      "noNotes": "Hozircha izoh yo'q",
+      "notePlaceholder": "Izoh yozing",
+      "addNote": "Qo'shish",
+      "createAccount": "Akkaunt yaratish",
+      "accountCreated": "Akkaunt allaqachon yaratilgan.",
+      "accountHint": "Akkaunt faqat tugma bosilgandan keyin yaratiladi. Sizga bir martalik parol ko'rsatiladi.",
+      "accountReady": "Akkaunt tayyor",
+      "tempPassword": "Vaqtinchalik parol",
+      "shownOnce": "Parol bir marta ko'rsatiladi. Uni insonga bering va almashtirishni so'rang.",
+      "empty": "Arizalar yo'q"
     }
   }
 }

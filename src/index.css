@@ -608,3 +608,19 @@ body {
 [data-theme='terminal'] .skeleton::after {
   background: linear-gradient(90deg, transparent, rgb(var(--mars) / 0.18), transparent);
 }
+
+/* Printing a report (window.print): only the report is on the paper, in black on white. */
+@media print {
+  body * { visibility: hidden; }
+  .print-area, .print-area * { visibility: visible; }
+  .print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    border: none;
+    background: #fff;
+    color: #000;
+  }
+  .print-hide { display: none !important; }
+}

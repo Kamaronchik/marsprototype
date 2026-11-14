@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { Check, X } from 'lucide-react';
+import { Check, X, Clock } from 'lucide-react';
 import PageHeader from '../../components/PageHeader';
 import Modal from '../../components/Modal';
 import { SkeletonCard } from '../../components/Skeleton';
@@ -43,7 +43,8 @@ const LessonForm = ({ lesson, onClose, onSaved }) => {
 
   const buttonClass = (active, tone) => {
     if (!active) return 'border-line bg-card text-ink-faint';
-    return tone === 'ok' ? 'border-moss bg-moss text-on-accent' : 'border-brick bg-brick text-on-accent';
+    if (tone === 'ok') return 'border-moss bg-moss text-on-accent';
+    return tone === 'late' ? 'border-ochre bg-ochre text-on-accent' : 'border-brick bg-brick text-on-accent';
   };
 
   return (
@@ -63,6 +64,8 @@ const LessonForm = ({ lesson, onClose, onSaved }) => {
                 <span className="flex gap-2">
                   <button type="button" aria-label={t('attendance.markPresent')} onClick={() => setMarks({ ...marks, [s.id]: 'present' })}
                     className={`rounded-lg border p-1.5 ${buttonClass(marks[s.id] === 'present', 'ok')}`}><Check size={16} /></button>
+                  <button type="button" aria-label={t('attendance.markLate')} onClick={() => setMarks({ ...marks, [s.id]: 'late' })}
+                    className={`rounded-lg border p-1.5 ${buttonClass(marks[s.id] === 'late', 'late')}`}><Clock size={16} /></button>
                   <button type="button" aria-label={t('attendance.markAbsent')} onClick={() => setMarks({ ...marks, [s.id]: 'absent' })}
                     className={`rounded-lg border p-1.5 ${buttonClass(marks[s.id] === 'absent', 'no')}`}><X size={16} /></button>
                 </span>

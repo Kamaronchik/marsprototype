@@ -9,6 +9,7 @@ import { Skeleton, SkeletonText } from '../../components/Skeleton';
 import { greetingKey, firstNameOf } from '../../lib/greeting';
 import { launchWhen, launchProgress } from '../../lib/launch';
 import { weekdaysText } from '../../lib/format';
+import { subjectName } from '../../lib/subject';
 import { useStudentHome } from './homeContext';
 
 // The cockpit home, before the numbers arrive: the same two cards, filled with placeholders shaped
@@ -79,7 +80,7 @@ const CockpitHome = () => {
                 <p className="mt-1.5 text-sm text-ink-soft">{t('home.noLaunchHint')}</p>
               </>
             )}
-            {crews[0] && <p className="mt-3 text-xs text-ink-faint">{crews[0].teacherName} · {weekdaysText(crews[0].weekdays, i18n.language)}</p>}
+            {crews[0] && <p className="mt-3 text-xs text-ink-faint">{crews[0].subject ? `${subjectName(crews[0].subject, i18n.language)} · ` : ''}{crews[0].teacherName} · {weekdaysText(crews[0].weekdays, i18n.language)}</p>}
           </div>
         </section>
 

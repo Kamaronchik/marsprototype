@@ -9,6 +9,7 @@ import { SkeletonCard } from '../../components/Skeleton';
 import { greetingKey, firstNameOf } from '../../lib/greeting';
 import { launchWhen } from '../../lib/launch';
 import { weekdaysText } from '../../lib/format';
+import { subjectName } from '../../lib/subject';
 import { useStudentHome } from './homeContext';
 
 // Progress drawn as dunes: a wavy ground that fills from the left up to the percentage.
@@ -94,7 +95,7 @@ const BaseHome = () => {
         <Module icon={Users} title={t('home.readiness')}>
           <p className="font-display text-4xl font-semibold text-ink">{readiness.percent === null ? '—' : `${readiness.percent}%`}</p>
           <div className="mt-3"><DuneBar percent={readiness.percent} /></div>
-          <p className="mt-2 text-xs text-ink-faint">{t('home.readinessLine', { came: readiness.present, missed: readiness.absent })}</p>
+          <p className="mt-2 text-xs text-ink-faint">{t('home.readinessLine', { came: readiness.present + (readiness.late ?? 0), missed: readiness.absent })}</p>
         </Module>
 
         <Module icon={Coins} title={t('home.coins')}>
@@ -113,7 +114,7 @@ const BaseHome = () => {
             {crews.map((crew) => (
               <li key={crew.id}>
                 <p className="text-sm font-semibold text-ink">{crew.name} <span className="font-normal text-ink-soft">· {crew.room}</span></p>
-                <p className="text-xs text-ink-faint">{weekdaysText(crew.weekdays, i18n.language)} · {crew.startTime}{crew.teacherName ? ` · ${crew.teacherName}` : ''}</p>
+                <p className="text-xs text-ink-faint">{crew.subject ? `${subjectName(crew.subject, i18n.language)} · ` : ''}{weekdaysText(crew.weekdays, i18n.language)} · {crew.startTime}{crew.teacherName ? ` · ${crew.teacherName}` : ''}</p>
               </li>
             ))}
           </ul>

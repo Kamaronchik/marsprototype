@@ -69,6 +69,7 @@ const Attendance = () => {
               <select id="att-status" value={filters.status} onChange={setFilter('status')} className="field pr-8">
                 <option value="">{t('attendance.allStatuses')}</option>
                 <option value="present">{t('attendance.present')}</option>
+                <option value="late">{t('attendance.late')}</option>
                 <option value="absent">{t('attendance.absent')}</option>
               </select>
             </div>
@@ -79,8 +80,9 @@ const Attendance = () => {
       {tab === 'marks' && (
         <>
           {stats && (
-            <dl className="mb-4 grid grid-cols-2 divide-line overflow-hidden rounded-xl border border-line bg-card md:grid-cols-4 md:divide-x">
+            <dl className="mb-4 grid grid-cols-2 divide-line overflow-hidden rounded-xl border border-line bg-card md:grid-cols-5 md:divide-x">
               <Stat label={t('attendance.came')} value={stats.present} />
+              <Stat label={t('attendance.late')} value={stats.late} />
               <Stat label={t('attendance.missed')} value={stats.absent} />
               <Stat label={t('attendance.lessons')} value={stats.total} />
               <Stat label={t('attendance.percent')} value={stats.percent === null ? '—' : `${stats.percent}%`} />

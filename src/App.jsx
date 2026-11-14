@@ -29,6 +29,12 @@ const AdminCoins = lazy(() => import('./pages/Admin/Coins'));
 const AdminBattles = lazy(() => import('./pages/Admin/Battles'));
 const AdminTelegram = lazy(() => import('./pages/Admin/Telegram'));
 const Settings = lazy(() => import('./pages/Admin/Settings'));
+const Subjects = lazy(() => import('./pages/shared/Subjects'));
+const Expenses = lazy(() => import('./pages/shared/Expenses'));
+const Reports = lazy(() => import('./pages/shared/Reports'));
+const AuditLogs = lazy(() => import('./pages/shared/AuditLogs'));
+const Applications = lazy(() => import('./pages/shared/Applications'));
+const MySchedule = lazy(() => import('./pages/shared/MySchedule'));
 
 const FinancierLayout = lazy(() => import('./layouts/Financier/FinancierLayout'));
 const FinanceOverview = lazy(() => import('./pages/shared/FinanceOverview'));
@@ -100,6 +106,11 @@ const AppRoutes = () => {
             <Route path="battles" element={<AdminBattles />} />
             <Route path="telegram" element={<AdminTelegram />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="subjects" element={<Subjects />} />
+            <Route path="expenses" element={<Expenses />} />
+            <Route path="reports" element={<Reports />} />
+            <Route path="applications" element={<Applications />} />
+            <Route path="audit" element={<AuditLogs />} />
           </Route>
 
           {/* Financier Routes */}
@@ -116,6 +127,9 @@ const AppRoutes = () => {
             <Route path="salaries" element={<Salaries />} />
             <Route path="debts" element={<Students debts />} />
             <Route path="students" element={<Students />} />
+            <Route path="expenses" element={<Expenses />} />
+            <Route path="reports" element={<Reports />} />
+            <Route path="audit" element={<AuditLogs />} />
           </Route>
 
           {/* Teacher Routes */}
@@ -129,6 +143,7 @@ const AppRoutes = () => {
           >
             <Route index element={<TeacherHome />} />
             <Route path="groups" element={<MyGroups />} />
+            <Route path="schedule" element={<MySchedule />} />
             <Route path="lessons" element={<TeacherLessons />} />
             <Route path="attendance" element={<TeacherAttendance />} />
             <Route path="homework" element={<TeacherHomework />} />
@@ -151,6 +166,9 @@ const AppRoutes = () => {
             <Route path="students" element={<AcademicStudents />} />
             <Route path="teachers" element={<AcademicTeachers />} />
             <Route path="groups" element={<AcademicGroups />} />
+            <Route path="subjects" element={<Subjects />} />
+            <Route path="applications" element={<Applications />} />
+            <Route path="audit" element={<AuditLogs />} />
           </Route>
 
           {/* Student Routes */}
@@ -163,6 +181,7 @@ const AppRoutes = () => {
             }
           >
             <Route index element={<StudentHome />} />
+            <Route path="schedule" element={<MySchedule />} />
             <Route path="attendance" element={<StudentAttendance />} />
             <Route path="homework" element={<StudentHomework />} />
             <Route path="grades" element={<StudentGrades />} />
@@ -175,9 +194,12 @@ const AppRoutes = () => {
             <Route path="profile" element={<StudentProfile />} />
           </Route>
 
-          <Route path="/forbidden" element={<StatusPage code="403" title="status.forbiddenTitle" text="status.forbiddenText" />} />
+          {/* A signed-in person with the wrong role lands here (see ProtectedRoute). /forbidden is the old address. */}
+          <Route path="/unauthorized" element={<StatusPage code="403" title="status.forbiddenTitle" text="status.forbiddenText" />} />
+          <Route path="/forbidden" element={<Navigate to="/unauthorized" replace />} />
+          <Route path="/not-found" element={<StatusPage code="404" title="status.notFoundTitle" text="status.notFoundText" />} />
           <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="*" element={<StatusPage code="404" title="status.notFoundTitle" text="status.notFoundText" />} />
+          <Route path="*" element={<Navigate to="/not-found" replace />} />
         </Routes>
         </Suspense>
     </>

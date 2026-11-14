@@ -1,4 +1,4 @@
-import { LayoutDashboard, CreditCard, Wallet, History, GraduationCap } from 'lucide-react';
+import { LayoutDashboard, CreditCard, Wallet, History, GraduationCap, Receipt, BarChart3, ScrollText } from 'lucide-react';
 import LedgerShell from '../../shells/LedgerShell';
 import { useRoleLook } from '../../lib/useRoleLook';
 
@@ -8,6 +8,9 @@ const menuItems = [
   { label: 'nav.salaries', path: '/financier/salaries', icon: Wallet },
   { label: 'nav.debts', path: '/financier/debts', icon: History },
   { label: 'nav.students', path: '/financier/students', icon: GraduationCap },
+  { label: 'nav.expenses', path: '/financier/expenses', icon: Receipt },
+  { label: 'nav.reports', path: '/financier/reports', icon: BarChart3 },
+  { label: 'nav.audit', path: '/financier/audit', icon: ScrollText },
 ];
 
 const FinancierLayout = () => {

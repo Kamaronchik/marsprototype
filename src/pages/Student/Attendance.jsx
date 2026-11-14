@@ -24,7 +24,7 @@ const Attendance = () => {
       )}
 
       {stats && (
-        <dl className="mb-6 grid grid-cols-2 divide-line overflow-hidden rounded-xl border border-line bg-card md:grid-cols-4 md:divide-x">
+        <dl className="mb-6 grid grid-cols-2 divide-line overflow-hidden rounded-xl border border-line bg-card md:grid-cols-5 md:divide-x">
           <div className="px-5 py-4">
             <dt className="text-xs font-semibold uppercase tracking-wider text-ink-faint">{t('attendance.percent')}</dt>
             <dd className="mt-1 font-display text-3xl font-semibold text-mars">{stats.percent === null ? '—' : `${stats.percent}%`}</dd>
@@ -32,6 +32,10 @@ const Attendance = () => {
           <div className="px-5 py-4">
             <dt className="text-xs font-semibold uppercase tracking-wider text-ink-faint">{t('attendance.came')}</dt>
             <dd className="mt-1 font-display text-3xl font-semibold text-ink">{stats.present}</dd>
+          </div>
+          <div className="px-5 py-4">
+            <dt className="text-xs font-semibold uppercase tracking-wider text-ink-faint">{t('attendance.late')}</dt>
+            <dd className="mt-1 font-display text-3xl font-semibold text-ink">{stats.late}</dd>
           </div>
           <div className="px-5 py-4">
             <dt className="text-xs font-semibold uppercase tracking-wider text-ink-faint">{t('attendance.missed')}</dt>

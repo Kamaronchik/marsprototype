@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import PageHeader from '../../components/PageHeader';
+import SubjectFilter from '../../components/SubjectFilter';
 import AiPanel from '../../components/AiPanel';
 import { SkeletonCard } from '../../components/Skeleton';
 import { useFetch } from '../../lib/useFetch';
@@ -10,7 +11,8 @@ import { formatDate } from '../../lib/format';
 // are always shown in full next to the AI summary, so the summary is never the only thing the manager reads.
 const Teachers = () => {
   const { t, i18n } = useTranslation();
-  const { data, loading } = useFetch('/api/academic/teachers');
+  const [subjectId, setSubjectId] = useState('');
+  const { data, loading } = useFetch(`/api/academic/teachers${subjectId ? `?subjectId=${subjectId}` : ''}`);
   const [openId, setOpenId] = useState(null);
   const teachers = data?.teachers ?? [];
 
@@ -18,6 +20,7 @@ const Teachers = () => {
     <>
       <PageHeader title={t('nav.teachers')}>{t('academic.teachersHint')}</PageHeader>
 
+      <SubjectFilter value={subjectId} onChange={setSubjectId} />
       {loading && <SkeletonCard lines={4} />}
       <ul className="space-y-4">
         {teachers.map((x) => (

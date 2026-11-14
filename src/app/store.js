@@ -1,7 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer from '../features/auth/authSlice';
+import authReducer, { logout } from '../features/auth/authSlice';
 import usersReducer from '../features/users/usersSlice';
 import { clearFetchCache } from '../lib/useFetch';
+import { SESSION_EXPIRED } from '../lib/api';
+import { applyRoleLook } from '../lib/theme';
 import cartReducer, { loadCart, saveCart } from '../features/cart/cartSlice';
 
 // Only the shopping cart is kept in the browser. Everything else comes from the server
@@ -32,4 +34,12 @@ store.subscribe(() => {
     signedInAs = id;
     clearFetchCache();
   }
+});
+
+// The session ended on the server (expired, blocked, signed out elsewhere): empty the private data
+// of this browser and let ProtectedRoute send the person to the login page.
+window.addEventListener(SESSION_EXPIRED, () => {
+  if (!store.getState().auth.isAuthenticated) return;
+  store.dispatch(logout());
+  applyRoleLook(null);
 });

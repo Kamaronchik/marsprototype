@@ -57,7 +57,7 @@ const Lessons = () => {
                 <td className="px-4 py-3 font-medium text-ink">{l.groupName}</td>
                 <td className="px-4 py-3">{l.topic}</td>
                 <td className="px-4 py-3 text-ink-soft">{l.teacherName}</td>
-                <td className="px-4 py-3">{l.present} / {l.present + l.absent}</td>
+                <td className="px-4 py-3">{l.present + l.late} / {l.present + l.late + l.absent}</td>
                 <td className="px-4 py-3">{l.homeworkCount}</td>
                 <td className="px-4 py-3">{l.averageRating ?? '—'}</td>
               </tr>

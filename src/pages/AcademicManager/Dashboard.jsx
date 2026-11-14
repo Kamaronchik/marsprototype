@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import PageHeader from '../../components/PageHeader';
+import SubjectFilter from '../../components/SubjectFilter';
 import { SkeletonCard } from '../../components/Skeleton';
 import { api, errorText } from '../../lib/api';
 import { useFetch } from '../../lib/useFetch';
@@ -16,7 +18,8 @@ const Stat = ({ label, value }) => (
 // Academic manager: today in numbers. Everything here is counted by the server, no AI.
 const Dashboard = () => {
   const { t, i18n } = useTranslation();
-  const { data, loading } = useFetch('/api/academic/dashboard');
+  const [subjectId, setSubjectId] = useState('');
+  const { data, loading } = useFetch(`/api/academic/dashboard${subjectId ? `?subjectId=${subjectId}` : ''}`);
 
   const sendQuestions = async () => {
     try {
@@ -36,6 +39,7 @@ const Dashboard = () => {
         {t('academic.dashboardHint')}
       </PageHeader>
 
+      <SubjectFilter value={subjectId} onChange={setSubjectId} />
       {loading && <SkeletonCard lines={3} />}
       {data && (
         <>

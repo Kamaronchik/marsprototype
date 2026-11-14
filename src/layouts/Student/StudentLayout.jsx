@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { LayoutDashboard, UserCircle, ClipboardCheck, Gift, Swords, BookOpenCheck, Award, Bot } from 'lucide-react';
+import { LayoutDashboard, UserCircle, ClipboardCheck, Gift, Swords, BookOpenCheck, Award, Bot, CalendarDays } from 'lucide-react';
 import { useDesign } from '../../lib/useDesign';
 import { useRoleLook } from '../../lib/useRoleLook';
 import StudentHomeProvider from '../../features/student/StudentHomeProvider';
@@ -18,6 +18,7 @@ const menuItems = [
   { label: 'nav.homework', path: '/student/homework', icon: BookOpenCheck },
   { label: 'nav.tutor', path: '/student/tutor', icon: Bot },
   { label: 'nav.grades', path: '/student/grades', icon: Award },
+  { label: 'nav.mySchedule', path: '/student/schedule', icon: CalendarDays },
   { label: 'nav.attendance', path: '/student/attendance', icon: ClipboardCheck },
   { label: 'nav.battle', path: '/student/battle', icon: Swords, end: false },
   { label: 'nav.shop', path: '/student/shop', icon: Gift },

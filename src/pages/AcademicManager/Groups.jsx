@@ -6,10 +6,11 @@ import AiPanel from '../../components/AiPanel';
 import { SkeletonCard } from '../../components/Skeleton';
 import { api, errorText } from '../../lib/api';
 import { useFetch } from '../../lib/useFetch';
+import { subjectName } from '../../lib/subject';
 
 // One group: change the head teacher, move students to another group, see the AI view of the group.
-const GroupCard = ({ group, groups, teachers, onChanged }) => {
-  const { t } = useTranslation();
+const GroupCard = ({ group, groups, teachers, subjects, onChanged }) => {
+  const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
   const students = useFetch(open ? `/api/groups/${group.id}/students` : null);
 
@@ -17,6 +18,16 @@ const GroupCard = ({ group, groups, teachers, onChanged }) => {
     if (!teacherId) return;
     try {
       await api(`/api/academic/groups/${group.id}/teacher`, { method: 'PATCH', body: { teacherId } });
+      toast.success(t('common.success_save'));
+      onChanged();
+    } catch (error) {
+      toast.error(errorText(t, error));
+    }
+  };
+
+  const setSubject = async (subjectId) => {
+    try {
+      await api(`/api/academic/groups/${group.id}/subject`, { method: 'PATCH', body: { subjectId: subjectId || null } });
       toast.success(t('common.success_save'));
       onChanged();
     } catch (error) {
@@ -44,6 +55,10 @@ const GroupCard = ({ group, groups, teachers, onChanged }) => {
           <p className="text-sm text-ink-soft">{t('groups.studentsCount', { count: group.studentCount })}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <select className="field !w-auto" value={group.subjectId ?? ''} onChange={(e) => setSubject(e.target.value)} aria-label={t('subjects.subject')}>
+            <option value="">{t('subjects.none')}</option>
+            {subjects.map((s) => <option key={s.id} value={s.id}>{subjectName(s, i18n.language)}</option>)}
+          </select>
           <select className="field !w-auto" value={group.teacherId ?? ''} onChange={(e) => assign(e.target.value)} aria-label={t('academic.teacher')}>
             {teachers.map((x) => <option key={x.id} value={x.id}>{x.fullName}</option>)}
           </select>
@@ -76,6 +91,7 @@ const Groups = () => {
   const { t } = useTranslation();
   const groups = useFetch('/api/groups');
   const teachers = useFetch('/api/academic/teacher-names');
+  const subjects = useFetch('/api/subjects');
 
   const list = (groups.data?.groups ?? []).filter((g) => g.status === 'active');
 
@@ -85,7 +101,7 @@ const Groups = () => {
       {groups.loading && <SkeletonCard lines={3} />}
       <ul className="space-y-4">
         {list.map((g) => (
-          <GroupCard key={g.id} group={g} groups={groups.data.groups} teachers={teachers.data?.teachers ?? []} onChanged={groups.reload} />
+          <GroupCard key={g.id} group={g} groups={groups.data.groups} teachers={teachers.data?.teachers ?? []} subjects={subjects.data?.subjects ?? []} onChanged={groups.reload} />
         ))}
       </ul>
     </>

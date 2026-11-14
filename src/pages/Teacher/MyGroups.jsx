@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { subjectName } from '../../lib/subject';
 import PageHeader from '../../components/PageHeader';
 import { useFetch } from '../../lib/useFetch';
 import { SkeletonCard } from '../../components/Skeleton';
@@ -28,7 +29,9 @@ const MyGroups = () => {
               <h2 className="font-display text-xl font-semibold text-ink">{g.name}</h2>
               <span className="rounded-md bg-sky-tint px-2 py-1 text-xs font-semibold text-sky">{g.room}</span>
             </div>
-            <p className="mt-1 text-sm text-ink-soft">{weekdaysText(g.weekdays, i18n.language)} · {g.startTime}</p>
+            <p className="mt-1 text-sm text-ink-soft">
+              {[g.subject && subjectName(g.subject, i18n.language), weekdaysText(g.weekdays, i18n.language), g.startTime].filter(Boolean).join(' · ')}
+            </p>
 
             <h3 className="mb-2 mt-5 text-xs font-semibold uppercase tracking-wider text-ink-faint">
               {t('groups.studentsCount', { count: g.students.length })}
