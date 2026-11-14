@@ -34,6 +34,7 @@ const ratingRoutes = require('./routes/ratingRoutes');
 const academicRoutes = require('./routes/academicRoutes');
 const subjectRoutes = require('./routes/subjectRoutes');
 const auditRoutes = require('./routes/auditRoutes');
+const careersRoutes = require('./routes/careersRoutes');
 
 const app = express();
 
@@ -42,8 +43,11 @@ app.set('trust proxy', 1);
 
 // Middleware
 app.use(helmet());
+// The site, and the Careers site (it only needs POST /api/careers/apply: the session cookie is SameSite=lax,
+// so it is never sent from another site anyway).
+const allowedOrigins = [process.env.CLIENT_URL || 'http://localhost:5173', process.env.CAREERS_URL].filter(Boolean);
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: (origin, done) => done(null, !origin || allowedOrigins.includes(origin)),
   credentials: true
 }));
 app.use(cookieParser());
@@ -74,6 +78,7 @@ app.use('/api/ratings', ratingRoutes);
 app.use('/api/academic', academicRoutes);
 app.use('/api/subjects', subjectRoutes);
 app.use('/api/audit', auditRoutes);
+app.use('/api/careers', careersRoutes);
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'Mars Space Backend is running' });

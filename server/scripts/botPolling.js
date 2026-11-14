@@ -5,6 +5,13 @@
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 
+// Polling is only for a computer at home. A deployed site (Vercel) uses the webhook:
+// polling would switch the webhook off and the bot would stop answering.
+if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+  console.error('Polling is for local development only. On the server the bot works through the webhook (npm run bot-webhook).');
+  process.exit(1);
+}
+
 const { getUpdates, deleteWebhook, getMe } = require('../services/telegram');
 const { handleUpdate } = require('../utils/telegramBot');
 

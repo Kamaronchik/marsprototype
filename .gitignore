@@ -30,3 +30,7 @@ server/.env
 
 .vercel
 .env.local
+
+# Database dumps (see docs/backup.md)
+*.dump
+*.sql.gz
