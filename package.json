@@ -27,7 +27,8 @@
     "start": "node server/server.js",
     "dev-all": "concurrently \"npm run dev\" \"node server/server.js\"",
     "test": "vitest run",
-    "seed-test-users": "node server/scripts/seedTestUsers.js"
+    "seed-test-users": "node server/scripts/seedTestUsers.js",
+    "test:ui": "vitest run src"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.14.0",

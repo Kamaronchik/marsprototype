@@ -10,7 +10,13 @@ const authMiddleware = async (req, res, next) => {
 
   // Hash the token from cookie to match the database record
   const sessionHash = crypto.createHash('sha256').update(sessionToken).digest('hex');
-  const session = await db.getSession(sessionHash);
+  let session;
+  try {
+    session = await db.getSession(sessionHash);
+  } catch (error) {
+    console.error('Session lookup failed:', error.message);
+    return res.status(503).json({ message: 'Database error' });
+  }
 
   if (!session) {
     return res.status(401).json({ message: 'Invalid or expired session' });
