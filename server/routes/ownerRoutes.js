@@ -20,6 +20,8 @@ router.get('/fines', owner.listFines);
 router.get('/staff', owner.listStaff);
 router.get('/staff/:id', owner.getStaff);
 
+router.post('/password', owner.changeOwnPassword);
+
 // Changing: CEO only
 router.get('/rules', ceoOnly, owner.listRules);
 router.put('/rules/:code', ceoOnly, owner.updateRule);

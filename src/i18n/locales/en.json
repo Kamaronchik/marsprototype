@@ -92,7 +92,9 @@
       "rules": "Rules",
       "ownerLog": "My journal",
       "accounts": "Accounts",
-      "fines": "Fines"
+      "fines": "Fines",
+      "password": "My password",
+      "sectionMine": "My account"
     },
     "bell": {
       "title": "Notifications",
@@ -904,7 +906,8 @@
       "password_must_be_at_least_12_characters": "Password must be at least 12 characters",
       "invalid_fine_amount": "Invalid fine amount",
       "invalid_fine": "Invalid fine",
-      "fine_not_found": "Fine not found"
+      "fine_not_found": "Fine not found",
+      "current_password_is_wrong": "Current password is wrong"
     },
     "ranks": {
       "cadet": "Cadet",
@@ -1545,7 +1548,13 @@
       "cancelFine": "Cancel the fine",
       "noFines": "No fines",
       "fineAmount": "Fine, sum",
-      "fineAmountHint": "Issued automatically when the warning reached the second step and was ignored. 0 = the rule does not fine. A false alarm cancels the fine."
+      "fineAmountHint": "Issued automatically when the warning reached the second step and was ignored. 0 = the rule does not fine. A false alarm cancels the fine.",
+      "passwordTitle": "My password",
+      "passwordHint": "Change your password. You are signed out on other devices.",
+      "currentPassword": "Current password",
+      "repeatPassword": "Repeat the new password",
+      "passwordMismatch": "Passwords do not match",
+      "passwordChanged": "Password changed"
     }
   }
 }

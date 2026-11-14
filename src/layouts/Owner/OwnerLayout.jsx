@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { LayoutDashboard, ScrollText, ShieldAlert, Users, SlidersHorizontal, Eye, UserCog, Banknote } from 'lucide-react';
+import { LayoutDashboard, ScrollText, ShieldAlert, Users, SlidersHorizontal, Eye, UserCog, Banknote, KeyRound } from 'lucide-react';
 import AppShell from '../../shells/AppShell';
 
 const main = { label: 'nav.sectionMain', items: [
@@ -20,10 +20,14 @@ const system = { label: 'nav.sectionSystem', items: [
   { label: 'nav.ownerLog', path: '/owner/my-log', icon: Eye },
 ] };
 
-// The CEO (role Owner) sees everything; the auditor only reads.
+const mine = { label: 'nav.sectionMine', items: [
+  { label: 'nav.password', path: '/owner/password', icon: KeyRound },
+] };
+
+// The CEO (role Owner) sees everything; the auditor only reads. Both change their own password.
 const OwnerLayout = () => {
   const role = useSelector((state) => state.auth.user?.role);
-  const sections = role === 'Owner' ? [main, crew, system] : [main, crew];
+  const sections = role === 'Owner' ? [main, crew, system, mine] : [main, crew, mine];
   return <AppShell sections={sections} eyebrow="eyebrow.owner" />;
 };
 

@@ -7,6 +7,7 @@ const { runAttendanceRule } = require('../utils/violations');
 const { loadNames } = require('./auditController');
 const { tashkentNow } = require('../utils/schedule');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const db = require('../databaseService');
 
 const MAX_PAGE_SIZE = 100;
@@ -435,6 +436,29 @@ const updateAccount = async (req, res) => {
   res.json({ account: toAccount(data) });
 };
 
+// --- Your own password -----------------------------------------------------------------
+
+// The CEO or the auditor changes their own password. The old one is asked, and every other session is closed.
+const changeOwnPassword = async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  if (typeof currentPassword !== 'string' || typeof newPassword !== 'string' || newPassword.length < 12) {
+    return res.status(400).json({ message: 'Password must be at least 12 characters' });
+  }
+  const { data: me } = await supabase.from('users').select('password_hash').eq('id', req.user.id).maybeSingle();
+  if (!me || !(await bcrypt.compare(currentPassword, me.password_hash))) {
+    return res.status(403).json({ message: 'Current password is wrong' });
+  }
+
+  const { error } = await supabase.from('users').update({ password_hash: await bcrypt.hash(newPassword, 12) }).eq('id', req.user.id);
+  if (error) return handleDbError(error, res);
+
+  const current = crypto.createHash('sha256').update(req.cookies.sessionId ?? '').digest('hex');
+  await supabase.from('sessions').delete().eq('user_id', req.user.id).neq('session_hash', current);
+  db.clearSessionCache();
+  await logAction(req.user.id, 'user.password_change', 'user', req.user.id);
+  res.json({ message: 'Done' });
+};
+
 // --- Fines: made by the system when a warning is ignored; the CEO reads and decides -----
 
 const FINE_COLUMNS = 'id, user_id, rule_code, amount, status, details, issued_at, closed_at, comment, user:users!fines_user_id_fkey(full_name, role)';
@@ -529,6 +553,6 @@ const logOwnerView = async (req, res, next) => {
 module.exports = {
   listLog, exportLog, entityHistory, overview, listViolations, getViolation, acknowledge, closeViolation,
   listStaff, getStaff, listRules, updateRule, runRules, logOwnerView, checkLevels,
-  listAccounts, createAccount, updateAccount,
+  listAccounts, createAccount, updateAccount, changeOwnPassword,
   listFines, cancelFine: closeFine('cancelled'), deductFine: closeFine('deducted'),
 };

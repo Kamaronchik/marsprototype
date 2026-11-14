@@ -92,7 +92,9 @@
       "rules": "Qoidalar",
       "ownerLog": "Mening jurnalim",
       "accounts": "Akkauntlar",
-      "fines": "Jarimalar"
+      "fines": "Jarimalar",
+      "password": "Mening parolim",
+      "sectionMine": "Mening akkauntim"
     },
     "bell": {
       "title": "Bildirishnomalar",
@@ -904,7 +906,8 @@
       "password_must_be_at_least_12_characters": "Parol kamida 12 belgidan iborat bo'lishi kerak",
       "invalid_fine_amount": "Jarima summasi noto'g'ri",
       "invalid_fine": "Noto'g'ri jarima",
-      "fine_not_found": "Jarima topilmadi"
+      "fine_not_found": "Jarima topilmadi",
+      "current_password_is_wrong": "Joriy parol noto'g'ri"
     },
     "ranks": {
       "cadet": "Kursant",
@@ -1545,7 +1548,13 @@
       "cancelFine": "Jarimani bekor qilish",
       "noFines": "Jarimalar yo'q",
       "fineAmount": "Jarima, so'm",
-      "fineAmountHint": "Ogohlantirish ikkinchi qadamga yetib, unga e'tibor berilmasa, avtomatik belgilanadi. 0 = qoida jarima solmaydi. Yolg'on qoidabuzarlik jarimani bekor qiladi."
+      "fineAmountHint": "Ogohlantirish ikkinchi qadamga yetib, unga e'tibor berilmasa, avtomatik belgilanadi. 0 = qoida jarima solmaydi. Yolg'on qoidabuzarlik jarimani bekor qiladi.",
+      "passwordTitle": "Mening parolim",
+      "passwordHint": "Parolni o'zgartiring. Boshqa qurilmalarda akkauntdan chiqarilasiz.",
+      "currentPassword": "Joriy parol",
+      "repeatPassword": "Yangi parolni takrorlang",
+      "passwordMismatch": "Parollar mos kelmaydi",
+      "passwordChanged": "Parol o'zgartirildi"
     }
   }
 }
