@@ -79,7 +79,7 @@ const listAuditUsers = async (req, res) => {
   const roles = actorRolesFor(req.user.role);
   if (roles) query = query.in('role', roles);
   else query = query.neq('role', 'Student');
-  if (req.user.role !== 'Owner') query = query.neq('role', 'Owner');
+  if (req.user.role !== 'Owner') query = query.not('role', 'in', '(Owner,Auditor)');
 
   const { data, error } = await query;
   if (error) return handleDbError(error, res);

@@ -57,16 +57,17 @@ const handleDbError = (error, res) => {
   return res.status(500).json({ message: 'Database error' });
 };
 
-// The Owner checks the Admin, so the Admin cannot see, change or delete an Owner account.
-// An Owner is created only from the command line: npm run create-owner.
+// The CEO (role Owner) and the auditors check the Admin, so the Admin cannot see, change or delete their accounts.
+// They are created by the CEO in the CEO panel (or, the first CEO, with npm run create-owner).
+const CEO_SIDE_ROLES = ['Owner', 'Auditor'];
 const isOwnerAccount = async (id) => {
   const { data } = await supabase.from('users').select('role').eq('id', id).maybeSingle();
-  return data?.role === 'Owner';
+  return CEO_SIDE_ROLES.includes(data?.role);
 };
 
 const listUsers = async (req, res) => {
   const { data, error } = await supabase
-    .from('users').select(COLUMNS).neq('role', 'Owner').order('created_at', { ascending: false });
+    .from('users').select(COLUMNS).not('role', 'in', '(Owner,Auditor)').order('created_at', { ascending: false });
   if (error) return handleDbError(error, res);
   res.json({ users: data.map(toClient) });
 };

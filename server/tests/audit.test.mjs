@@ -83,6 +83,13 @@ describe.skipIf(!hasDatabase)('the owner panel is closed to every other role', (
     expect((await admin.post('/api/owner/violations/00000000-0000-4000-8000-000000000000/close').send({ outcome: 'dismissed', comment: 'test' })).status).toBe(403);
   });
 
+  it('keeps the account management for the CEO only', async () => {
+    for (const role of ['admin', 'financier', 'teacher']) {
+      expect((await as(ctx.cookies[role]).get('/api/owner/accounts')).status).toBe(403);
+      expect((await as(ctx.cookies[role]).post('/api/owner/accounts').send({ role: 'Admin' })).status).toBe(403);
+    }
+  });
+
   it('keeps the timer endpoint closed without the secret', async () => {
     expect([401, 503]).toContain((await as(null).get('/api/cron/rules')).status);
   });

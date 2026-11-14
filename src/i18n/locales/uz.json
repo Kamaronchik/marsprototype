@@ -40,7 +40,8 @@
       "Financier": "Moliyachi",
       "Student": "O'quvchi",
       "AcademicManager": "O'quv bo'limi mudiri",
-      "Owner": "Egasi"
+      "Owner": "CEO",
+      "Auditor": "Auditor"
     },
     "nav": {
       "overview": "Umumiy ko'rinish",
@@ -89,7 +90,8 @@
       "violations": "Qoidabuzarliklar",
       "staff": "Xodimlar",
       "rules": "Qoidalar",
-      "ownerLog": "Mening jurnalim"
+      "ownerLog": "Mening jurnalim",
+      "accounts": "Akkauntlar"
     },
     "bell": {
       "title": "Bildirishnomalar",
@@ -895,7 +897,8 @@
       "invalid_levels": "Ogohlantirish zanjiri noto'g'ri",
       "rule_not_found": "Qoida topilmadi",
       "cron_is_not_configured": "Taymer sozlanmagan",
-      "invalid_cron_secret": "Taymer siri noto'g'ri"
+      "invalid_cron_secret": "Taymer siri noto'g'ri",
+      "password_must_be_at_least_12_characters": "Parol kamida 12 belgidan iborat bo'lishi kerak"
     },
     "ranks": {
       "cadet": "Kursant",
@@ -1239,7 +1242,8 @@
         "Financier": "moliyachi",
         "Student": "o'quvchi",
         "AcademicManager": "o'quv bo'limi mudiri",
-        "Owner": "egasi"
+        "Owner": "CEO",
+        "Auditor": "auditor"
       },
       "actions": {
         "user": {
@@ -1493,7 +1497,21 @@
         "escalated": "Uzatilgan",
         "resolved": "Tuzatilgan",
         "dismissed": "Yolg'on"
-      }
+      },
+      "fullName": "Ism",
+      "username": "Login",
+      "email": "Pochta (kirishda kod shu yerga keladi)",
+      "password": "Parol (kamida 12 belgi)",
+      "createAccount": "Akkaunt yaratish",
+      "block": "Bloklash",
+      "unblock": "Blokdan chiqarish",
+      "newPassword": "Yangi parol",
+      "setPassword": "Parolni o'zgartirish",
+      "statusLabel": "Holat",
+      "actions": "Amallar",
+      "noAccounts": "Hozircha akkauntlar yo'q",
+      "accountsTitle": "Akkauntlar",
+      "accountsHint": "Bu yerda CEO adminlar, moliyachilar va auditorlarni yaratadi, bloklaydi va parollarini o'zgartiradi. Auditor faqat jurnal va qoidabuzarliklarni o'qiydi."
     }
   }
 }

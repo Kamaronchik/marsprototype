@@ -40,7 +40,8 @@
       "Financier": "Финансист",
       "Student": "Ученик",
       "AcademicManager": "Завуч",
-      "Owner": "Владелец"
+      "Owner": "CEO",
+      "Auditor": "Аудитор"
     },
     "nav": {
       "overview": "Обзор",
@@ -89,7 +90,8 @@
       "violations": "Нарушения",
       "staff": "Сотрудники",
       "rules": "Правила",
-      "ownerLog": "Мой журнал"
+      "ownerLog": "Мой журнал",
+      "accounts": "Аккаунты"
     },
     "bell": {
       "title": "Уведомления",
@@ -897,7 +899,8 @@
       "invalid_levels": "Некорректная цепочка предупреждений",
       "rule_not_found": "Правило не найдено",
       "cron_is_not_configured": "Таймер не настроен",
-      "invalid_cron_secret": "Неверный секрет таймера"
+      "invalid_cron_secret": "Неверный секрет таймера",
+      "password_must_be_at_least_12_characters": "Пароль должен быть не короче 12 символов"
     },
     "ranks": {
       "cadet": "Кадет",
@@ -1243,7 +1246,8 @@
         "Financier": "финансист",
         "Student": "ученик",
         "AcademicManager": "завуч",
-        "Owner": "владелец"
+        "Owner": "CEO",
+        "Auditor": "аудитор"
       },
       "actions": {
         "user": {
@@ -1497,7 +1501,21 @@
         "escalated": "Передано дальше",
         "resolved": "Исправлено",
         "dismissed": "Ложное"
-      }
+      },
+      "fullName": "Имя",
+      "username": "Логин",
+      "email": "Почта (сюда придёт код при входе)",
+      "password": "Пароль (не короче 12 символов)",
+      "createAccount": "Создать аккаунт",
+      "block": "Заблокировать",
+      "unblock": "Разблокировать",
+      "newPassword": "Новый пароль",
+      "setPassword": "Сменить пароль",
+      "statusLabel": "Статус",
+      "actions": "Действия",
+      "noAccounts": "Аккаунтов пока нет",
+      "accountsTitle": "Аккаунты",
+      "accountsHint": "Здесь CEO создаёт админов, финансистов и аудиторов, блокирует их и меняет пароли. Аудитор только читает журнал и нарушения."
     }
   }
 }

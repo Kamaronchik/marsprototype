@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
@@ -19,6 +20,7 @@ const Tile = ({ label, value, alert = false }) => (
 // The owner's first page: what needs attention right now.
 const Overview = () => {
   const { t, i18n } = useTranslation();
+  const isCeo = useSelector((state) => state.auth.user?.role) === 'Owner';
   const overview = useFetch('/api/owner/overview');
   const open = useFetch('/api/owner/violations?status=active&pageSize=5');
   const [checking, setChecking] = useState(false);
@@ -38,7 +40,7 @@ const Overview = () => {
     }
   };
 
-  const action = <button className="btn-primary" onClick={checkNow} disabled={checking}>{t('owner.checkNow')}</button>;
+  const action = !isCeo ? null : <button className="btn-primary" onClick={checkNow} disabled={checking}>{t('owner.checkNow')}</button>;
 
   return (
     <>

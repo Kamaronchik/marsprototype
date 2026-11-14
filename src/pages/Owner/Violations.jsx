@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
@@ -20,6 +21,7 @@ const Chain = ({ id, onChanged }) => {
   const chain = useFetch(`/api/owner/violations/${id}`);
   const [comment, setComment] = useState('');
   const [busy, setBusy] = useState(false);
+  const isCeo = useSelector((state) => state.auth.user?.role) === 'Owner';
   const violation = chain.data?.violation;
 
   const send = async (path, body) => {
@@ -52,7 +54,7 @@ const Chain = ({ id, onChanged }) => {
         ))}
       </ol>
 
-      {!CLOSED.includes(violation.status) && (
+      {isCeo && !CLOSED.includes(violation.status) && (
         <div className="rounded-lg border border-line bg-card p-4">
           <label htmlFor={`c-${id}`} className="field-label">{t('owner.closeComment')}</label>
           <textarea id={`c-${id}`} className="field" rows="2" maxLength="500" value={comment} onChange={(e) => setComment(e.target.value)} />

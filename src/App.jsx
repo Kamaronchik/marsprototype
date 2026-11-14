@@ -61,6 +61,7 @@ const OwnerStaff = lazy(() => import('./pages/Owner/Staff'));
 const OwnerStaffProfile = lazy(() => import('./pages/Owner/StaffProfile'));
 const OwnerHistory = lazy(() => import('./pages/Owner/History'));
 const OwnerRules = lazy(() => import('./pages/Owner/Rules'));
+const OwnerAccounts = lazy(() => import('./pages/Owner/Accounts'));
 
 const StudentLayout = lazy(() => import('./layouts/Student/StudentLayout'));
 const StudentHome = lazy(() => import('./features/student/StudentHome'));
@@ -174,11 +175,11 @@ const AppRoutes = () => {
             <Route path="audit" element={<AuditLogs />} />
           </Route>
 
-          {/* Owner Routes: the audit panel. Only the Owner role. */}
+          {/* CEO panel (role Owner) and read-only view for the auditor. */}
           <Route
             path="/owner"
             element={
-              <ProtectedRoute allowedRoles={['Owner']}>
+              <ProtectedRoute allowedRoles={['Owner', 'Auditor']}>
                 <OwnerLayout />
               </ProtectedRoute>
             }
@@ -191,6 +192,7 @@ const AppRoutes = () => {
             <Route path="staff/:id" element={<OwnerStaffProfile />} />
             <Route path="history/:entity/:id" element={<OwnerHistory />} />
             <Route path="rules" element={<OwnerRules />} />
+            <Route path="accounts" element={<OwnerAccounts />} />
           </Route>
 
           {/* Student Routes */}

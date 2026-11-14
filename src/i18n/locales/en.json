@@ -40,7 +40,8 @@
       "Financier": "Finance",
       "Student": "Student",
       "AcademicManager": "Academic manager",
-      "Owner": "Owner"
+      "Owner": "CEO",
+      "Auditor": "Auditor"
     },
     "nav": {
       "overview": "Overview",
@@ -89,7 +90,8 @@
       "violations": "Violations",
       "staff": "Staff",
       "rules": "Rules",
-      "ownerLog": "My journal"
+      "ownerLog": "My journal",
+      "accounts": "Accounts"
     },
     "bell": {
       "title": "Notifications",
@@ -895,7 +897,8 @@
       "invalid_levels": "Invalid chain of warnings",
       "rule_not_found": "Rule not found",
       "cron_is_not_configured": "The timer is not configured",
-      "invalid_cron_secret": "Invalid timer secret"
+      "invalid_cron_secret": "Invalid timer secret",
+      "password_must_be_at_least_12_characters": "Password must be at least 12 characters"
     },
     "ranks": {
       "cadet": "Cadet",
@@ -1239,7 +1242,8 @@
         "Financier": "Financier",
         "Student": "Student",
         "AcademicManager": "Academic manager",
-        "Owner": "owner"
+        "Owner": "CEO",
+        "Auditor": "auditor"
       },
       "actions": {
         "user": {
@@ -1493,7 +1497,21 @@
         "escalated": "Passed on",
         "resolved": "Fixed",
         "dismissed": "False alarm"
-      }
+      },
+      "fullName": "Name",
+      "username": "Username",
+      "email": "Email (the sign-in code comes here)",
+      "password": "Password (at least 12 characters)",
+      "createAccount": "Create account",
+      "block": "Block",
+      "unblock": "Unblock",
+      "newPassword": "New password",
+      "setPassword": "Change password",
+      "statusLabel": "Status",
+      "actions": "Actions",
+      "noAccounts": "No accounts yet",
+      "accountsTitle": "Accounts",
+      "accountsHint": "Here the CEO creates admins, financiers and auditors, blocks them and changes their passwords. The auditor only reads the journal and the violations."
     }
   }
 }

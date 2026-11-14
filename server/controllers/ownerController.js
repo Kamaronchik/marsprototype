@@ -6,6 +6,8 @@ const { logAction } = require('../utils/audit');
 const { runAttendanceRule } = require('../utils/violations');
 const { loadNames } = require('./auditController');
 const { tashkentNow } = require('../utils/schedule');
+const bcrypt = require('bcryptjs');
+const db = require('../databaseService');
 
 const MAX_PAGE_SIZE = 100;
 const EXPORT_LIMIT = 5000;
@@ -363,6 +365,69 @@ const updateRule = async (req, res) => {
   res.json({ message: 'Done' });
 };
 
+// --- Accounts: the CEO creates and manages Admin, Financier and Auditor ---------------
+
+const MANAGED_ROLES = ['Admin', 'Financier', 'Auditor'];
+const ACCOUNT_COLUMNS = 'id, username, full_name, email, role, status, created_at';
+
+const toAccount = (u) => ({ id: u.id, username: u.username, fullName: u.full_name, email: u.email, role: u.role, status: u.status, createdAt: u.created_at });
+
+const listAccounts = async (req, res) => {
+  const { data, error } = await supabase.from('users').select(ACCOUNT_COLUMNS).in('role', MANAGED_ROLES).order('created_at', { ascending: false });
+  if (error) return handleDbError(error, res);
+  res.json({ accounts: data.map(toAccount) });
+};
+
+const createAccount = async (req, res) => {
+  const { username, email, fullName, password, role } = req.body;
+  if (!MANAGED_ROLES.includes(role)) return res.status(400).json({ message: 'Invalid role' });
+  if (!/^[a-zA-Z0-9._-]{3,30}$/.test(username || '')) return res.status(400).json({ message: 'Username: 3-30 chars (letters, digits . _ -)' });
+  if (!/^\S+@\S+\.\S+$/.test((email || '').trim())) return res.status(400).json({ message: 'Invalid email' });
+  if (!fullName || !fullName.trim()) return res.status(400).json({ message: 'Full name is required' });
+  if (!password || password.length < 12) return res.status(400).json({ message: 'Password must be at least 12 characters' });
+
+  const { data, error } = await supabase.from('users').insert({
+    username, email: email.trim().toLowerCase(), full_name: fullName.trim(), role, status: 'active',
+    password_hash: await bcrypt.hash(password, 12), email_verified: false,
+  }).select(ACCOUNT_COLUMNS).single();
+  if (error) {
+    if (error.code === '23505') return res.status(409).json({ message: 'Username already exists' });
+    return handleDbError(error, res);
+  }
+  await logAction(req.user.id, 'user.create', 'user', data.id, { role });
+  res.status(201).json({ account: toAccount(data) });
+};
+
+// Block, unblock or give a new password. Only the three managed roles can be reached from here.
+const updateAccount = async (req, res) => {
+  const { id } = req.params;
+  const { status, password } = req.body;
+  if (!isUuid(id)) return res.status(400).json({ message: 'Invalid user' });
+  if (status !== undefined && !['active', 'blocked'].includes(status)) return res.status(400).json({ message: 'Invalid status' });
+  if (password !== undefined && (typeof password !== 'string' || password.length < 12)) {
+    return res.status(400).json({ message: 'Password must be at least 12 characters' });
+  }
+  if (status === undefined && password === undefined) return res.status(400).json({ message: 'Nothing to update' });
+
+  const { data: before } = await supabase.from('users').select('role, status').eq('id', id).in('role', MANAGED_ROLES).maybeSingle();
+  if (!before) return res.status(404).json({ message: 'User not found' });
+
+  const updates = {};
+  if (status !== undefined) updates.status = status;
+  if (password !== undefined) updates.password_hash = await bcrypt.hash(password, 12);
+  const { data, error } = await supabase.from('users').update(updates).eq('id', id).select(ACCOUNT_COLUMNS).single();
+  if (error) return handleDbError(error, res);
+
+  if (status !== undefined && status !== before.status) await logAction(req.user.id, 'user.status_change', 'user', id, { from: before.status, to: status });
+  if (password !== undefined) await logAction(req.user.id, 'user.password_change', 'user', id);
+  // A blocked person or a new password ends every open session at once.
+  if (status === 'blocked' || password !== undefined) {
+    await supabase.from('sessions').delete().eq('user_id', id);
+    db.clearSessionCache();
+  }
+  res.json({ account: toAccount(data) });
+};
+
 // "Check now": runs the rules at once and tells what happened.
 const runRules = async (req, res) => {
   const result = await runAttendanceRule();
@@ -381,4 +446,5 @@ const logOwnerView = async (req, res, next) => {
 module.exports = {
   listLog, exportLog, entityHistory, overview, listViolations, getViolation, acknowledge, closeViolation,
   listStaff, getStaff, listRules, updateRule, runRules, logOwnerView, checkLevels,
+  listAccounts, createAccount, updateAccount,
 };
