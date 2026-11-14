@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../../features/auth/authSlice';
 import { toast } from 'react-toastify';
-import { ArrowLeft, Loader2, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Loader2, RefreshCw, ShieldCheck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Logo from '../../components/Logo';
 import LanguageSwitch from '../../components/LanguageSwitch';
@@ -22,6 +22,8 @@ const DeviceVerificationPage = () => {
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const [timer, setTimer] = useState(60); // resend available every 1 minute
+  const [failed, setFailed] = useState(0); // grows on every wrong code: restarts the shake animation
+  const lastSent = useRef(''); // the code that was sent last, so one code is never sent twice
 
   useEffect(() => {
     if (!userId) {
@@ -36,25 +38,31 @@ const DeviceVerificationPage = () => {
     return () => clearInterval(interval);
   }, [navigate, userId]);
 
+  const focusBox = (index) => document.getElementById(`code-${index}`)?.focus();
+
   const handleInputChange = (index, value) => {
-    // Only accept numeric input
-    if (value && isNaN(Number(value))) return;
+    const digits = value.replace(/\D/g, '');
+    if (value && !digits) return;
 
-    const newCode = [...code];
-    newCode[index] = value.slice(-1);
-    setCode(newCode);
-
-    if (index < 5 && value) {
-      const nextInput = document.getElementById(`code-${index + 1}`);
-      nextInput?.focus();
+    // Several digits at once (autofill from the keyboard): fill the boxes from here.
+    if (digits.length > 1) {
+      const next = [...code];
+      digits.slice(0, 6 - index).split('').forEach((d, i) => { next[index + i] = d; });
+      setCode(next);
+      focusBox(Math.min(index + digits.length, 5));
+      return;
     }
+
+    const next = [...code];
+    next[index] = digits;
+    setCode(next);
+    if (index < 5 && digits) focusBox(index + 1);
   };
 
   const handleKeyDown = (index, e) => {
-    if (e.key === 'Backspace' && !code[index] && index > 0) {
-      const prevInput = document.getElementById(`code-${index - 1}`);
-      prevInput?.focus();
-    }
+    if (e.key === 'Backspace' && !code[index] && index > 0) focusBox(index - 1);
+    if (e.key === 'ArrowLeft' && index > 0) focusBox(index - 1);
+    if (e.key === 'ArrowRight' && index < 5) focusBox(index + 1);
   };
 
   const handlePaste = (e) => {
@@ -63,7 +71,7 @@ const DeviceVerificationPage = () => {
     if (/^\d{6}$/.test(pastedData)) {
       const digits = pastedData.split('');
       setCode(digits);
-      document.getElementById('code-5')?.focus();
+      focusBox(5);
     }
   };
 
@@ -73,14 +81,7 @@ const DeviceVerificationPage = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const fullCode = code.join('');
-    if (fullCode.length !== 6) {
-      toast.error(t('verify.enterAll'));
-      return;
-    }
-
+  const submit = async (fullCode) => {
     setLoading(true);
     try {
       const response = await fetch('/api/auth/verify-device', {
@@ -98,12 +99,38 @@ const DeviceVerificationPage = () => {
         navigate(homePath(data.user.role));
       } else {
         toast.error(data.message ? messageText(t, data.message) : t('verify.failed'));
+        wrongCode();
       }
     } catch {
       toast.error(t('verify.connection'));
+      wrongCode();
     } finally {
       setLoading(false);
     }
+  };
+
+  // A wrong code: shake the boxes, empty them and let the person type again.
+  const wrongCode = () => {
+    setFailed((n) => n + 1);
+    lastSent.current = '';
+    setCode(['', '', '', '', '', '']);
+    focusBox(0);
+  };
+
+  // The code is sent by itself as soon as the sixth digit is in.
+  const fullCode = code.join('');
+  useEffect(() => {
+    if (fullCode.length === 6 && !loading && lastSent.current !== fullCode) {
+      lastSent.current = fullCode;
+      submit(fullCode);
+    }
+    // submit only uses the code it is given, the other values do not change when it is sent
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fullCode, loading]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (fullCode.length !== 6) toast.error(t('verify.enterAll'));
   };
 
   const handleResend = async () => {
@@ -124,7 +151,8 @@ const DeviceVerificationPage = () => {
         toast.success(data.message ? messageText(t, data.message) : t('verify.resent'));
         setTimer(60);
         setCode(['', '', '', '', '', '']);
-        document.getElementById('code-0')?.focus();
+        lastSent.current = '';
+        focusBox(0);
       } else {
         toast.error(data.message ? messageText(t, data.message) : t('verify.resendFailed'));
       }
@@ -135,6 +163,8 @@ const DeviceVerificationPage = () => {
     }
   };
 
+  const progress = (fullCode.length / 6) * 100;
+
   return (
     <div className="flex min-h-screen flex-col items-center px-6 py-10">
       <div className="flex w-full max-w-5xl items-center justify-between">
@@ -142,56 +172,63 @@ const DeviceVerificationPage = () => {
         <div className="flex items-center gap-4"><ThemeToggle /><LanguageSwitch /></div>
       </div>
 
-      <div className="my-auto w-full max-w-md py-10">
+      <div className="otp-rise my-auto w-full max-w-md py-10">
         <button
           onClick={() => navigate('/login')}
-          className="mb-8 inline-flex items-center gap-1.5 text-sm font-medium text-ink-soft hover:text-ink"
+          className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-ink-soft hover:text-ink"
         >
           <ArrowLeft size={16} /> {t('verify.back')}
         </button>
 
-        <h1 className="font-display text-[2rem] font-semibold tracking-tight text-ink">{t('verify.title')}</h1>
-        <p className="mt-2 text-[15px] leading-relaxed text-ink-soft">
-          {t('verify.text')}
-        </p>
+        <div className="rounded-2xl border border-line bg-card p-7 shadow-xl sm:p-9">
+          <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-mars-tint text-mars">
+            <ShieldCheck size={24} strokeWidth={1.8} />
+          </span>
+          <h1 className="mt-5 font-display text-[1.9rem] font-semibold leading-tight tracking-tight text-ink">{t('verify.title')}</h1>
+          <p className="mt-2 text-[15px] leading-relaxed text-ink-soft">{t('verify.text')}</p>
 
-        <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-          <div className="flex gap-2 sm:gap-3" onPaste={handlePaste}>
-            {code.map((digit, idx) => (
-              <input
-                key={idx}
-                id={`code-${idx}`}
-                type="text"
-                inputMode="numeric"
-                maxLength="1"
-                autoComplete="one-time-code"
-                aria-label={t('verify.digit', { n: idx + 1 })}
-                className="field h-14 w-full min-w-0 px-0 text-center font-display text-2xl font-semibold"
-                value={digit}
-                onChange={(e) => handleInputChange(idx, e.target.value)}
-                onKeyDown={(e) => handleKeyDown(idx, e)}
-              />
-            ))}
-          </div>
+          <form onSubmit={handleSubmit} className="mt-7">
+            {/* key={failed}: a new element after a wrong code, so the shake plays again */}
+            <div key={failed} className={`flex gap-2 sm:gap-3 ${failed ? 'otp-shake' : ''}`} onPaste={handlePaste}>
+              {code.map((digit, idx) => (
+                <input
+                  key={idx}
+                  id={`code-${idx}`}
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  autoFocus={idx === 0}
+                  disabled={loading}
+                  aria-label={t('verify.digit', { n: idx + 1 })}
+                  className={`field h-14 w-full min-w-0 px-0 text-center font-display text-2xl font-semibold disabled:opacity-60 ${digit ? 'otp-pop border-mars' : ''}`}
+                  value={digit}
+                  onChange={(e) => handleInputChange(idx, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(idx, e)}
+                />
+              ))}
+            </div>
 
-          <button type="submit" disabled={loading} className="btn-primary w-full py-3">
-            {loading ? (
-              <>
-                <Loader2 className="animate-spin" size={17} />
-                <span>{t('verify.checking')}</span>
-              </>
-            ) : (
-              <span>{t('verify.confirm')}</span>
-            )}
-          </button>
-        </form>
+            <div className="mt-4 h-1 overflow-hidden rounded-full bg-sunken" aria-hidden="true">
+              <div className="h-full rounded-full bg-mars" style={{ width: `${loading ? 100 : progress}%` }} />
+            </div>
 
-        <div className="mt-8 border-t border-line pt-6 text-sm text-ink-soft">
+            <p className="mt-3 flex h-5 items-center gap-2 text-sm text-ink-soft" aria-live="polite">
+              {loading && (
+                <>
+                  <Loader2 className="animate-spin" size={15} />
+                  <span>{t('verify.checking')}</span>
+                </>
+              )}
+            </p>
+          </form>
+        </div>
+
+        <div className="mt-6 text-center text-sm text-ink-soft">
           <p>{t('verify.noMail')}</p>
           <button
             type="button"
             disabled={timer > 0 || resending}
-            className="mt-2 inline-flex items-center gap-1.5 font-semibold text-mars hover:text-mars-deep disabled:pointer-events-none disabled:text-ink-faint"
+            className="mt-1.5 inline-flex items-center gap-1.5 font-semibold text-mars hover:text-mars-deep disabled:pointer-events-none disabled:text-ink-faint"
             onClick={handleResend}
           >
             {resending ? (
