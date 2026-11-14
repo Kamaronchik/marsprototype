@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 
 // The rules of the Battle Arena, in one place. The reward and the daily limit are also in
-// settle_battle (database/schema_battle.sql): change them in both places.
+// settle_battle (supabase/migrations/007_battle.sql): change them in both places.
 const COURSES = ['html', 'css', 'js', 'react'];
 const LEVELS = ['intern', 'junior', 'middle', 'senior'];
 const QUESTIONS_PER_BATTLE = 6;

@@ -1,5 +1,5 @@
 // Puts the question bank (database/battleQuestions.js, with its .uz and .en translations) into the database.
-// Run after schema_battle.sql:  npm run seed-battle
+// Run after 007_battle.sql:  npm run seed-battle
 // Safe to run again: questions that are already there are skipped.
 const supabase = require('../config/supabase');
 const questions = require('../database/battleQuestions');
@@ -37,7 +37,7 @@ const problems = withTranslations.flatMap((q, i) => {
   if (problems.length) return fail(`the question bank has problems:\n  ${problems.join('\n  ')}`);
 
   const { data: existing, error: readError } = await supabase.from('battle_questions').select('course, level, text, i18n');
-  if (readError) return fail(`cannot read battle_questions (did you run schema_battle.sql?): ${readError.message}`);
+  if (readError) return fail(`cannot read battle_questions (did you run 007_battle.sql?): ${readError.message}`);
 
   const known = new Map(existing.map((q) => [`${q.course}|${q.level}|${q.text}`, q]));
   const fresh = withTranslations.filter((q) => !known.has(`${q.course}|${q.level}|${q.text}`));

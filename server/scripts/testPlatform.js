@@ -1,5 +1,5 @@
 // End-to-end check of groups, rooms, students, notifications and attendance against the real database.
-// Run AFTER schema_platform.sql:  npm run test-platform
+// Run AFTER 006_platform.sql:  npm run test-platform
 // Test accounts are the fixed "zz_test_*" ones (blocked again at the end); test groups are deleted.
 const crypto = require('crypto');
 const {
@@ -242,7 +242,7 @@ const cleanup = async (users, ctx) => {
 
   try {
     const { error: missing } = await supabase.from('groups').select('room').limit(1);
-    if (missing) throw new Error('Run schema_platform.sql in Supabase first.');
+    if (missing) throw new Error('Run 006_platform.sql in Supabase first.');
 
     const raw = {
       admin: await ensureUser('admin', 'Admin'),

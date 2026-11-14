@@ -1,4 +1,4 @@
-// Errors returned by the SQL functions in database/rpc_shop.sql: code -> [HTTP status, message].
+// Errors returned by the SQL functions in supabase/migrations/005_rpc_shop.sql: code -> [HTTP status, message].
 const RPC_ERRORS = {
   INVALID_AMOUNT: [400, 'Amount must be a positive whole number'],
   FORBIDDEN: [403, 'Forbidden'],

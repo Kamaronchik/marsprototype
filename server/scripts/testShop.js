@@ -1,5 +1,5 @@
 // End-to-end check of the coins shop against the real database.
-// Run AFTER schema_shop.sql and rpc_shop.sql:  npm run test-shop
+// Run AFTER 004_shop.sql and 005_rpc_shop.sql:  npm run test-shop
 // It uses fixed "zz_test_*" accounts, which are blocked again at the end.
 // Coin transactions and the audit log are append-only, so their test rows stay in the database.
 const crypto = require('crypto');
@@ -376,7 +376,7 @@ const cleanup = async (users, ctx) => {
 
   try {
     const { error: missing } = await supabase.rpc('get_wallet_balance', { p_student_id: crypto.randomUUID() });
-    if (missing?.code === 'PGRST202') throw new Error('Run schema_shop.sql and rpc_shop.sql in Supabase first.');
+    if (missing?.code === 'PGRST202') throw new Error('Run 004_shop.sql and 005_rpc_shop.sql in Supabase first.');
 
     const raw = {
       admin: await ensureUser('admin', 'Admin'),

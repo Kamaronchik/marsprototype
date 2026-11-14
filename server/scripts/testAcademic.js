@@ -1,5 +1,5 @@
 // End-to-end check of the academic manager: lessons with topics, ratings, risk list, AI reports, messages.
-// Run AFTER schema_academic_manager.sql:  npm run test-academic
+// Run AFTER 013_academic_manager.sql:  npm run test-academic
 // Gemini and Telegram are replaced by fakes: nothing is sent anywhere and no model is called.
 // Test accounts are the fixed "zz_test_*" ones (blocked again at the end); the test group is deleted.
 
@@ -283,7 +283,7 @@ const cleanup = async (users, groupId) => {
 
   try {
     const { error: missing } = await supabase.from('lessons').select('id').limit(1);
-    if (missing) throw new Error('Run schema_academic_manager.sql in Supabase first.');
+    if (missing) throw new Error('Run 013_academic_manager.sql in Supabase first.');
 
     const raw = {
       admin: await ensureUser('admin', 'Admin'),
