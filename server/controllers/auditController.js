@@ -3,16 +3,10 @@ const { handleDbError } = require('../utils/apiErrors');
 const { isUuid } = require('../utils/validate');
 const { readRange, applyRange } = require('../utils/financeRange');
 
-// Who sees which actions. The Admin sees everything.
-// An action code looks like "group.create": the part before the dot is its area.
-const ACADEMIC = ['group.', 'schedule.', 'attendance.', 'grade.', 'homework.', 'lesson.', 'academic.', 'subject.', 'application.'];
-const FINANCE = ['payment.', 'salary.', 'expense.', 'balance.', 'student.payment_status'];
-const VISIBLE = { AcademicManager: ACADEMIC, Financier: FINANCE };
+const { prefixesFor, canSee, actorRolesFor } = require('../utils/auditAreas');
 
 const PAGE_SIZE = 25;
 const MAX_PAGE_SIZE = 100;
-
-const allowedFor = (role, action) => !VISIBLE[role] || VISIBLE[role].some((prefix) => action.startsWith(prefix));
 
 // "group.*,schedule.*" for the database filter.
 const prefixFilter = (prefixes) => prefixes.map((p) => `action.like.${p}*`).join(',');
@@ -44,7 +38,7 @@ const listAudit = async (req, res) => {
   const empty = { entries: [], page, pageSize, total: 0 };
 
   // Asking for an action the role may not see gives nothing, not an error that leaks its existence.
-  if (action && !allowedFor(req.user.role, action)) return res.json(empty);
+  if (action && !canSee(req.user.role, action)) return res.json(empty);
 
   let query = supabase
     .from('audit_log')
@@ -52,7 +46,7 @@ const listAudit = async (req, res) => {
     .order('created_at', { ascending: false })
     .range((page - 1) * pageSize, page * pageSize - 1);
 
-  const prefixes = VISIBLE[req.user.role];
+  const prefixes = prefixesFor(req.user.role);
   if (prefixes) query = query.or(prefixFilter(prefixes));
   if (action) query = query.eq('action', action);
   if (userId) query = query.eq('actor_id', userId);
@@ -79,14 +73,9 @@ const listAudit = async (req, res) => {
 };
 
 // The people who can appear in the journal, for the "user" filter.
-const ACTOR_ROLES = {
-  AcademicManager: ['Admin', 'Teacher', 'AcademicManager'],
-  Financier: ['Admin', 'Financier'],
-};
-
 const listAuditUsers = async (req, res) => {
   let query = supabase.from('users').select('id, full_name, role').order('full_name').limit(500);
-  const roles = ACTOR_ROLES[req.user.role];
+  const roles = actorRolesFor(req.user.role);
   if (roles) query = query.in('role', roles);
   else query = query.neq('role', 'Student');
 
