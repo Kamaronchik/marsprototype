@@ -15,6 +15,7 @@ const RuleCard = ({ rule, onSaved }) => {
   const [enabled, setEnabled] = useState(rule.enabled);
   const [severity, setSeverity] = useState(rule.severity);
   const [levels, setLevels] = useState(rule.levels);
+  const [fineAmount, setFineAmount] = useState(rule.fineAmount);
   const [saving, setSaving] = useState(false);
 
   const changeLevel = (index, change) => setLevels(levels.map((l, i) => (i === index ? { ...l, ...change } : l)));
@@ -30,7 +31,7 @@ const RuleCard = ({ rule, onSaved }) => {
   const save = async () => {
     setSaving(true);
     try {
-      await api(`/api/owner/rules/${rule.code}`, { method: 'PUT', body: { enabled, severity, levels } });
+      await api(`/api/owner/rules/${rule.code}`, { method: 'PUT', body: { enabled, severity, levels, fineAmount: Number(fineAmount) } });
       toast.success(t('settings.saved'));
       onSaved();
     } catch (error) {
@@ -58,6 +59,12 @@ const RuleCard = ({ rule, onSaved }) => {
         <select id={`sev-${rule.code}`} className="field pr-8" value={severity} onChange={(e) => setSeverity(e.target.value)}>
           {SEVERITIES.map((s) => <option key={s} value={s}>{t(`owner.severities.${s}`)}</option>)}
         </select>
+      </div>
+
+      <div className="mt-4 max-w-xs">
+        <label htmlFor={`fine-${rule.code}`} className="field-label">{t('owner.fineAmount')}</label>
+        <input id={`fine-${rule.code}`} type="number" min="0" step="1000" className="field" value={fineAmount} onChange={(e) => setFineAmount(e.target.value)} />
+        <p className="mt-1 text-xs text-ink-faint">{t('owner.fineAmountHint')}</p>
       </div>
 
       <h3 className="mb-2 mt-5 text-sm font-semibold text-ink">{t('owner.levels')}</h3>

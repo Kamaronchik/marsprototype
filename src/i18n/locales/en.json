@@ -91,7 +91,8 @@
       "staff": "Staff",
       "rules": "Rules",
       "ownerLog": "My journal",
-      "accounts": "Accounts"
+      "accounts": "Accounts",
+      "fines": "Fines"
     },
     "bell": {
       "title": "Notifications",
@@ -124,7 +125,9 @@
       "lesson_rate": "How were the lessons this week? Rate the lesson \"{{topic}}\" ({{groupName}}) on your home page.",
       "attendance_late": "You were marked late in {{groupName}} on {{date}}",
       "violation_attendance": "Attendance of group {{groupName}} for {{date}} is not marked. Students not marked: {{count}}. Please mark it",
-      "violation_escalated": "Teacher {{teacherName}} has not marked attendance of group {{groupName}} for {{date}} (not marked: {{count}})"
+      "violation_escalated": "Teacher {{teacherName}} has not marked attendance of group {{groupName}} for {{date}} (not marked: {{count}})",
+      "fine_issued": "You were fined {{amount}}: attendance of group {{groupName}} for {{date}} was not marked in time",
+      "fine_issued_ceo": "Automatic fine {{amount}}: {{teacherName}}, group {{groupName}}, {{date}}"
     },
     "errors": {
       "ROOM_BUSY": "This room is already taken at that time",
@@ -898,7 +901,10 @@
       "rule_not_found": "Rule not found",
       "cron_is_not_configured": "The timer is not configured",
       "invalid_cron_secret": "Invalid timer secret",
-      "password_must_be_at_least_12_characters": "Password must be at least 12 characters"
+      "password_must_be_at_least_12_characters": "Password must be at least 12 characters",
+      "invalid_fine_amount": "Invalid fine amount",
+      "invalid_fine": "Invalid fine",
+      "fine_not_found": "Fine not found"
     },
     "ranks": {
       "cadet": "Cadet",
@@ -1367,6 +1373,11 @@
           "export": "exported the journal to CSV",
           "run_rules": "ran the rules check",
           "create": "an owner account was created"
+        },
+        "fine": {
+          "issue": "the system issued a fine of {{amount}} ({{group}})",
+          "deduct": "took the fine from the salary: {{amount}}",
+          "cancel": "cancelled the fine: {{amount}}"
         }
       }
     },
@@ -1511,7 +1522,30 @@
       "actions": "Actions",
       "noAccounts": "No accounts yet",
       "accountsTitle": "Accounts",
-      "accountsHint": "Here the CEO creates admins, financiers and auditors, blocks them and changes their passwords. The auditor only reads the journal and the violations."
+      "accountsHint": "Here the CEO creates admins, financiers and auditors, blocks them and changes their passwords. The auditor only reads the journal and the violations.",
+      "finesTitle": "Fines",
+      "finesHint": "Fines arrive here by themselves: when a worker ignores a warning, the system issues a fine by the rule. You take it from the salary or cancel it with a comment.",
+      "monthFines": "Fines this month",
+      "monthAmount": "Amount this month",
+      "monthWaiting": "Waiting for your decision",
+      "mostFined": "Most fines",
+      "fineTab": {
+        "issued": "Waiting",
+        "deducted": "Deducted",
+        "cancelled": "Cancelled",
+        "all": "All"
+      },
+      "fineStatus": {
+        "issued": "Waiting for a decision",
+        "deducted": "Deducted from the salary",
+        "cancelled": "Cancelled"
+      },
+      "fineComment": "Comment (required to cancel)",
+      "deduct": "Deduct from the salary",
+      "cancelFine": "Cancel the fine",
+      "noFines": "No fines",
+      "fineAmount": "Fine, sum",
+      "fineAmountHint": "Issued automatically when the warning reached the second step and was ignored. 0 = the rule does not fine. A false alarm cancels the fine."
     }
   }
 }

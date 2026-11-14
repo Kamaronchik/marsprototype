@@ -65,7 +65,7 @@ describe.skipIf(!hasDatabase)('the owner panel is closed to every other role', (
   beforeAll(async () => { ctx = await setup(); });
   afterAll(async () => { await teardown(); });
 
-  const PATHS = ['/api/owner/overview', '/api/owner/log', '/api/owner/violations', '/api/owner/staff', '/api/owner/rules'];
+  const PATHS = ['/api/owner/overview', '/api/owner/log', '/api/owner/violations', '/api/owner/staff', '/api/owner/rules', '/api/owner/fines'];
 
   it('asks for a session', async () => {
     for (const path of PATHS) expect((await as(null).get(path)).status).toBe(401);
@@ -88,6 +88,13 @@ describe.skipIf(!hasDatabase)('the owner panel is closed to every other role', (
       expect((await as(ctx.cookies[role]).get('/api/owner/accounts')).status).toBe(403);
       expect((await as(ctx.cookies[role]).post('/api/owner/accounts').send({ role: 'Admin' })).status).toBe(403);
     }
+  });
+
+  it('does not let anybody but the CEO cancel or deduct a fine', async () => {
+    const admin = as(ctx.cookies.admin);
+    const id = '00000000-0000-4000-8000-000000000000';
+    expect((await admin.post(`/api/owner/fines/${id}/cancel`).send({ comment: 'test' })).status).toBe(403);
+    expect((await admin.post(`/api/owner/fines/${id}/deduct`).send({})).status).toBe(403);
   });
 
   it('keeps the timer endpoint closed without the secret', async () => {

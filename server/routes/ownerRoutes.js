@@ -16,6 +16,7 @@ router.get('/log/export', owner.exportLog);
 router.get('/history/:entity/:id', owner.entityHistory);
 router.get('/violations', owner.listViolations);
 router.get('/violations/:id', owner.getViolation);
+router.get('/fines', owner.listFines);
 router.get('/staff', owner.listStaff);
 router.get('/staff/:id', owner.getStaff);
 
@@ -25,6 +26,9 @@ router.put('/rules/:code', ceoOnly, owner.updateRule);
 router.post('/rules/run', ceoOnly, owner.runRules);
 router.post('/violations/:id/acknowledge', ceoOnly, owner.acknowledge);
 router.post('/violations/:id/close', ceoOnly, owner.closeViolation);
+
+router.post('/fines/:id/cancel', ceoOnly, owner.cancelFine);
+router.post('/fines/:id/deduct', ceoOnly, owner.deductFine);
 
 router.get('/accounts', ceoOnly, owner.listAccounts);
 router.post('/accounts', ceoOnly, owner.createAccount);

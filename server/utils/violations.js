@@ -92,6 +92,27 @@ const tellLevel = async (violation, levelIndex, rule, missing) => {
   }
 };
 
+// A fine for a worker who ignored the warning: made once per violation, only when the rule has an amount.
+// The CEO sees it in the Fines page; the worker and the CEO get a message in the bell.
+const issueFine = async (violation, rule) => {
+  const amount = rule.fine_amount ?? 0;
+  if (amount <= 0 || !violation.user_id) return;
+
+  const { data: fine, error } = await supabase.from('fines').insert({
+    violation_id: violation.id, user_id: violation.user_id, rule_code: rule.code, amount,
+    details: { groupName: violation.details.groupName, teacherName: violation.details.teacherName, date: violation.subject_date },
+  }).select('id').single();
+  if (error) return; // already fined, or the fines table is not there yet
+
+  const info = { amount, groupName: violation.details.groupName, teacherName: violation.details.teacherName, date: violation.subject_date };
+  await notify(violation.user_id, 'fine.issued', info, { dedupeKey: `fine:${fine.id}:${violation.user_id}` });
+  const { data: ceos } = await supabase.from('users').select('id').eq('role', 'Owner').eq('status', 'active');
+  for (const ceo of ceos ?? []) {
+    await notify(ceo.id, 'fine.issued_ceo', info, { link: '/owner/fines', dedupeKey: `fine:${fine.id}:${ceo.id}` });
+  }
+  await logAction(null, 'fine.issue', 'fine', fine.id, { amount, groupName: info.groupName, userId: violation.user_id });
+};
+
 // Step 1: a violation for every lesson of today that is late and has unmarked students.
 const findNewViolations = async (rule, now) => {
   const firstLevel = rule.levels[0]?.afterMinutes ?? 15;
@@ -156,6 +177,7 @@ const followOpenViolations = async (rule, now) => {
     await supabase.from('violations').update({ level: due, status }).eq('id', violation.id);
     await tellLevel(violation, due, rule, missing);
     if (due > 0) {
+      await issueFine(violation, rule);
       escalated += 1;
       await logAction(null, 'violation.escalate', 'violation', violation.id, { level: due, to: rule.levels[due].to });
     }

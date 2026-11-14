@@ -261,6 +261,12 @@ const closeViolation = async (req, res) => {
   if (error) return handleDbError(error, res);
 
   await supabase.from('violation_events').insert({ violation_id: id, kind: outcome, recipient_id: req.user.id, comment });
+  // A false alarm must not cost the worker money.
+  if (outcome === 'dismissed') {
+    await supabase.from('fines')
+      .update({ status: 'cancelled', closed_at: new Date().toISOString(), closed_by: req.user.id, comment })
+      .eq('violation_id', id).eq('status', 'issued');
+  }
   await logAction(req.user.id, `violation.${outcome === 'resolved' ? 'resolve' : 'dismiss'}`, 'violation', id, { auto: false }, { reasonComment: comment });
   res.json({ message: 'Done' });
 };
@@ -322,7 +328,7 @@ const getStaff = async (req, res) => {
 
 // --- Rules -------------------------------------------------------------------------
 
-const toRule = (r) => ({ code: r.code, title: r.title, enabled: r.enabled, severity: r.severity, levels: r.levels, updatedAt: r.updated_at });
+const toRule = (r) => ({ code: r.code, title: r.title, enabled: r.enabled, severity: r.severity, levels: r.levels, fineAmount: r.fine_amount ?? 0, updatedAt: r.updated_at });
 
 const listRules = async (req, res) => {
   const { data, error } = await supabase.from('audit_rules').select('*').order('code');
@@ -345,7 +351,8 @@ const checkLevels = (levels) => {
 
 const updateRule = async (req, res) => {
   const { code } = req.params;
-  const { enabled, severity, levels } = req.body;
+  const { enabled, severity, levels, fineAmount } = req.body;
+  if (!Number.isInteger(fineAmount) || fineAmount < 0 || fineAmount > 100000000) return res.status(400).json({ message: 'Invalid fine amount' });
   if (typeof enabled !== 'boolean') return res.status(400).json({ message: 'Invalid rule' });
   if (!['low', 'medium', 'high', 'critical'].includes(severity)) return res.status(400).json({ message: 'Invalid rule' });
   if (checkLevels(levels)) return res.status(400).json({ message: 'Invalid levels' });
@@ -355,12 +362,12 @@ const updateRule = async (req, res) => {
 
   const clean = levels.map((l) => ({ afterMinutes: l.afterMinutes, to: [...new Set(l.to)] }));
   const { error } = await supabase.from('audit_rules')
-    .update({ enabled, severity, levels: clean, updated_by: req.user.id, updated_at: new Date().toISOString() }).eq('code', code);
+    .update({ enabled, severity, levels: clean, fine_amount: fineAmount, updated_by: req.user.id, updated_at: new Date().toISOString() }).eq('code', code);
   if (error) return handleDbError(error, res);
 
   await logAction(req.user.id, 'rule.update', 'rule', null, { code }, {
-    oldValue: { enabled: before.enabled, severity: before.severity, levels: before.levels },
-    newValue: { enabled, severity, levels: clean },
+    oldValue: { enabled: before.enabled, severity: before.severity, levels: before.levels, fineAmount: before.fine_amount },
+    newValue: { enabled, severity, levels: clean, fineAmount },
   });
   res.json({ message: 'Done' });
 };
@@ -428,6 +435,82 @@ const updateAccount = async (req, res) => {
   res.json({ account: toAccount(data) });
 };
 
+// --- Fines: made by the system when a warning is ignored; the CEO reads and decides -----
+
+const FINE_COLUMNS = 'id, user_id, rule_code, amount, status, details, issued_at, closed_at, comment, user:users!fines_user_id_fkey(full_name, role)';
+
+const toFine = (f) => ({
+  id: f.id,
+  person: { id: f.user_id, name: f.user?.full_name ?? null, role: f.user?.role ?? null },
+  ruleCode: f.rule_code,
+  amount: f.amount,
+  status: f.status,
+  details: f.details,
+  issuedAt: f.issued_at,
+  closedAt: f.closed_at,
+  comment: f.comment,
+});
+
+// ?status=issued|deducted|cancelled (nothing = all). Also the sums of the current month.
+const listFines = async (req, res) => {
+  const { status, userId } = req.query;
+  if ((status && !['issued', 'deducted', 'cancelled'].includes(status)) || (userId && !isUuid(userId))) {
+    return res.status(400).json({ message: 'Invalid filter' });
+  }
+  const { page, pageSize } = pageOf(req.query);
+  const monthStart = `${tashkentNow().date.slice(0, 7)}-01T00:00:00+05:00`;
+
+  let list = supabase.from('fines').select(FINE_COLUMNS, { count: 'exact' })
+    .order('issued_at', { ascending: false }).range((page - 1) * pageSize, page * pageSize - 1);
+  if (status) list = list.eq('status', status);
+  if (userId) list = list.eq('user_id', userId);
+
+  const [{ data, error, count }, month] = await Promise.all([
+    list,
+    supabase.from('fines').select('user_id, amount, status, user:users!fines_user_id_fkey(full_name)').gte('issued_at', monthStart).neq('status', 'cancelled'),
+  ]);
+  if (error) return handleDbError(error, res);
+
+  // The month: how much, how many, and who has the most.
+  const perPerson = new Map();
+  (month.data ?? []).forEach((f) => {
+    const row = perPerson.get(f.user_id) ?? { id: f.user_id, name: f.user?.full_name ?? null, amount: 0, count: 0 };
+    perPerson.set(f.user_id, { ...row, amount: row.amount + f.amount, count: row.count + 1 });
+  });
+  const monthRows = month.data ?? [];
+
+  res.json({
+    page, pageSize, total: count ?? 0,
+    fines: data.map(toFine),
+    month: {
+      count: monthRows.length,
+      amount: monthRows.reduce((sum, f) => sum + f.amount, 0),
+      waiting: monthRows.filter((f) => f.status === 'issued').reduce((sum, f) => sum + f.amount, 0),
+      topPeople: [...perPerson.values()].sort((a, b) => b.amount - a.amount).slice(0, 5),
+    },
+  });
+};
+
+// The CEO decides: "deducted" (taken from the salary) or "cancelled". A cancel needs a comment.
+const closeFine = (outcome) => async (req, res) => {
+  const { id } = req.params;
+  const comment = typeof req.body.comment === 'string' ? req.body.comment.trim() : '';
+  if (!isUuid(id)) return res.status(400).json({ message: 'Invalid fine' });
+  if (outcome === 'cancelled' && (comment.length < 3 || comment.length > 500)) {
+    return res.status(400).json({ message: 'A comment is required (3 to 500 characters)' });
+  }
+
+  const { data, error } = await supabase.from('fines')
+    .update({ status: outcome, closed_at: new Date().toISOString(), closed_by: req.user.id, comment: comment || null })
+    .eq('id', id).eq('status', 'issued').select('id, user_id, amount').maybeSingle();
+  if (error) return handleDbError(error, res);
+  if (!data) return res.status(404).json({ message: 'Fine not found' });
+
+  await logAction(req.user.id, outcome === 'cancelled' ? 'fine.cancel' : 'fine.deduct', 'fine', id,
+    { amount: data.amount, userId: data.user_id }, { reasonComment: comment || null });
+  res.json({ message: 'Done' });
+};
+
 // "Check now": runs the rules at once and tells what happened.
 const runRules = async (req, res) => {
   const result = await runAttendanceRule();
@@ -447,4 +530,5 @@ module.exports = {
   listLog, exportLog, entityHistory, overview, listViolations, getViolation, acknowledge, closeViolation,
   listStaff, getStaff, listRules, updateRule, runRules, logOwnerView, checkLevels,
   listAccounts, createAccount, updateAccount,
+  listFines, cancelFine: closeFine('cancelled'), deductFine: closeFine('deducted'),
 };

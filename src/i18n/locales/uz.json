@@ -91,7 +91,8 @@
       "staff": "Xodimlar",
       "rules": "Qoidalar",
       "ownerLog": "Mening jurnalim",
-      "accounts": "Akkauntlar"
+      "accounts": "Akkauntlar",
+      "fines": "Jarimalar"
     },
     "bell": {
       "title": "Bildirishnomalar",
@@ -124,7 +125,9 @@
       "lesson_rate": "Bu hafta darslar qanday o'tdi? Bosh sahifada «{{topic}}» ({{groupName}}) darsini baholang.",
       "attendance_late": "Siz {{groupName}} guruhida {{date}} kuni kechikdi deb belgilandingiz",
       "violation_attendance": "{{groupName}} guruhining {{date}} kungi davomati belgilanmagan. Belgilanmagan o'quvchilar: {{count}}. Uni belgilang",
-      "violation_escalated": "O'qituvchi {{teacherName}} {{groupName}} guruhining {{date}} kungi davomatini belgilamadi (belgilanmagan: {{count}})"
+      "violation_escalated": "O'qituvchi {{teacherName}} {{groupName}} guruhining {{date}} kungi davomatini belgilamadi (belgilanmagan: {{count}})",
+      "fine_issued": "Sizga {{amount}} jarima belgilandi: {{groupName}} guruhining {{date}} kungi davomati o'z vaqtida belgilanmadi",
+      "fine_issued_ceo": "Avtomatik jarima {{amount}}: {{teacherName}}, {{groupName}} guruhi, {{date}}"
     },
     "errors": {
       "ROOM_BUSY": "Bu xona shu vaqtda band",
@@ -898,7 +901,10 @@
       "rule_not_found": "Qoida topilmadi",
       "cron_is_not_configured": "Taymer sozlanmagan",
       "invalid_cron_secret": "Taymer siri noto'g'ri",
-      "password_must_be_at_least_12_characters": "Parol kamida 12 belgidan iborat bo'lishi kerak"
+      "password_must_be_at_least_12_characters": "Parol kamida 12 belgidan iborat bo'lishi kerak",
+      "invalid_fine_amount": "Jarima summasi noto'g'ri",
+      "invalid_fine": "Noto'g'ri jarima",
+      "fine_not_found": "Jarima topilmadi"
     },
     "ranks": {
       "cadet": "Kursant",
@@ -1367,6 +1373,11 @@
           "export": "jurnalni CSV ga yukladi",
           "run_rules": "qoidalar tekshiruvini ishga tushirdi",
           "create": "ega akkaunti yaratildi"
+        },
+        "fine": {
+          "issue": "tizim {{amount}} jarima belgiladi ({{group}})",
+          "deduct": "jarimani maoshdan ushlab qoldi: {{amount}}",
+          "cancel": "jarimani bekor qildi: {{amount}}"
         }
       }
     },
@@ -1511,7 +1522,30 @@
       "actions": "Amallar",
       "noAccounts": "Hozircha akkauntlar yo'q",
       "accountsTitle": "Akkauntlar",
-      "accountsHint": "Bu yerda CEO adminlar, moliyachilar va auditorlarni yaratadi, bloklaydi va parollarini o'zgartiradi. Auditor faqat jurnal va qoidabuzarliklarni o'qiydi."
+      "accountsHint": "Bu yerda CEO adminlar, moliyachilar va auditorlarni yaratadi, bloklaydi va parollarini o'zgartiradi. Auditor faqat jurnal va qoidabuzarliklarni o'qiydi.",
+      "finesTitle": "Jarimalar",
+      "finesHint": "Jarimalar bu yerga avtomatik keladi: xodim ogohlantirishga e'tibor bermasa, tizim qoida bo'yicha o'zi jarima belgilaydi. Siz uni maoshdan ushlab qolasiz yoki izoh bilan bekor qilasiz.",
+      "monthFines": "Oylik jarimalar soni",
+      "monthAmount": "Oylik summa",
+      "monthWaiting": "Qaroringizni kutmoqda",
+      "mostFined": "Eng ko'p jarima",
+      "fineTab": {
+        "issued": "Qaror kutmoqda",
+        "deducted": "Ushlab qolingan",
+        "cancelled": "Bekor qilingan",
+        "all": "Hammasi"
+      },
+      "fineStatus": {
+        "issued": "Qaror kutmoqda",
+        "deducted": "Maoshdan ushlab qolingan",
+        "cancelled": "Bekor qilingan"
+      },
+      "fineComment": "Izoh (bekor qilish uchun majburiy)",
+      "deduct": "Maoshdan ushlab qolish",
+      "cancelFine": "Jarimani bekor qilish",
+      "noFines": "Jarimalar yo'q",
+      "fineAmount": "Jarima, so'm",
+      "fineAmountHint": "Ogohlantirish ikkinchi qadamga yetib, unga e'tibor berilmasa, avtomatik belgilanadi. 0 = qoida jarima solmaydi. Yolg'on qoidabuzarlik jarimani bekor qiladi."
     }
   }
 }

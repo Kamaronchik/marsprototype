@@ -1,10 +1,11 @@
 import { useSelector } from 'react-redux';
-import { LayoutDashboard, ScrollText, ShieldAlert, Users, SlidersHorizontal, Eye, UserCog } from 'lucide-react';
+import { LayoutDashboard, ScrollText, ShieldAlert, Users, SlidersHorizontal, Eye, UserCog, Banknote } from 'lucide-react';
 import AppShell from '../../shells/AppShell';
 
 const main = { label: 'nav.sectionMain', items: [
   { label: 'nav.overview', path: '/owner', icon: LayoutDashboard },
   { label: 'nav.violations', path: '/owner/violations', icon: ShieldAlert },
+  { label: 'nav.fines', path: '/owner/fines', icon: Banknote },
 ] };
 
 const crew = { label: 'nav.sectionCrew', items: [

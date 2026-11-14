@@ -62,6 +62,7 @@ const OwnerStaffProfile = lazy(() => import('./pages/Owner/StaffProfile'));
 const OwnerHistory = lazy(() => import('./pages/Owner/History'));
 const OwnerRules = lazy(() => import('./pages/Owner/Rules'));
 const OwnerAccounts = lazy(() => import('./pages/Owner/Accounts'));
+const OwnerFines = lazy(() => import('./pages/Owner/Fines'));
 
 const StudentLayout = lazy(() => import('./layouts/Student/StudentLayout'));
 const StudentHome = lazy(() => import('./features/student/StudentHome'));
@@ -193,6 +194,7 @@ const AppRoutes = () => {
             <Route path="history/:entity/:id" element={<OwnerHistory />} />
             <Route path="rules" element={<OwnerRules />} />
             <Route path="accounts" element={<OwnerAccounts />} />
+            <Route path="fines" element={<OwnerFines />} />
           </Route>
 
           {/* Student Routes */}
