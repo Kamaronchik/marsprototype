@@ -116,7 +116,8 @@ const testStudentsInGroups = async ({ admin, teacher, teacherB, studentA, studen
   check('only a student can be added -> 404', (await call('POST', `/api/groups/${ctx.group.id}/students`, admin, { studentId: teacherB.id })).status === 404);
   check('teacher cannot add students -> 403', (await call('POST', `/api/groups/${ctx.group.id}/students`, teacher, { studentId: studentB.id })).status === 403);
 
-  const mine = (await call('GET', '/api/groups/mine', teacher)).body.groups;
+  // The permission tests (npm run test) keep their own zz_test_group_* groups under the same teacher account.
+  const mine = (await call('GET', '/api/groups/mine', teacher)).body.groups.filter((g) => !g.name.startsWith('zz_test_group_'));
   check('teacher sees only own groups with students', mine.length === 2 && mine.every((g) => g.teacherId === teacher.id) && mine.find((g) => g.id === ctx.group.id).students.length === 2, mine);
 };
 
@@ -164,7 +165,7 @@ const testAttendance = async ({ admin, teacher, teacherB, studentA, studentB }, 
   const today = tashkentNow();
   const mark = (who, student, status, extra = {}) => call('PUT', '/api/attendance/mark', who, { groupId: ctx.group.id, studentId: student.id, status, ...extra });
 
-  check('only present or absent exist -> 400', (await mark(admin, studentA, 'late')).status === 400);
+  check('only present, late or absent exist -> 400', (await mark(admin, studentA, 'sleeping')).status === 400);
   check('future date -> 400', (await mark(admin, studentA, 'present', { date: addDays(today.date, 1) })).status === 400);
   check('student outside the group -> 404', (await mark(admin, studentB, 'present')).status === 404);
   check('student cannot mark -> 403', (await mark(studentA, studentA, 'present')).status === 403);

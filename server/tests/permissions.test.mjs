@@ -76,7 +76,7 @@ describe.skipIf(!hasDatabase)('permissions by role', () => {
         groupId: ctx.groupA.id, studentId: ctx.users.student.id, status: 'absent',
       });
       expect([403, 404]).toContain(res.status);
-      const { data } = await supabase.from('attendance').select('id').eq('group_id', ctx.groupA.id).eq('student_id', ctx.users.student.id);
+      const { data } = await supabase.from('attendance').select('id').eq('group_id', ctx.groupA.id).eq('marked_by', ctx.users.teacher2.id);
       expect(data).toHaveLength(0);
     });
 
