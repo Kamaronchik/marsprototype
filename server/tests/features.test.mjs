@@ -57,6 +57,25 @@ describe.skipIf(!hasDatabase)('new features', () => {
     });
   });
 
+  describe('student list of the Academic Manager', () => {
+    it('shows students with their groups, without e-mail or payments', async () => {
+      const res = await as(ctx.cookies.academic).get('/api/academic/students?q=zz_test');
+      expect(res.status).toBe(200);
+      expect(res.body.students.length).toBeGreaterThan(0);
+      const text = JSON.stringify(res.body);
+      for (const secret of ['email', 'payment', 'balance', 'password']) expect(text.toLowerCase()).not.toContain(secret);
+      const student = res.body.students.find((s) => s.fullName === 'ZZ Test student');
+      expect(student.groups.map((g) => g.name)).toContain('zz_test_group_a');
+    });
+
+    it('can be limited to one group, and is closed to other roles', async () => {
+      const res = await as(ctx.cookies.academic).get(`/api/academic/students?groupId=${ctx.groupB.id}`);
+      expect(res.body.students.map((s) => s.fullName)).toEqual(['ZZ Test student2']);
+      expect((await as(ctx.cookies.academic).get('/api/academic/students?groupId=bad')).status).toBe(400);
+      for (const who of ['teacher', 'student', 'financier']) expect((await as(ctx.cookies[who]).get('/api/academic/students')).status).toBe(403);
+    });
+  });
+
   describe('audit log', () => {
     it('writes a role change, and each role sees only its own area', async () => {
       const admin = as(ctx.cookies.admin);

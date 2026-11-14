@@ -1114,7 +1114,15 @@
       "lates_one": "Late {{count}} time in 2 weeks",
       "lates_few": "Late {{count}} times in 2 weeks",
       "lates_many": "Late {{count}} times in 2 weeks",
-      "lates_other": "Late {{count}} times in 2 weeks"
+      "lates_other": "Late {{count}} times in 2 weeks",
+      "rosterHint": "Every student and the groups they are in. Payments are not shown here.",
+      "searchStudents": "Name or group",
+      "studentsTotal_one": "{{count}} student",
+      "studentsTotal_few": "{{count}} students",
+      "studentsTotal_many": "{{count}} students",
+      "studentsTotal_other": "{{count}} students",
+      "frozen": "frozen",
+      "noStudentsFound": "No students found"
     },
     "schedule": {
       "mineHint": "Your lessons for the week.",

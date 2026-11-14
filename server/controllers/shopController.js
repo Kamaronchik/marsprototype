@@ -99,7 +99,7 @@ const confirmPurchase = async (req, res) => {
       db.findUserById(req.user.id),
       supabase.from('orders').select('total').eq('id', data.order_id).single(),
     ]);
-    await notifyAdmins('order.created', { studentName: student?.full_name ?? '', total: order?.total ?? 0 }, { link: '/admin/orders' });
+    await notifyAdmins('order.created', { studentName: student?.full_name ?? '', total: order?.total ?? 0 }, { link: '/admin' });
   }
 
   res.status(data.already_done ? 200 : 201).json({ orderId: data.order_id, balance: data.balance });

@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, GraduationCap, Layers, ClipboardCheck, CreditCard, Wallet, Gift, PackageCheck, Coins, Trophy, Settings, History, Send, BookMarked, Receipt, BarChart3, Briefcase, ScrollText } from 'lucide-react';
+import { LayoutDashboard, Users, GraduationCap, Layers, ClipboardCheck, CreditCard, Wallet, Settings, History, Send, BookMarked, Receipt, BarChart3, Briefcase, ScrollText } from 'lucide-react';
 import AppShell from '../../shells/AppShell';
 
 const sections = [
@@ -14,9 +14,6 @@ const sections = [
   ] },
   { label: 'nav.sectionOperations', items: [
     { label: 'nav.attendance', path: '/admin/attendance', icon: ClipboardCheck },
-    { label: 'nav.battles', path: '/admin/battles', icon: Trophy },
-    { label: 'nav.products', path: '/admin/shop', icon: Gift },
-    { label: 'nav.orders', path: '/admin/orders', icon: PackageCheck },
     { label: 'nav.telegram', path: '/admin/telegram', icon: Send },
   ] },
   { label: 'nav.sectionMoney', items: [
@@ -25,7 +22,6 @@ const sections = [
     { label: 'nav.debts', path: '/admin/debts', icon: History },
     { label: 'nav.expenses', path: '/admin/expenses', icon: Receipt },
     { label: 'nav.reports', path: '/admin/reports', icon: BarChart3 },
-    { label: 'nav.coins', path: '/admin/coins', icon: Coins },
   ] },
   { label: 'nav.sectionSystem', items: [
     { label: 'nav.audit', path: '/admin/audit', icon: ScrollText },

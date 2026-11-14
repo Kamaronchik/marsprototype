@@ -3,7 +3,7 @@ const router = express.Router();
 const { authMiddleware, requireRole } = require('../middleware/deviceMiddleware');
 const { limiter } = require('../utils/rateLimit');
 const {
-  getDashboard, getRiskStudents, getTeachers, transferStudent, assignTeacher, assignSubject, listTeacherNames,
+  getDashboard, getRiskStudents, getTeachers, transferStudent, assignTeacher, assignSubject, listTeacherNames, listStudents,
 } = require('../controllers/academicController');
 const { getReport, refreshReport, makeDraft, sendMessage } = require('../controllers/aiReportController');
 
@@ -14,6 +14,7 @@ router.use(authMiddleware, requireRole('Admin', 'AcademicManager'));
 
 router.get('/dashboard', getDashboard);
 router.get('/students/risk', getRiskStudents);
+router.get('/students', listStudents);
 router.get('/teachers', getTeachers);
 router.get('/teacher-names', listTeacherNames);
 

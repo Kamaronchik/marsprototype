@@ -23,10 +23,6 @@ const AdminAttendance = lazy(() => import('./pages/Admin/Attendance'));
 const Students = lazy(() => import('./pages/shared/Students'));
 const Payments = lazy(() => import('./pages/shared/Payments'));
 const Salaries = lazy(() => import('./pages/shared/Salaries'));
-const ShopProducts = lazy(() => import('./pages/Admin/ShopProducts'));
-const ShopOrders = lazy(() => import('./pages/Admin/ShopOrders'));
-const AdminCoins = lazy(() => import('./pages/Admin/Coins'));
-const AdminBattles = lazy(() => import('./pages/Admin/Battles'));
 const AdminTelegram = lazy(() => import('./pages/Admin/Telegram'));
 const Settings = lazy(() => import('./pages/Admin/Settings'));
 const Subjects = lazy(() => import('./pages/shared/Subjects'));
@@ -55,6 +51,7 @@ const AcademicLessons = lazy(() => import('./pages/AcademicManager/Lessons'));
 const AcademicStudents = lazy(() => import('./pages/AcademicManager/Students'));
 const AcademicTeachers = lazy(() => import('./pages/AcademicManager/Teachers'));
 const AcademicGroups = lazy(() => import('./pages/AcademicManager/Groups'));
+const AcademicRoster = lazy(() => import('./pages/AcademicManager/Roster'));
 
 const StudentLayout = lazy(() => import('./layouts/Student/StudentLayout'));
 const StudentHome = lazy(() => import('./features/student/StudentHome'));
@@ -100,10 +97,6 @@ const AppRoutes = () => {
             <Route path="payments" element={<Payments />} />
             <Route path="salaries" element={<Salaries />} />
             <Route path="debts" element={<Students debts />} />
-            <Route path="shop" element={<ShopProducts />} />
-            <Route path="orders" element={<ShopOrders />} />
-            <Route path="coins" element={<AdminCoins />} />
-            <Route path="battles" element={<AdminBattles />} />
             <Route path="telegram" element={<AdminTelegram />} />
             <Route path="settings" element={<Settings />} />
             <Route path="subjects" element={<Subjects />} />
@@ -163,6 +156,7 @@ const AppRoutes = () => {
             <Route index element={<AcademicDashboard />} />
             <Route path="schedule" element={<AcademicSchedule />} />
             <Route path="lessons" element={<AcademicLessons />} />
+            <Route path="roster" element={<AcademicRoster />} />
             <Route path="students" element={<AcademicStudents />} />
             <Route path="teachers" element={<AcademicTeachers />} />
             <Route path="groups" element={<AcademicGroups />} />

@@ -1114,7 +1114,15 @@
       "lates_one": "2 haftada kechikish: {{count}}",
       "lates_few": "2 haftada kechikish: {{count}}",
       "lates_many": "2 haftada kechikish: {{count}}",
-      "lates_other": "2 haftada kechikish: {{count}}"
+      "lates_other": "2 haftada kechikish: {{count}}",
+      "rosterHint": "Barcha o'quvchilar va ularning guruhlari. To'lovlar bu yerda ko'rsatilmaydi.",
+      "searchStudents": "Ism yoki guruh",
+      "studentsTotal_one": "{{count}} o'quvchi",
+      "studentsTotal_few": "{{count}} o'quvchi",
+      "studentsTotal_many": "{{count}} o'quvchi",
+      "studentsTotal_other": "{{count}} o'quvchi",
+      "frozen": "muzlatilgan",
+      "noStudentsFound": "O'quvchilar topilmadi"
     },
     "schedule": {
       "mineHint": "Haftalik darslaringiz.",

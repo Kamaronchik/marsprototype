@@ -1118,7 +1118,15 @@
       "lates_one": "Опозданий за 2 недели: {{count}}",
       "lates_few": "Опозданий за 2 недели: {{count}}",
       "lates_many": "Опозданий за 2 недели: {{count}}",
-      "lates_other": "Опозданий за 2 недели: {{count}}"
+      "lates_other": "Опозданий за 2 недели: {{count}}",
+      "rosterHint": "Все ученики и их группы. Платежи здесь не показываются.",
+      "searchStudents": "Имя или группа",
+      "studentsTotal_one": "{{count}} ученик",
+      "studentsTotal_few": "{{count}} ученика",
+      "studentsTotal_many": "{{count}} учеников",
+      "studentsTotal_other": "{{count}} ученика",
+      "frozen": "заморожен",
+      "noStudentsFound": "Ученики не найдены"
     },
     "schedule": {
       "mineHint": "Ваши уроки на неделю.",

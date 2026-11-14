@@ -113,6 +113,35 @@ const assignSubject = async (req, res) => {
   res.json({ message: 'Subject assigned' });
 };
 
+// All students for the academic manager: name, status and groups. No e-mail, no payments, no balance.
+// Filters: ?q=text (name or group)  ?groupId=<uuid>
+const listStudents = async (req, res) => {
+  const { q, groupId } = req.query;
+  if (groupId !== undefined && !isUuid(groupId)) return res.status(400).json({ message: 'Invalid group id' });
+
+  const { data, error } = await supabase
+    .from('users')
+    .select('id, full_name, status, memberships:group_students(group:groups(id, name, status))')
+    .eq('role', 'Student')
+    .neq('status', 'blocked')
+    .order('full_name')
+    .limit(1000);
+  if (error) return handleDbError(error, res);
+
+  let students = data.map((s) => ({
+    id: s.id,
+    fullName: s.full_name,
+    frozen: s.status === 'frozen',
+    groups: s.memberships.filter((m) => m.group && m.group.status === 'active').map((m) => ({ id: m.group.id, name: m.group.name })),
+  }));
+  if (groupId) students = students.filter((s) => s.groups.some((g) => g.id === groupId));
+  const needle = typeof q === 'string' ? q.trim().toLowerCase() : '';
+  if (needle) {
+    students = students.filter((s) => [s.fullName, ...s.groups.map((g) => g.name)].some((text) => text.toLowerCase().includes(needle)));
+  }
+  res.json({ students });
+};
+
 // Teachers for the "assign teacher" list: id and name only.
 const listTeacherNames = async (req, res) => {
   const { data, error } = await supabase
@@ -121,4 +150,4 @@ const listTeacherNames = async (req, res) => {
   res.json({ teachers: data.map((t) => ({ id: t.id, fullName: t.full_name })) });
 };
 
-module.exports = { getDashboard, getRiskStudents, getTeachers, transferStudent, assignTeacher, assignSubject, listTeacherNames };
+module.exports = { getDashboard, getRiskStudents, getTeachers, transferStudent, assignTeacher, assignSubject, listTeacherNames, listStudents };
