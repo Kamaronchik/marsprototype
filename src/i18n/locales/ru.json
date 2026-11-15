@@ -909,7 +909,8 @@
       "invalid_fine_amount": "Некорректная сумма штрафа",
       "invalid_fine": "Некорректный штраф",
       "fine_not_found": "Штраф не найден",
-      "current_password_is_wrong": "Текущий пароль неверный"
+      "current_password_is_wrong": "Текущий пароль неверный",
+      "only_the_ceo_can_add_this_role": "Только CEO может добавить эту роль"
     },
     "ranks": {
       "cadet": "Кадет",

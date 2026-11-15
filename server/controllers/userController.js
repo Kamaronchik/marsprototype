@@ -60,6 +60,8 @@ const handleDbError = (error, res) => {
 // The CEO (role Owner) and the auditors check the Admin, so the Admin cannot see, change or delete their accounts.
 // They are created by the CEO in the CEO panel (or, the first CEO, with npm run create-owner).
 const CEO_SIDE_ROLES = ['Owner', 'Auditor'];
+// Only the CEO adds these roles (on the Accounts page of the CEO panel). The Admin cannot create them or promote anybody to them.
+const CEO_ONLY_ROLES = ['Admin', 'AcademicManager'];
 const isOwnerAccount = async (id) => {
   const { data } = await supabase.from('users').select('role').eq('id', id).maybeSingle();
   return CEO_SIDE_ROLES.includes(data?.role);
@@ -74,6 +76,7 @@ const listUsers = async (req, res) => {
 
 const createUser = async (req, res) => {
   const { username, email, fullName, password, role, groupId } = req.body;
+  if (CEO_ONLY_ROLES.includes(role)) return res.status(403).json({ message: 'Only the CEO can add this role' });
   const problem = validate({ username, email, fullName, password, role }, { partial: false });
   if (problem) return res.status(400).json({ message: problem });
 
@@ -114,6 +117,11 @@ const updateUser = async (req, res) => {
   const { id } = req.params;
   const { username, email, fullName, password, role, status } = req.body;
   if (await isOwnerAccount(id)) return res.status(404).json({ message: 'User not found' });
+  // Promoting somebody to Admin or Academic Manager is adding that role: the CEO does it. Keeping the role is fine.
+  if (CEO_ONLY_ROLES.includes(role)) {
+    const { data: current } = await supabase.from('users').select('role').eq('id', id).maybeSingle();
+    if (current && current.role !== role) return res.status(403).json({ message: 'Only the CEO can add this role' });
+  }
 
   const problem = validate({ username, email, fullName, password, role }, { partial: true });
   if (problem) return res.status(400).json({ message: problem });

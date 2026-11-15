@@ -11,7 +11,7 @@ import { useFetch } from '../../lib/useFetch';
 import { formatDateTime } from '../../lib/format';
 
 const STATUSES = ['new', 'viewed', 'interview', 'accepted', 'rejected'];
-const ACCOUNT_ROLES = ['Teacher', 'AcademicManager', 'Financier'];
+const ACCOUNT_ROLES = ['Teacher', 'Financier'];
 
 const looksLikeEmail = (text) => /^\S+@\S+\.\S+$/.test(text);
 

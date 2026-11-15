@@ -907,7 +907,8 @@
       "invalid_fine_amount": "Invalid fine amount",
       "invalid_fine": "Invalid fine",
       "fine_not_found": "Fine not found",
-      "current_password_is_wrong": "Current password is wrong"
+      "current_password_is_wrong": "Current password is wrong",
+      "only_the_ceo_can_add_this_role": "Only the CEO can add this role"
     },
     "ranks": {
       "cadet": "Cadet",

@@ -97,6 +97,22 @@ describe.skipIf(!hasDatabase)('the owner panel is closed to every other role', (
     expect((await admin.post(`/api/owner/fines/${id}/deduct`).send({})).status).toBe(403);
   });
 
+  it('lets only the CEO add an Admin or an Academic Manager', async () => {
+    const admin = as(ctx.cookies.admin);
+    const body = { username: 'zz_nope', email: 'zz_nope@example.invalid', fullName: 'Nope', password: 'password-12345' };
+    for (const role of ['Admin', 'AcademicManager']) {
+      expect((await admin.post('/api/users').send({ ...body, role })).status).toBe(403);
+    }
+    // Promoting an existing account is adding the role too.
+    for (const role of ['Admin', 'AcademicManager']) {
+      expect((await admin.patch(`/api/users/${ctx.users.victim.id}`).send({ role })).status).toBe(403);
+    }
+    // Other roles are still the Admin's to add.
+    const teacher = await admin.post('/api/users').send({ ...body, username: 'zz_probe_teacher', role: 'Teacher' });
+    expect(teacher.status).toBe(201);
+    await admin.delete(`/api/users/${teacher.body.user.id}`);
+  });
+
   it('keeps the timer endpoint closed without the secret', async () => {
     expect([401, 503]).toContain((await as(null).get('/api/cron/rules')).status);
   });

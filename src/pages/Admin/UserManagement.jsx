@@ -360,7 +360,7 @@ const UserManagement = () => {
                 <div>
                   <label htmlFor="role" className="field-label">{t('peoplePage.role')}</label>
                   <select id="role" name="role" value={formData.role} onChange={handleInputChange} className="field">
-                    {['Student', 'Teacher', 'Financier', 'AcademicManager', 'Admin'].map((role) => (
+                    {['Student', 'Teacher', 'Financier', 'AcademicManager', 'Admin'].filter((role) => role === formData.role || !['Admin', 'AcademicManager'].includes(role)).map((role) => (
                       <option key={role} value={role}>{t(`roles.${role}`)}</option>
                     ))}
                   </select>

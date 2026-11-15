@@ -6,7 +6,7 @@ import { SkeletonText } from '../../components/Skeleton';
 import { useFetch } from '../../lib/useFetch';
 import { api, errorText } from '../../lib/api';
 
-const ROLES = ['Admin', 'Financier', 'Auditor'];
+const ROLES = ['Admin', 'AcademicManager', 'Financier', 'Auditor'];
 const EMPTY = { username: '', email: '', fullName: '', password: '', role: 'Admin' };
 
 // A form: the CEO makes a new Admin, Financier or Auditor.

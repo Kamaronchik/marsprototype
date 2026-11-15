@@ -7,7 +7,8 @@ const { logAction } = require('../utils/audit');
 
 const BUCKET = 'resumes';
 const STATUSES = ['new', 'viewed', 'interview', 'accepted', 'rejected'];
-const ACCOUNT_ROLES = ['Teacher', 'AcademicManager', 'Financier'];
+// The Academic Manager is added only by the CEO, so it is not offered here.
+const ACCOUNT_ROLES = ['Teacher', 'Financier'];
 const SIGNED_URL_SECONDS = 60;
 
 // Resume files: the type is checked by the first bytes of the file, not by the name the sender gave it.

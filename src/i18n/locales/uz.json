@@ -907,7 +907,8 @@
       "invalid_fine_amount": "Jarima summasi noto'g'ri",
       "invalid_fine": "Noto'g'ri jarima",
       "fine_not_found": "Jarima topilmadi",
-      "current_password_is_wrong": "Joriy parol noto'g'ri"
+      "current_password_is_wrong": "Joriy parol noto'g'ri",
+      "only_the_ceo_can_add_this_role": "Bu rolni faqat CEO qo'sha oladi"
     },
     "ranks": {
       "cadet": "Kursant",

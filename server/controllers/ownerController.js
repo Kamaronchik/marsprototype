@@ -375,7 +375,7 @@ const updateRule = async (req, res) => {
 
 // --- Accounts: the CEO creates and manages Admin, Financier and Auditor ---------------
 
-const MANAGED_ROLES = ['Admin', 'Financier', 'Auditor'];
+const MANAGED_ROLES = ['Admin', 'AcademicManager', 'Financier', 'Auditor'];
 const ACCOUNT_COLUMNS = 'id, username, full_name, email, role, status, created_at';
 
 const toAccount = (u) => ({ id: u.id, username: u.username, fullName: u.full_name, email: u.email, role: u.role, status: u.status, createdAt: u.created_at });
