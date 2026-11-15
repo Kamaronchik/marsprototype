@@ -21,7 +21,6 @@ import StudentHomeProvider from '../features/student/StudentHomeProvider';
 import AdminDashboard from './Admin/AdminDashboard';
 import UserManagement from './Admin/UserManagement';
 import AdminGroups from './Admin/Groups';
-import AdminAttendance from './Admin/Attendance';
 import Settings from './Admin/Settings';
 import Telegram from './Admin/Telegram';
 import Students from './shared/Students';
@@ -64,7 +63,7 @@ const require = createRequire(import.meta.url);
 // roles: pages by role, as in src/App.jsx
 const ROLES = {
   Admin: {
-    AdminDashboard, UserManagement, AdminGroups, AdminAttendance, Settings, Telegram, Students, Payments, Salaries,
+    AdminDashboard, UserManagement, AdminGroups, Settings, Telegram, Students, Payments, Salaries,
     Subjects, Expenses, Reports, Applications, AuditLogs,
   },
   Financier: { FinanceOverview, Payments, Salaries, Students, Expenses, Reports, AuditLogs },

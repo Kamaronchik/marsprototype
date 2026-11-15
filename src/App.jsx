@@ -19,7 +19,6 @@ const AdminLayout = lazy(() => import('./layouts/Admin/AdminLayout'));
 const AdminDashboard = lazy(() => import('./pages/Admin/AdminDashboard'));
 const UserManagement = lazy(() => import('./pages/Admin/UserManagement'));
 const Groups = lazy(() => import('./pages/Admin/Groups'));
-const AdminAttendance = lazy(() => import('./pages/Admin/Attendance'));
 const Students = lazy(() => import('./pages/shared/Students'));
 const Payments = lazy(() => import('./pages/shared/Payments'));
 const Salaries = lazy(() => import('./pages/shared/Salaries'));
@@ -105,7 +104,6 @@ const AppRoutes = () => {
             <Route path="users" element={<UserManagement />} />
             <Route path="students" element={<Students />} />
             <Route path="groups" element={<Groups />} />
-            <Route path="attendance" element={<AdminAttendance />} />
             <Route path="payments" element={<Payments />} />
             <Route path="salaries" element={<Salaries />} />
             <Route path="debts" element={<Students debts />} />

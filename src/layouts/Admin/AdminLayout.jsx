@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, GraduationCap, Layers, ClipboardCheck, CreditCard, Wallet, Settings, History, Send, BookMarked, Receipt, BarChart3, Briefcase, ScrollText } from 'lucide-react';
+import { LayoutDashboard, Users, GraduationCap, Layers, CreditCard, Wallet, Settings, History, Send, BookMarked, Receipt, BarChart3, Briefcase, ScrollText } from 'lucide-react';
 import AppShell from '../../shells/AppShell';
 
 const sections = [
@@ -13,7 +13,6 @@ const sections = [
     { label: 'nav.applications', path: '/admin/applications', icon: Briefcase },
   ] },
   { label: 'nav.sectionOperations', items: [
-    { label: 'nav.attendance', path: '/admin/attendance', icon: ClipboardCheck },
     { label: 'nav.telegram', path: '/admin/telegram', icon: Send },
   ] },
   { label: 'nav.sectionMoney', items: [

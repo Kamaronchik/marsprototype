@@ -13,7 +13,7 @@ const { DAY_CLOSE, toMinutes, tashkentNow } = require('./schedule');
 
 const ATT_LATE = 'ATT_LATE';
 const OPEN_STATUSES = ['open', 'acknowledged', 'escalated'];
-const ROLE_LINKS = { Teacher: '/teacher/attendance', AcademicManager: '/academic', Admin: '/admin/attendance', Owner: '/owner/violations' };
+const ROLE_LINKS = { Teacher: '/teacher/attendance', AcademicManager: '/academic', Admin: '/admin', Owner: '/owner/violations' };
 
 // The last level whose time has come, or -1. levels are sorted by afterMinutes.
 const levelFor = (levels, elapsedMinutes) => {
