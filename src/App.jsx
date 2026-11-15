@@ -28,7 +28,6 @@ const Settings = lazy(() => import('./pages/Admin/Settings'));
 const Subjects = lazy(() => import('./pages/shared/Subjects'));
 const Expenses = lazy(() => import('./pages/shared/Expenses'));
 const Reports = lazy(() => import('./pages/shared/Reports'));
-const AuditLogs = lazy(() => import('./pages/shared/AuditLogs'));
 const Applications = lazy(() => import('./pages/shared/Applications'));
 const MySchedule = lazy(() => import('./pages/shared/MySchedule'));
 
@@ -116,7 +115,6 @@ const AppRoutes = () => {
             <Route path="expenses" element={<Expenses />} />
             <Route path="reports" element={<Reports />} />
             <Route path="applications" element={<Applications />} />
-            <Route path="audit" element={<AuditLogs />} />
           </Route>
 
           {/* Financier Routes */}
@@ -135,7 +133,6 @@ const AppRoutes = () => {
             <Route path="students" element={<Students />} />
             <Route path="expenses" element={<Expenses />} />
             <Route path="reports" element={<Reports />} />
-            <Route path="audit" element={<AuditLogs />} />
           </Route>
 
           {/* Teacher Routes */}
@@ -175,7 +172,6 @@ const AppRoutes = () => {
             <Route path="groups" element={<AcademicGroups />} />
             <Route path="subjects" element={<Subjects />} />
             <Route path="applications" element={<Applications />} />
-            <Route path="audit" element={<AuditLogs />} />
           </Route>
 
           {/* CEO panel (role Owner) and read-only view for the auditor. */}

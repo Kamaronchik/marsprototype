@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, GraduationCap, Layers, CreditCard, Wallet, Settings, History, Send, BookMarked, Receipt, BarChart3, Briefcase, ScrollText } from 'lucide-react';
+import { LayoutDashboard, Users, GraduationCap, Layers, CreditCard, Wallet, Settings, History, Send, BookMarked, Receipt, BarChart3, Briefcase } from 'lucide-react';
 import AppShell from '../../shells/AppShell';
 
 const sections = [
@@ -23,7 +23,6 @@ const sections = [
     { label: 'nav.reports', path: '/admin/reports', icon: BarChart3 },
   ] },
   { label: 'nav.sectionSystem', items: [
-    { label: 'nav.audit', path: '/admin/audit', icon: ScrollText },
     { label: 'nav.settings', path: '/admin/settings', icon: Settings },
   ] },
 ];

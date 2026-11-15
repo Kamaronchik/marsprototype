@@ -30,7 +30,6 @@ import Subjects from './shared/Subjects';
 import Expenses from './shared/Expenses';
 import Reports from './shared/Reports';
 import Applications from './shared/Applications';
-import AuditLogs from './shared/AuditLogs';
 import FinanceOverview from './shared/FinanceOverview';
 import MySchedule from './shared/MySchedule';
 import TeacherHome from '../features/teacher/TeacherHome';
@@ -64,13 +63,13 @@ const require = createRequire(import.meta.url);
 const ROLES = {
   Admin: {
     AdminDashboard, UserManagement, AdminGroups, Settings, Telegram, Students, Payments, Salaries,
-    Subjects, Expenses, Reports, Applications, AuditLogs,
+    Subjects, Expenses, Reports, Applications,
   },
-  Financier: { FinanceOverview, Payments, Salaries, Students, Expenses, Reports, AuditLogs },
+  Financier: { FinanceOverview, Payments, Salaries, Students, Expenses, Reports },
   Teacher: { TeacherHome, MySchedule, TeacherLessons, TeacherAttendance, TeacherHomework, TeacherGrades, MyGroups, TeacherCoins },
   AcademicManager: {
     AcademicDashboard, AcademicSchedule, AcademicLessons, AcademicRisk, AcademicTeachers, AcademicGroups, AcademicRoster,
-    Subjects, Applications, AuditLogs,
+    Subjects, Applications,
   },
   Student: {
     StudentHome, MySchedule, StudentAttendance, StudentHomework, StudentGrades, Tutor, BattleArena, Shop, StudentCoins,

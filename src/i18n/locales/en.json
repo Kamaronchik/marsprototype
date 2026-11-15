@@ -1232,8 +1232,6 @@
       "exportFailed": "Could not make the Excel file"
     },
     "audit": {
-      "title": "Audit log",
-      "hint": "Who did what and when. You see the actions of your own area.",
       "user": "User",
       "allUsers": "All users",
       "action": "Action code",

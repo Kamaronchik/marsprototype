@@ -1232,8 +1232,6 @@
       "exportFailed": "Excel faylini yaratib bo'lmadi"
     },
     "audit": {
-      "title": "Harakatlar jurnali",
-      "hint": "Kim, qachon va nima qildi. Siz o'z sohangiz harakatlarini ko'rasiz.",
       "user": "Foydalanuvchi",
       "allUsers": "Barcha foydalanuvchilar",
       "action": "Harakat kodi",
