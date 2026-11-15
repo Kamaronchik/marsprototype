@@ -1,20 +1,16 @@
 const supabase = require('../config/supabase');
 const { handleDbError } = require('../utils/apiErrors');
 const { isUuid } = require('../utils/validate');
-const { readRange, applyRange } = require('../utils/financeRange');
 const { logAction } = require('../utils/audit');
 const { runAttendanceRule } = require('../utils/violations');
-const { loadNames } = require('./auditController');
+const { loadNames } = require('../utils/auditNames');
 const { tashkentNow } = require('../utils/schedule');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const db = require('../databaseService');
 
 const MAX_PAGE_SIZE = 100;
-const EXPORT_LIMIT = 5000;
 const OPEN_STATUSES = ['open', 'acknowledged', 'escalated'];
-const ACTION_PATTERN = /^[a-z_]+(\.[a-z_]*)*$/;
-const ENTITY_PATTERN = /^[a-z_]+$/;
 const STAFF_ROLES = ['Teacher', 'AcademicManager', 'Financier', 'Admin'];
 const LEVEL_ROLES = ['Teacher', 'AcademicManager', 'Admin', 'Owner'];
 
@@ -24,36 +20,11 @@ const pageOf = (query) => {
   return { page, pageSize };
 };
 
-// --- The journal -------------------------------------------------------------------
+// --- Journal entries (shown in the profile of a worker) ---------------------------------
 
 const LOG_COLUMNS = `id, actor_id, actor_role, action, entity, entity_id, details, old_value, new_value,
   reason_code, reason_comment, ip_address, user_agent, created_at,
   actor:users!audit_log_actor_id_fkey(full_name)`;
-
-// Filters: ?userId ?role ?action ?entity ?entityId ?studentId ?ip ?from ?to
-// action ending with a dot ("grade.") means "every action of this kind".
-const buildLogQuery = (query, range, columns, options) => {
-  const { userId, role, action, entity, entityId, studentId, ip } = query;
-  let q = supabase.from('audit_log').select(columns, options).order('created_at', { ascending: false });
-  if (userId) q = q.eq('actor_id', userId);
-  if (role) q = q.eq('actor_role', role);
-  if (action) q = action.endsWith('.') ? q.like('action', `${action}*`) : q.eq('action', action);
-  if (entity) q = q.eq('entity', entity);
-  if (entityId) q = q.eq('entity_id', entityId);
-  if (studentId) q = q.or(`entity_id.eq.${studentId},details->>studentId.eq.${studentId}`);
-  if (ip) q = q.eq('ip_address', ip);
-  return applyRange(q, range, 'created_at');
-};
-
-// null when the filters are fine, otherwise the reason.
-const checkLogFilters = (query) => {
-  const { userId, action, entity, entityId, studentId, ip } = query;
-  if ([userId, entityId, studentId].some((id) => id && !isUuid(id))) return 'Invalid filter';
-  if (action && !ACTION_PATTERN.test(action)) return 'Invalid filter';
-  if (entity && !ENTITY_PATTERN.test(entity)) return 'Invalid filter';
-  if (ip && !/^[0-9a-fA-F:.]{3,45}$/.test(ip)) return 'Invalid filter';
-  return null;
-};
 
 const toEntry = (row, names) => ({
   id: row.id,
@@ -72,61 +43,6 @@ const toEntry = (row, names) => ({
   userAgent: row.user_agent,
 });
 
-const listLog = async (req, res) => {
-  const range = readRange(req.query);
-  const problem = checkLogFilters(req.query);
-  if (!range || problem) return res.status(400).json({ message: 'Invalid filter' });
-  const { page, pageSize } = pageOf(req.query);
-
-  const { data, error, count } = await buildLogQuery(req.query, range, LOG_COLUMNS, { count: 'exact' })
-    .range((page - 1) * pageSize, page * pageSize - 1);
-  if (error) return handleDbError(error, res);
-
-  const names = await loadNames(data);
-  res.json({ page, pageSize, total: count ?? 0, entries: data.map((row) => toEntry(row, names)) });
-};
-
-// A cell that starts with = + - @ would be run as a formula by Excel.
-const csvCell = (value) => {
-  const text = value == null ? '' : typeof value === 'object' ? JSON.stringify(value) : String(value);
-  const safe = /^[=+\-@]/.test(text) ? `'${text}` : text;
-  return `"${safe.replace(/"/g, '""')}"`;
-};
-
-const exportLog = async (req, res) => {
-  const range = readRange(req.query);
-  const problem = checkLogFilters(req.query);
-  if (!range || problem) return res.status(400).json({ message: 'Invalid filter' });
-
-  const { data, error } = await buildLogQuery(req.query, range, LOG_COLUMNS).limit(EXPORT_LIMIT);
-  if (error) return handleDbError(error, res);
-
-  await logAction(req.user.id, 'owner.export', 'owner', null, { rows: data.length, filters: req.query });
-
-  const header = ['time', 'who', 'role', 'action', 'entity', 'entity_id', 'old', 'new', 'reason', 'ip'];
-  const lines = data.map((r) => [
-    r.created_at, r.actor?.full_name, r.actor_role, r.action, r.entity, r.entity_id,
-    r.old_value, r.new_value, [r.reason_code, r.reason_comment].filter(Boolean).join(': '), r.ip_address,
-  ].map(csvCell).join(','));
-  res.set('Content-Type', 'text/csv; charset=utf-8');
-  res.set('Content-Disposition', 'attachment; filename="audit-log.csv"');
-  res.send(`﻿${[header.join(','), ...lines].join('\n')}`);
-};
-
-// Every change of one thing (a mark, a group, a person) from the first to the last.
-const entityHistory = async (req, res) => {
-  const { entity, id } = req.params;
-  if (!ENTITY_PATTERN.test(entity) || !isUuid(id)) return res.status(400).json({ message: 'Invalid filter' });
-
-  const { data, error } = await supabase
-    .from('audit_log').select(LOG_COLUMNS).eq('entity', entity).eq('entity_id', id)
-    .order('created_at', { ascending: true }).limit(500);
-  if (error) return handleDbError(error, res);
-
-  const names = await loadNames(data);
-  res.json({ entity, id, entries: data.map((row) => toEntry(row, names)) });
-};
-
 // --- Overview ----------------------------------------------------------------------
 
 const overview = async (req, res) => {
@@ -136,14 +52,13 @@ const overview = async (req, res) => {
   const dayStart = `${tashkentNow().date}T00:00:00+05:00`;
   const monthAgo = new Date(Date.now() - 30 * 86400000).toISOString();
 
-  const [open, today, events, recent, resolved] = await Promise.all([
+  const [open, today, recent, resolved] = await Promise.all([
     supabase.from('violations').select('id', { count: 'exact', head: true }).in('status', OPEN_STATUSES),
     supabase.from('violations').select('id', { count: 'exact', head: true }).gte('detected_at', dayStart),
-    supabase.from('audit_log').select('id', { count: 'exact', head: true }).gte('created_at', dayStart),
     supabase.from('violations').select('user_id').gte('detected_at', monthAgo).not('user_id', 'is', null),
     supabase.from('violations').select('reaction_seconds').eq('status', 'resolved').gte('detected_at', monthAgo).not('reaction_seconds', 'is', null),
   ]);
-  const failed = [open, today, events, recent, resolved].find((r) => r.error);
+  const failed = [open, today, recent, resolved].find((r) => r.error);
   if (failed) return handleDbError(failed.error, res);
 
   const counts = new Map();
@@ -157,7 +72,6 @@ const overview = async (req, res) => {
   res.json({
     openViolations: open.count ?? 0,
     violationsToday: today.count ?? 0,
-    actionsToday: events.count ?? 0,
     averageReactionMinutes: seconds.length ? Math.round(seconds.reduce((a, b) => a + b, 0) / seconds.length / 60) : null,
     topOffenders: top.map(([id, count]) => {
       const person = people.find((p) => p.id === id);
@@ -542,17 +456,9 @@ const runRules = async (req, res) => {
   res.json(result);
 };
 
-// Every request of the owner to the panel is written to the journal: the owner is checked too.
-const logOwnerView = async (req, res, next) => {
-  if (req.method === 'GET' && !req.path.startsWith('/log/export')) {
-    await logAction(req.user.id, 'owner.view', 'owner', null, { path: req.originalUrl.replace(/^\/api\/owner/, '').slice(0, 200) });
-  }
-  next();
-};
-
 module.exports = {
-  listLog, exportLog, entityHistory, overview, listViolations, getViolation, acknowledge, closeViolation,
-  listStaff, getStaff, listRules, updateRule, runRules, logOwnerView, checkLevels,
+  overview, listViolations, getViolation, acknowledge, closeViolation,
+  listStaff, getStaff, listRules, updateRule, runRules, checkLevels,
   listAccounts, createAccount, updateAccount, changeOwnPassword,
   listFines, cancelFine: closeFine('cancelled'), deductFine: closeFine('deducted'),
 };

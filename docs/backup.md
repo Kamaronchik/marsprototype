@@ -56,7 +56,7 @@ pg_restore --no-owner --no-privileges --data-only --disable-triggers \
 
 4. Вписать в `.env` (и в Vercel) новые `SUPABASE_URL` и `SUPABASE_SECRET_KEY` от нового проекта.
 5. Заново поставить Telegram webhook: `npm run bot-webhook -- https://ваш-сайт.vercel.app`.
-6. Проверить: войти админом, открыть список учеников, платежи и журнал действий.
+6. Проверить: войти админом, открыть список учеников и платежи.
 
 ## Если по ошибке удалили несколько строк
 

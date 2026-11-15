@@ -1,4 +1,4 @@
-// The new features: late status, my schedule, audit log visibility, subjects, expenses and reports, careers.
+// The new features: late status, my schedule, audit log, subjects, expenses and reports, careers.
 // Tests of a migration are skipped until it is applied (see supabase/migrations).
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createRequire } from 'node:module';
@@ -12,7 +12,11 @@ const careersReady = await tableExists('job_applications');
 const formReady = await tableExists('job_applications', 'decision_emailed');
 
 const PAST_MONDAY = '2020-01-06'; // a fixed past day: the groups of the tests have lessons on every weekday
-const actionsOf = (res) => res.body.entries.map((e) => e.action);
+// The action codes written to the audit log that match the filter, the newest first.
+const loggedActions = async (filter) => {
+  const { data } = await supabase.from('audit_log').select('action').match(filter).order('created_at', { ascending: false }).limit(100);
+  return (data ?? []).map((row) => row.action);
+};
 
 describe.skipIf(!hasDatabase)('new features', () => {
   let ctx;
@@ -81,48 +85,22 @@ describe.skipIf(!hasDatabase)('new features', () => {
   });
 
   describe('audit log', () => {
-    it('writes a role change, and each role sees only its own area', async () => {
+    it('writes a role change', async () => {
       const admin = as(ctx.cookies.admin);
       await admin.patch(`/api/users/${ctx.users.victim.id}`).send({ role: 'Teacher' });
       await admin.patch(`/api/users/${ctx.users.victim.id}`).send({ role: 'Student' });
 
-      const all = await admin.get('/api/audit?pageSize=100&action=user.role_change');
-      expect(all.status).toBe(200);
-      expect(all.body.entries.length).toBeGreaterThan(0);
-      expect(all.body.entries[0].actor.name).toBeTruthy();
-
-      const academic = await as(ctx.cookies.academic).get('/api/audit?pageSize=100');
-      expect(academic.status).toBe(200);
-      expect(actionsOf(academic).every((a) => /^(group|schedule|attendance|grade|homework|lesson|academic|subject|application)\./.test(a))).toBe(true);
-      expect(actionsOf(academic)).not.toContain('user.role_change');
-
-      const financier = await as(ctx.cookies.financier).get('/api/audit?pageSize=100');
-      expect(financier.status).toBe(200);
-      expect(actionsOf(financier).every((a) => /^(payment|salary|expense|balance|student\.payment_status)/.test(a))).toBe(true);
-    });
-
-    it('a role cannot ask for an action of another area', async () => {
-      const res = await as(ctx.cookies.financier).get('/api/audit?action=user.role_change');
-      expect(res.status).toBe(200);
-      expect(res.body.entries).toHaveLength(0);
-    });
-
-    it('is closed to teachers and students, and filters are checked', async () => {
-      expect((await as(ctx.cookies.teacher).get('/api/audit')).status).toBe(403);
-      expect((await as(ctx.cookies.student).get('/api/audit')).status).toBe(403);
-      expect((await as(ctx.cookies.admin).get('/api/audit?userId=nope')).status).toBe(400);
-      expect((await as(ctx.cookies.admin).get('/api/audit?from=2026-13-40')).status).toBe(400);
-    });
-
-    it('pages the answer', async () => {
-      const res = await as(ctx.cookies.admin).get('/api/audit?pageSize=2&page=1');
-      expect(res.body.entries.length).toBeLessThanOrEqual(2);
-      expect(res.body.total).toBeGreaterThanOrEqual(res.body.entries.length);
+      const written = await loggedActions({ action: 'user.role_change', entity_id: ctx.users.victim.id });
+      expect(written.length).toBeGreaterThan(0);
     });
 
     it('writes marks and attendance', async () => {
-      const marks = await as(ctx.cookies.admin).get('/api/audit?pageSize=100');
-      expect(actionsOf(marks).some((a) => a === 'attendance.mark' || a === 'attendance.change')).toBe(true);
+      const { data } = await supabase.from('audit_log').select('action').in('action', ['attendance.mark', 'attendance.change']).limit(1);
+      expect(data.length).toBe(1);
+    });
+
+    it('has no page to read it: the old addresses are gone', async () => {
+      expect((await as(ctx.cookies.admin).get('/api/audit')).status).toBe(404);
     });
   });
 
@@ -185,8 +163,8 @@ describe.skipIf(!hasDatabase)('new features', () => {
       expect((await financier.delete(`/api/finance/expenses/${id}`)).status).toBe(200);
       expect((await financier.delete(`/api/finance/expenses/${id}`)).status).toBe(404);
 
-      const log = await financier.get('/api/audit?pageSize=100');
-      const mine = actionsOf(log).filter((a) => a.startsWith('expense.'));
+      const written = await loggedActions({ actor_id: ctx.users.financier.id });
+      const mine = written.filter((a) => a.startsWith('expense.'));
       expect(mine).toEqual(expect.arrayContaining(['expense.create', 'expense.update', 'expense.delete']));
     });
 

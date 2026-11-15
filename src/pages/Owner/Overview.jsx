@@ -47,14 +47,13 @@ const Overview = () => {
       <PageHeader title={t('owner.overviewTitle')} action={action}>{t('owner.overviewHint')}</PageHeader>
 
       {!data ? (
-        <dl className="grid grid-cols-2 overflow-hidden rounded-xl border border-line bg-card md:grid-cols-4">
-          {Array.from({ length: 4 }, (_, i) => <SkeletonStat key={i} />)}
+        <dl className="grid grid-cols-2 overflow-hidden rounded-xl border border-line bg-card md:grid-cols-3">
+          {Array.from({ length: 3 }, (_, i) => <SkeletonStat key={i} />)}
         </dl>
       ) : (
-        <dl className="grid grid-cols-2 overflow-hidden rounded-xl border border-line bg-card md:grid-cols-4 [&>div]:border-b [&>div]:border-r [&>div]:border-line">
+        <dl className="grid grid-cols-2 overflow-hidden rounded-xl border border-line bg-card md:grid-cols-3 [&>div]:border-b [&>div]:border-r [&>div]:border-line">
           <Tile label={t('owner.openViolations')} value={data.openViolations} alert={data.openViolations > 0} />
           <Tile label={t('owner.violationsToday')} value={data.violationsToday} />
-          <Tile label={t('owner.actionsToday')} value={data.actionsToday} />
           <Tile label={t('owner.reaction')} value={data.averageReactionMinutes == null ? '—' : t('owner.minutes', { count: data.averageReactionMinutes })} />
         </dl>
       )}

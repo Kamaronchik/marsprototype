@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { LayoutDashboard, ScrollText, ShieldAlert, Users, SlidersHorizontal, Eye, UserCog, Banknote, KeyRound } from 'lucide-react';
+import { LayoutDashboard, ShieldAlert, Users, SlidersHorizontal, UserCog, Banknote, KeyRound } from 'lucide-react';
 import AppShell from '../../shells/AppShell';
 
 const main = { label: 'nav.sectionMain', items: [
@@ -9,15 +9,13 @@ const main = { label: 'nav.sectionMain', items: [
 ] };
 
 const crew = { label: 'nav.sectionCrew', items: [
-  { label: 'nav.audit', path: '/owner/journal', icon: ScrollText },
   { label: 'nav.staff', path: '/owner/staff', icon: Users, end: false },
 ] };
 
-// Only the CEO changes things: accounts, rules and the journal of the CEO's own actions.
+// Only the CEO changes things: accounts and rules.
 const system = { label: 'nav.sectionSystem', items: [
   { label: 'nav.accounts', path: '/owner/accounts', icon: UserCog },
   { label: 'nav.rules', path: '/owner/rules', icon: SlidersHorizontal },
-  { label: 'nav.ownerLog', path: '/owner/my-log', icon: Eye },
 ] };
 
 const mine = { label: 'nav.sectionMine', items: [

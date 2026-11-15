@@ -6,7 +6,6 @@ import { as, setup, teardown, hasDatabase } from './helpers.mjs';
 const require = createRequire(import.meta.url);
 const { levelFor, minutesSinceStart } = require('../utils/violations');
 const { checkLevels } = require('../controllers/ownerController');
-const { canSee } = require('../utils/auditAreas');
 
 const LEVELS = [
   { afterMinutes: 15, to: ['Teacher'] },
@@ -47,25 +46,12 @@ describe('the chain of a rule is checked before it is saved', () => {
   });
 });
 
-describe('the Admin is checked by the Owner', () => {
-  it('does not see database triggers, rules, violations or what the owner did', () => {
-    ['db.attendance.update', 'rule.update', 'violation.open', 'owner.view'].forEach((action) => {
-      expect(canSee('Admin', action)).toBe(false);
-      expect(canSee('Owner', action)).toBe(true);
-    });
-  });
-
-  it('still sees the ordinary journal', () => {
-    expect(canSee('Admin', 'group.create')).toBe(true);
-  });
-});
-
 describe.skipIf(!hasDatabase)('the owner panel is closed to every other role', () => {
   let ctx;
   beforeAll(async () => { ctx = await setup(); });
   afterAll(async () => { await teardown(); });
 
-  const PATHS = ['/api/owner/overview', '/api/owner/log', '/api/owner/violations', '/api/owner/staff', '/api/owner/rules', '/api/owner/fines'];
+  const PATHS = ['/api/owner/overview', '/api/owner/violations', '/api/owner/staff', '/api/owner/rules', '/api/owner/fines'];
 
   it('asks for a session', async () => {
     for (const path of PATHS) expect((await as(null).get(path)).status).toBe(401);

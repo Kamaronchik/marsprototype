@@ -99,7 +99,7 @@ const RuleCard = ({ rule, onSaved }) => {
   );
 };
 
-// The owner changes the thresholds and the chain of escalation. Every change is written to the journal.
+// The owner changes the thresholds and the chain of escalation.
 const Rules = () => {
   const { t } = useTranslation();
   const rules = useFetch('/api/owner/rules');

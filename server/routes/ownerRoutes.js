@@ -3,17 +3,13 @@ const router = express.Router();
 const { authMiddleware, requireRole } = require('../middleware/deviceMiddleware');
 const owner = require('../controllers/ownerController');
 
-// The CEO panel (role Owner). The auditor (role Auditor) may only read the journal and the violations.
-// Everything that is opened here is written to the journal.
-router.use(authMiddleware, requireRole('Owner', 'Auditor'), owner.logOwnerView);
+// The CEO panel (role Owner). The auditor (role Auditor) may only read.
+router.use(authMiddleware, requireRole('Owner', 'Auditor'));
 
 const ceoOnly = requireRole('Owner');
 
 // Reading: CEO and auditors
 router.get('/overview', owner.overview);
-router.get('/log', owner.listLog);
-router.get('/log/export', owner.exportLog);
-router.get('/history/:entity/:id', owner.entityHistory);
 router.get('/violations', owner.listViolations);
 router.get('/violations/:id', owner.getViolation);
 router.get('/fines', owner.listFines);

@@ -54,11 +54,9 @@ const AcademicRoster = lazy(() => import('./pages/AcademicManager/Roster'));
 
 const OwnerLayout = lazy(() => import('./layouts/Owner/OwnerLayout'));
 const OwnerOverview = lazy(() => import('./pages/Owner/Overview'));
-const OwnerJournal = lazy(() => import('./pages/Owner/Journal'));
 const OwnerViolations = lazy(() => import('./pages/Owner/Violations'));
 const OwnerStaff = lazy(() => import('./pages/Owner/Staff'));
 const OwnerStaffProfile = lazy(() => import('./pages/Owner/StaffProfile'));
-const OwnerHistory = lazy(() => import('./pages/Owner/History'));
 const OwnerRules = lazy(() => import('./pages/Owner/Rules'));
 const OwnerAccounts = lazy(() => import('./pages/Owner/Accounts'));
 const OwnerFines = lazy(() => import('./pages/Owner/Fines'));
@@ -184,12 +182,9 @@ const AppRoutes = () => {
             }
           >
             <Route index element={<OwnerOverview />} />
-            <Route path="journal" element={<OwnerJournal />} />
-            <Route path="my-log" element={<OwnerJournal ownOnly />} />
             <Route path="violations" element={<OwnerViolations />} />
             <Route path="staff" element={<OwnerStaff />} />
             <Route path="staff/:id" element={<OwnerStaffProfile />} />
-            <Route path="history/:entity/:id" element={<OwnerHistory />} />
             <Route path="rules" element={<OwnerRules />} />
             <Route path="accounts" element={<OwnerAccounts />} />
             <Route path="fines" element={<OwnerFines />} />
