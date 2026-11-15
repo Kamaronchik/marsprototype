@@ -1,11 +1,15 @@
 // The new features: late status, my schedule, audit log visibility, subjects, expenses and reports, careers.
 // Tests of a migration are skipped until it is applied (see supabase/migrations).
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { as, supabase, setup, teardown, hasDatabase, tableExists } from './helpers.mjs';
+import { createRequire } from 'node:module';
+import { as, supabase, setup, teardown, hasDatabase, tableExists, emailService } from './helpers.mjs';
+
+const careers = createRequire(import.meta.url)('../controllers/careersController');
 
 const subjectsReady = await tableExists('subjects');
 const expensesReady = await tableExists('expenses');
 const careersReady = await tableExists('job_applications');
+const formReady = await tableExists('job_applications', 'decision_emailed');
 
 const PAST_MONDAY = '2020-01-06'; // a fixed past day: the groups of the tests have lessons on every weekday
 const actionsOf = (res) => res.body.entries.map((e) => e.action);
@@ -281,6 +285,99 @@ describe.skipIf(!hasDatabase)('new features', () => {
         await supabase.from('users').update({ status: 'blocked' }).eq('username', 'zz_test_hire');
       }
       expect((await admin.post(`/api/careers/applications/${applicationId}/account`).send({ ...body, role: 'Admin' })).status).toBe(400);
+    });
+  });
+
+  // The form on the site (/apply), the bell for the staff and the letter with the decision (migration 021).
+  describe.skipIf(!formReady)('job application form on the site', () => {
+    const realSend = emailService.sendApplicationDecisionEmail;
+    let letters = [];
+    let siteId;
+
+    beforeAll(() => { emailService.sendApplicationDecisionEmail = async (email, data) => { letters.push({ email, ...data }); }; });
+    afterAll(async () => {
+      emailService.sendApplicationDecisionEmail = realSend;
+      const { data } = await supabase.from('job_applications').select('id, resume_path').like('full_name', 'zz_test_%');
+      for (const row of data ?? []) {
+        await supabase.from('notifications').delete().like('dedupe_key', `application:${row.id}:%`);
+        if (row.resume_path) await supabase.storage.from('resumes').remove([row.resume_path]);
+      }
+      await supabase.from('job_applications').delete().like('full_name', 'zz_test_%');
+    });
+
+    // The controller is called directly here: the public route allows only a few applications per visitor.
+    const applyDirectly = async (body) => {
+      const res = { code: 200, status(code) { this.code = code; return this; }, json() { return this; } };
+      await careers.apply({ body }, res);
+      return res.code;
+    };
+    const good = { fullName: 'zz_test_site', email: 'zz_test_site@example.invalid', position: 'intern', strength: 'I explain hard things simply' };
+
+    it('checks the e-mail, the vacancy and the strong side', async () => {
+      expect(await applyDirectly({ ...good, email: 'not-an-email' })).toBe(400);
+      expect(await applyDirectly({ ...good, position: 'director' })).toBe(400);
+      expect(await applyDirectly({ ...good, strength: 'short' })).toBe(400);
+    });
+
+    it('saves the application and tells the Admin and the Academic Manager in the bell', async () => {
+      const pdf = Buffer.from('%PDF-1.4\n1 0 obj<<>>endobj\ntrailer<<>>\n%%EOF');
+      const res = await as(null).post('/api/careers/apply')
+        .field('fullName', good.fullName).field('email', 'ZZ_Test_Site@Example.invalid').field('position', 'intern')
+        .field('strength', good.strength).field('language', 'uz')
+        .attach('resume', pdf, 'cv.pdf');
+      expect(res.status).toBe(201);
+      expect(Object.keys(res.body)).toEqual(['message']);
+
+      const { data } = await supabase.from('job_applications').select('*').eq('full_name', good.fullName).limit(1).single();
+      siteId = data.id;
+      expect(data).toMatchObject({ email: good.email, contact: good.email, position: 'intern', language: 'uz', message: good.strength, status: 'new' });
+
+      for (const who of ['admin', 'academic']) {
+        const { data: bell } = await supabase.from('notifications').select('type').eq('dedupe_key', `application:${siteId}:${ctx.users[who].id}`);
+        expect(bell).toHaveLength(1);
+        expect(bell[0].type).toBe('application.new');
+      }
+    });
+
+    it('the candidate gets one letter per decision, in the language of the form', async () => {
+      const academic = as(ctx.cookies.academic);
+      const admin = as(ctx.cookies.admin);
+      const setStatus = (who, status) => who.patch(`/api/careers/applications/${siteId}/status`).send({ status });
+
+      expect((await setStatus(academic, 'accepted')).status).toBe(403);
+      expect(letters).toHaveLength(0);
+
+      const rejected = await setStatus(academic, 'rejected');
+      expect(rejected.status).toBe(200);
+      expect(rejected.body.emailSent).toBe(true);
+      expect(letters).toEqual([{ email: good.email, name: good.fullName, decision: 'rejected', language: 'uz' }]);
+
+      await setStatus(academic, 'rejected'); // the same decision again: no second letter
+      expect(letters).toHaveLength(1);
+
+      const accepted = await setStatus(admin, 'accepted');
+      expect(accepted.body.application.decisionEmailed).toBe('accepted');
+      expect(letters).toHaveLength(2);
+      expect(letters[1].decision).toBe('accepted');
+
+      // "Send again" is for a decision that is made; an accepted candidate belongs to the Admin.
+      expect((await academic.post(`/api/careers/applications/${siteId}/decision-email`)).status).toBe(403);
+      expect((await admin.post(`/api/careers/applications/${siteId}/decision-email`)).status).toBe(200);
+      expect(letters).toHaveLength(3);
+    });
+
+    it('a failed letter does not undo the decision', async () => {
+      const { data: row } = await supabase.from('job_applications')
+        .insert({ full_name: 'zz_test_no_mail', contact: good.email, email: good.email, position: 'teacher', message: good.strength }).select('id').single();
+      emailService.sendApplicationDecisionEmail = async () => { throw new Error('Gmail is down'); };
+
+      const admin = as(ctx.cookies.admin);
+      const res = await admin.patch(`/api/careers/applications/${row.id}/status`).send({ status: 'rejected' });
+      expect(res.status).toBe(200);
+      expect(res.body.emailSent).toBe(false);
+      expect(res.body.application).toMatchObject({ status: 'rejected', decisionEmailed: null });
+      expect((await admin.post(`/api/careers/applications/${row.id}/decision-email`)).status).toBe(502);
+      expect((await admin.post(`/api/careers/applications/${siteId}/notes`).send({ text: 'x' })).status).toBe(201);
     });
   });
 });

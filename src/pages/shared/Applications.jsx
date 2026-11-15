@@ -13,7 +13,12 @@ import { formatDateTime } from '../../lib/format';
 const STATUSES = ['new', 'viewed', 'interview', 'accepted', 'rejected'];
 const ACCOUNT_ROLES = ['Teacher', 'Financier'];
 
+const DECISIONS = ['accepted', 'rejected'];
+
 const looksLikeEmail = (text) => /^\S+@\S+\.\S+$/.test(text);
+
+// "intern" and "teacher" come from our own form and are translated; older applications carry free text.
+const positionText =(t, position) => t(`applications.positions.${position}`, { defaultValue: position });
 
 // One candidate: the data, the resume, the notes, the status. Only the Admin accepts and makes accounts.
 const Details = ({ id, isAdmin, onClose, onChanged }) => {
@@ -22,6 +27,7 @@ const Details = ({ id, isAdmin, onClose, onChanged }) => {
   const [note, setNote] = useState('');
   const [account, setAccount] = useState(null); // the form, then the one-time password
   const [created, setCreated] = useState(null);
+  const [decision, setDecision] = useState(null); // 'accepted' or 'rejected' while the confirmation is open
 
   const application = data?.application;
   const statuses = STATUSES.filter((s) => isAdmin || s !== 'accepted');
@@ -50,6 +56,21 @@ const Details = ({ id, isAdmin, onClose, onChanged }) => {
     }
   };
 
+  // "Accept" or "Reject": the status changes and the candidate gets a letter.
+  const decide = async () => {
+    const result = await run(() => api(`/api/careers/applications/${id}/status`, { method: 'PATCH', body: { status: decision } }));
+    setDecision(null);
+    if (!result) return;
+    if (result.emailSent) toast.success(t('applications.letterSent'));
+    else toast.warn(t('applications.letterNotSent'));
+    reload();
+    onChanged();
+  };
+
+  const resendLetter = async () => {
+    if (await run(() => api(`/api/careers/applications/${id}/decision-email`, { method: 'POST' }), t('applications.letterSent'))) reload();
+  };
+
   const addNote = async (event) => {
     event.preventDefault();
     if (await run(() => api(`/api/careers/applications/${id}/notes`, { method: 'POST', body: { text: note } }))) {
@@ -76,7 +97,7 @@ const Details = ({ id, isAdmin, onClose, onChanged }) => {
         <div className="space-y-5">
           <dl className="grid gap-3 text-sm sm:grid-cols-2">
             <div><dt className="text-xs font-semibold uppercase text-ink-faint">{t('applications.contact')}</dt><dd className="text-ink">{application.contact}</dd></div>
-            <div><dt className="text-xs font-semibold uppercase text-ink-faint">{t('applications.position')}</dt><dd className="text-ink">{application.position}</dd></div>
+            <div><dt className="text-xs font-semibold uppercase text-ink-faint">{t('applications.position')}</dt><dd className="text-ink">{positionText(t, application.position)}</dd></div>
             <div><dt className="text-xs font-semibold uppercase text-ink-faint">{t('applications.received')}</dt><dd className="text-ink">{formatDateTime(application.createdAt, i18n.language)}</dd></div>
             <div>
               <dt className="text-xs font-semibold uppercase text-ink-faint">{t('applications.status')}</dt>
@@ -89,6 +110,32 @@ const Details = ({ id, isAdmin, onClose, onChanged }) => {
           </dl>
           {application.message && <p className="whitespace-pre-line rounded-lg bg-sunken/60 p-3 text-sm text-ink">{application.message}</p>}
           {application.hasResume && <button className="btn-quiet" onClick={openResume}><FileText size={16} /> {t('applications.resume')}</button>}
+
+          {/* The decision. Accepting is for the Admin; the candidate is told by e-mail. */}
+          {!locked && !decision && (
+            <div className="flex flex-wrap gap-2">
+              {isAdmin && application.status !== 'accepted' && <button className="btn-primary" onClick={() => setDecision('accepted')}>{t('applications.accept')}</button>}
+              {application.status !== 'rejected' && <button className="btn-quiet" onClick={() => setDecision('rejected')}>{t('applications.reject')}</button>}
+            </div>
+          )}
+          {decision && (
+            <div className="rounded-lg border border-line bg-sunken/60 p-4 text-sm">
+              <p className="font-semibold text-ink">{t(`applications.confirm.${decision}`, { name: application.fullName })}</p>
+              <p className="mt-1 text-ink-soft">
+                {application.email ? t('applications.confirmLetter', { email: application.email }) : t('applications.confirmNoEmail')}
+              </p>
+              <div className="mt-3 flex gap-2">
+                <button className="btn-primary" onClick={decide}>{t(`applications.${decision === 'accepted' ? 'accept' : 'reject'}`)}</button>
+                <button className="btn-quiet" onClick={() => setDecision(null)}>{t('common.cancel')}</button>
+              </div>
+            </div>
+          )}
+          {DECISIONS.includes(application.status) && application.email && (
+            <p className="text-sm text-ink-soft">
+              {t(application.decisionEmailed === application.status ? 'applications.letterSent' : 'applications.letterNotSent')}
+              {!locked && <button className="ml-2 text-mars" onClick={resendLetter}>{t('applications.sendAgain')}</button>}
+            </p>
+          )}
 
           <div>
             <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-ink-faint">{t('applications.notes')}</h3>
@@ -184,7 +231,7 @@ const Applications = () => {
             <button className="flex w-full flex-wrap items-center justify-between gap-2 px-5 py-3.5 text-left hover:bg-sunken/40" onClick={() => setOpenId(a.id)}>
               <span>
                 <span className="block font-semibold text-ink">{a.fullName}</span>
-                <span className="block text-sm text-ink-soft">{a.position} · {a.contact}</span>
+                <span className="block text-sm text-ink-soft">{positionText(t, a.position)} · {a.contact}</span>
               </span>
               <span className="text-right text-xs text-ink-soft">
                 <span className="block font-semibold text-ink">{t(`applications.statuses.${a.status}`)}</span>

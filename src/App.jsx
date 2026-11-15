@@ -14,6 +14,7 @@ import PageSkeleton from './components/PageSkeleton';
 // Every page is its own chunk: the browser downloads a role's screens only once that role signs
 // in, instead of all four roles' worth of code on the very first visit (the login screen).
 const DeviceVerificationPage = lazy(() => import('./pages/auth/DeviceVerificationPage'));
+const Apply = lazy(() => import('./pages/public/Apply'));
 
 const AdminLayout = lazy(() => import('./layouts/Admin/AdminLayout'));
 const AdminDashboard = lazy(() => import('./pages/Admin/AdminDashboard'));
@@ -89,6 +90,8 @@ const AppRoutes = () => {
         <Suspense fallback={<PageSkeleton />}>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          {/* Public: the job application form, linked from the login page. */}
+          <Route path="/apply" element={<Apply />} />
           <Route path="/verify-device" element={<DeviceVerificationPage />} />
 
           {/* Admin Routes */}

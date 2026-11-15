@@ -33,7 +33,8 @@ applied to a real database.
 | 018 | `018_audit_system.sql` | Owner role, richer audit_log with DB triggers, rules, violations |
 | 019 | `019_auditor_role.sql` | Auditor role (read-only access to the audit panel) |
 | 020 | `020_fines.sql` | automatic fines for ignored warnings |
-| 021+ | later files | see the list in this folder |
+| 021 | `021_applications_form.sql` | job application form: candidate e-mail, language, decision letter |
+| 022+ | later files | see the list in this folder |
 
 4. Put the keys into `.env` (see `.env.example`): `SUPABASE_URL` and `SUPABASE_SECRET_KEY`
    (Project settings -> API -> `service_role`). The secret key stays on the server only.

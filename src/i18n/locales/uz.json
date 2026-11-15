@@ -129,7 +129,8 @@
       "violation_attendance": "{{groupName}} guruhining {{date}} kungi davomati belgilanmagan. Belgilanmagan o'quvchilar: {{count}}. Uni belgilang",
       "violation_escalated": "O'qituvchi {{teacherName}} {{groupName}} guruhining {{date}} kungi davomatini belgilamadi (belgilanmagan: {{count}})",
       "fine_issued": "Sizga {{amount}} jarima belgilandi: {{groupName}} guruhining {{date}} kungi davomati o'z vaqtida belgilanmadi",
-      "fine_issued_ceo": "Avtomatik jarima {{amount}}: {{teacherName}}, {{groupName}} guruhi, {{date}}"
+      "fine_issued_ceo": "Avtomatik jarima {{amount}}: {{teacherName}}, {{groupName}} guruhi, {{date}}",
+      "application_new": "Ishga yangi ariza: {{name}}"
     },
     "errors": {
       "ROOM_BUSY": "Bu xona shu vaqtda band",
@@ -908,7 +909,11 @@
       "invalid_fine": "Noto'g'ri jarima",
       "fine_not_found": "Jarima topilmadi",
       "current_password_is_wrong": "Joriy parol noto'g'ri",
-      "only_the_ceo_can_add_this_role": "Bu rolni faqat CEO qo'sha oladi"
+      "only_the_ceo_can_add_this_role": "Bu rolni faqat CEO qo'sha oladi",
+      "tell_us_about_your_strong_side_at_least_10_characters": "Kuchli tomoningiz haqida yozing (kamida 10 belgi)",
+      "accept_or_reject_the_candidate_first": "Avval nomzodni qabul qiling yoki rad eting",
+      "this_application_has_no_e_mail": "Bu arizada pochta yo'q",
+      "the_letter_was_not_sent_try_again_later": "Xat yuborilmadi. Keyinroq urinib ko'ring."
     },
     "ranks": {
       "cadet": "Kursant",
@@ -1324,7 +1329,8 @@
           "note": "Nomzod haqida izoh yozdi",
           "status": "Nomzod holatini o'zgartirdi: {{from}} → {{to}}",
           "view_resume": "Nomzod rezyumesini ochdi",
-          "create_account": "Nomzod uchun akkaunt yaratdi"
+          "create_account": "Nomzod uchun akkaunt yaratdi",
+          "decision_email": "nomzodga qaror haqida xat yubordi"
         },
         "coins": {
           "award": "{{target}} ga koin berdi",
@@ -1387,7 +1393,7 @@
     },
     "applications": {
       "title": "Vakansiya arizalari",
-      "hint": "Vakansiyalar saytidan ariza yuborganlar. Ko'ring, izoh yozing, bosqichlar bo'yicha olib boring.",
+      "hint": "Saytda ariza topshirgan odamlar. Rezyumeni ko'ring, izoh yozing, qabul qiling yoki rad eting: nomzod xat oladi.",
       "contact": "Aloqa",
       "position": "Vakansiya",
       "received": "Kelgan vaqti",
@@ -1411,7 +1417,22 @@
       "accountReady": "Akkaunt tayyor",
       "tempPassword": "Vaqtinchalik parol",
       "shownOnce": "Parol bir marta ko'rsatiladi. Uni insonga bering va almashtirishni so'rang.",
-      "empty": "Arizalar yo'q"
+      "empty": "Arizalar yo'q",
+      "positions": {
+        "intern": "Stajyor",
+        "teacher": "O'qituvchi"
+      },
+      "accept": "Qabul qilish",
+      "reject": "Rad etish",
+      "confirm": {
+        "accepted": "{{name}} nomzodini qabul qilasizmi?",
+        "rejected": "{{name}} nomzodini rad etasizmi?"
+      },
+      "confirmLetter": "Nomzodga qaror haqida xat {{email}} manziliga yuboriladi.",
+      "confirmNoEmail": "Bu arizada pochta yo'q, xat yuborilmaydi.",
+      "letterSent": "Nomzodga xat yuborildi",
+      "letterNotSent": "Nomzodga xat yuborilmadi",
+      "sendAgain": "Yana yuborish"
     },
     "theme": {
       "dark": "Qorong'i rejim",
@@ -1556,6 +1577,25 @@
       "repeatPassword": "Yangi parolni takrorlang",
       "passwordMismatch": "Parollar mos kelmaydi",
       "passwordChanged": "Parol o'zgartirildi"
+    },
+    "apply": {
+      "loginQuestion": "Bizda ishlashni xohlaysizmi?",
+      "loginLink": "Ariza topshirish",
+      "title": "Mars Space da ish",
+      "text": "O'zingiz haqingizda yozing va rezyumeni biriktiring. Arizani ko'rib chiqib, javobni pochtangizga yuboramiz.",
+      "backToLogin": "Kirish sahifasiga qaytish",
+      "fullName": "Ism va familiya",
+      "email": "Gmail manzilingiz",
+      "position": "Kim bo'lib ishlamoqchisiz",
+      "strength": "Kuchli tomoningiz",
+      "strengthHint": "Nimani eng yaxshi bajarasiz? Bir-ikki gap yozing.",
+      "resume": "Rezyume",
+      "resumeHint": "PDF yoki Word fayl, 4 MB gacha.",
+      "fileTooBig": "Fayl juda katta. 4 MB gacha mumkin.",
+      "submit": "Arizani yuborish",
+      "sending": "Yuborilmoqda",
+      "sentTitle": "Ariza qabul qilindi",
+      "sentText": "Rahmat. Arizani ko'rib chiqib, javobni {{email}} manziliga yuboramiz."
     }
   }
 }

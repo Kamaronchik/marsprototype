@@ -4,7 +4,7 @@ const router = express.Router();
 const { authMiddleware, requireRole } = require('../middleware/deviceMiddleware');
 const { limiter } = require('../utils/rateLimit');
 const {
-  apply, listApplications, getApplication, getResumeLink, addNote, setStatus, createAccount,
+  apply, listApplications, getApplication, getResumeLink, addNote, setStatus, resendDecisionEmail, createAccount,
 } = require('../controllers/careersController');
 
 // Public form: few applications per visitor, and the resume stays in memory (up to 4 MB, one file).
@@ -29,6 +29,7 @@ router.get('/applications/:id', getApplication);
 router.get('/applications/:id/resume', getResumeLink);
 router.post('/applications/:id/notes', addNote);
 router.patch('/applications/:id/status', setStatus);
+router.post('/applications/:id/decision-email', resendDecisionEmail);
 
 // Only the Admin makes accounts.
 router.post('/applications/:id/account', requireRole('Admin'), createAccount);

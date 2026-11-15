@@ -129,7 +129,8 @@
       "violation_attendance": "Attendance of group {{groupName}} for {{date}} is not marked. Students not marked: {{count}}. Please mark it",
       "violation_escalated": "Teacher {{teacherName}} has not marked attendance of group {{groupName}} for {{date}} (not marked: {{count}})",
       "fine_issued": "You were fined {{amount}}: attendance of group {{groupName}} for {{date}} was not marked in time",
-      "fine_issued_ceo": "Automatic fine {{amount}}: {{teacherName}}, group {{groupName}}, {{date}}"
+      "fine_issued_ceo": "Automatic fine {{amount}}: {{teacherName}}, group {{groupName}}, {{date}}",
+      "application_new": "New job application: {{name}}"
     },
     "errors": {
       "ROOM_BUSY": "This room is already taken at that time",
@@ -908,7 +909,11 @@
       "invalid_fine": "Invalid fine",
       "fine_not_found": "Fine not found",
       "current_password_is_wrong": "Current password is wrong",
-      "only_the_ceo_can_add_this_role": "Only the CEO can add this role"
+      "only_the_ceo_can_add_this_role": "Only the CEO can add this role",
+      "tell_us_about_your_strong_side_at_least_10_characters": "Tell us about your strong side (at least 10 characters)",
+      "accept_or_reject_the_candidate_first": "Accept or reject the candidate first",
+      "this_application_has_no_e_mail": "This application has no e-mail",
+      "the_letter_was_not_sent_try_again_later": "The letter was not sent. Try again later."
     },
     "ranks": {
       "cadet": "Cadet",
@@ -1324,7 +1329,8 @@
           "note": "wrote a note about a candidate",
           "status": "changed the status of a candidate: {{from}} → {{to}}",
           "view_resume": "opened the resume of a candidate",
-          "create_account": "created an account for a candidate"
+          "create_account": "created an account for a candidate",
+          "decision_email": "sent the candidate a letter with the decision"
         },
         "coins": {
           "award": "gave coins to {{target}}",
@@ -1387,7 +1393,7 @@
     },
     "applications": {
       "title": "Job applications",
-      "hint": "People who applied through the Careers site. Look, write notes, follow the steps.",
+      "hint": "People who applied on the site. Read the resume, write notes, accept or reject: the candidate gets a letter.",
       "contact": "Contact",
       "position": "Vacancy",
       "received": "Received",
@@ -1411,7 +1417,22 @@
       "accountReady": "The account is ready",
       "tempPassword": "Temporary password",
       "shownOnce": "The password is shown once. Give it to the person and ask them to change it.",
-      "empty": "No applications"
+      "empty": "No applications",
+      "positions": {
+        "intern": "Intern",
+        "teacher": "Teacher"
+      },
+      "accept": "Accept",
+      "reject": "Reject",
+      "confirm": {
+        "accepted": "Accept the candidate {{name}}?",
+        "rejected": "Reject the candidate {{name}}?"
+      },
+      "confirmLetter": "A letter with the decision will go to {{email}}.",
+      "confirmNoEmail": "This application has no e-mail, no letter will be sent.",
+      "letterSent": "The letter to the candidate was sent",
+      "letterNotSent": "The letter to the candidate was not sent",
+      "sendAgain": "Send again"
     },
     "theme": {
       "dark": "Dark mode",
@@ -1556,6 +1577,25 @@
       "repeatPassword": "Repeat the new password",
       "passwordMismatch": "Passwords do not match",
       "passwordChanged": "Password changed"
+    },
+    "apply": {
+      "loginQuestion": "Want to work with us?",
+      "loginLink": "Apply for a job",
+      "title": "Work at Mars Space",
+      "text": "Tell us about yourself and attach your resume. We will look at the application and answer by e-mail.",
+      "backToLogin": "Back to sign in",
+      "fullName": "Full name",
+      "email": "Your Gmail",
+      "position": "The job you want",
+      "strength": "Your strong side",
+      "strengthHint": "What are you best at? Write a couple of sentences.",
+      "resume": "Resume",
+      "resumeHint": "A PDF or Word file, up to 4 MB.",
+      "fileTooBig": "The file is too big. Up to 4 MB is allowed.",
+      "submit": "Send application",
+      "sending": "Sending",
+      "sentTitle": "Application received",
+      "sentText": "Thank you. We will look at it and send the answer to {{email}}."
     }
   }
 }

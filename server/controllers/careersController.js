@@ -4,8 +4,15 @@ const supabase = require('../config/supabase');
 const { handleDbError } = require('../utils/apiErrors');
 const { isUuid } = require('../utils/validate');
 const { logAction } = require('../utils/audit');
+const { notify } = require('../utils/notify');
+const emailService = require('../services/emailService');
 
 const BUCKET = 'resumes';
+// The form on our own site (/apply): the candidate chooses one of these and leaves an e-mail.
+const POSITIONS = ['intern', 'teacher'];
+const LANGUAGES = ['ru', 'uz', 'en'];
+const DECISIONS = ['accepted', 'rejected'];
+const isEmail = (value) => /^\S+@\S+\.\S+$/.test(value);
 const STATUSES = ['new', 'viewed', 'interview', 'accepted', 'rejected'];
 // The Academic Manager is added only by the CEO, so it is not offered here.
 const ACCOUNT_ROLES = ['Teacher', 'Financier'];
@@ -32,9 +39,41 @@ const toClient = (a) => ({
   status: a.status,
   accountCreated: !!a.account_user_id,
   createdAt: a.created_at,
+  email: a.email ?? null,
+  decisionEmailed: a.decision_emailed ?? null,
 });
 
-const COLUMNS = 'id, full_name, contact, position, message, resume_path, status, account_user_id, created_at';
+const COLUMNS = 'id, full_name, contact, position, message, resume_path, status, account_user_id, created_at, email, language, decision_emailed';
+
+// Tells every active Admin and Academic Manager in the bell that somebody applied.
+const announceApplication = async (applicationId, name) => {
+  const { data: staff } = await supabase.from('users').select('id, role').in('role', ['Admin', 'AcademicManager']).eq('status', 'active');
+  await Promise.all((staff ?? []).map((person) => notify(
+    person.id,
+    'application.new',
+    { name },
+    { link: person.role === 'Admin' ? '/admin/applications' : '/academic/applications', dedupeKey: `application:${applicationId}:${person.id}` },
+  )));
+};
+
+// The letter to the candidate: "you are accepted" or "we cannot accept you now".
+// One letter per decision; force = send again on purpose. A failed letter never undoes the decision.
+// Returns true when the candidate has been told, false when not (no e-mail, or Gmail failed).
+const tellDecision = async (application, actorId, { force = false } = {}) => {
+  if (!application.email || !DECISIONS.includes(application.status)) return false;
+  if (!force && application.decision_emailed === application.status) return true;
+  try {
+    await emailService.sendApplicationDecisionEmail(application.email, {
+      name: application.full_name, decision: application.status, language: application.language,
+    });
+  } catch (error) {
+    console.error('Decision email error:', error.message);
+    return false;
+  }
+  await supabase.from('job_applications').update({ decision_emailed: application.status }).eq('id', application.id);
+  await logAction(actorId, 'application.decision_email', 'application', application.id, { status: application.status });
+  return true;
+};
 
 // --- Public: the Careers site sends an application here -----------------------------------------
 // It answers only "ok": never any data, and nothing about other applications.
@@ -43,12 +82,24 @@ const apply = async (req, res) => {
   if (text(req.body.website, 100)) return res.status(201).json({ message: 'Application received' });
 
   const fullName = text(req.body.fullName, 100);
-  const contact = text(req.body.contact, 100);
   const position = text(req.body.position, 100);
-  const message = text(req.body.message, 2000);
   if (fullName.length < 2) return res.status(400).json({ message: 'Name is required' });
-  if (contact.length < 5) return res.status(400).json({ message: 'Contact is required (phone, Telegram or e-mail)' });
-  if (position.length < 2) return res.status(400).json({ message: 'Choose a vacancy' });
+
+  // Two senders: the form on our site (e-mail + strong side) and the older Careers site (any contact + message).
+  const fromSite = req.body.email !== undefined;
+  const email = text(req.body.email, 100).toLowerCase();
+  let contact = text(req.body.contact, 100);
+  let message = text(req.body.message, 2000);
+  if (fromSite) {
+    if (!isEmail(email)) return res.status(400).json({ message: 'Invalid email' });
+    if (!POSITIONS.includes(position)) return res.status(400).json({ message: 'Choose a vacancy' });
+    message = text(req.body.strength, 2000);
+    if (message.length < 10) return res.status(400).json({ message: 'Tell us about your strong side (at least 10 characters)' });
+    contact = email;
+  } else {
+    if (contact.length < 5) return res.status(400).json({ message: 'Contact is required (phone, Telegram or e-mail)' });
+    if (position.length < 2) return res.status(400).json({ message: 'Choose a vacancy' });
+  }
 
   let resumePath = null;
   if (req.file) {
@@ -59,17 +110,19 @@ const apply = async (req, res) => {
     if (uploadError) return handleDbError(uploadError, res);
   }
 
-  const { data, error } = await supabase
-    .from('job_applications')
-    .insert({ full_name: fullName, contact, position, message: message || null, resume_path: resumePath })
-    .select('id')
-    .single();
+  const row = { full_name: fullName, contact, position, message: message || null, resume_path: resumePath };
+  if (fromSite) {
+    row.email = email;
+    row.language = LANGUAGES.includes(req.body.language) ? req.body.language : 'ru';
+  }
+  const { data, error } = await supabase.from('job_applications').insert(row).select('id').single();
   if (error) {
     if (resumePath) await supabase.storage.from(BUCKET).remove([resumePath]);
     return handleDbError(error, res);
   }
 
   await logAction(null, 'application.receive', 'application', data.id, { position });
+  await announceApplication(data.id, fullName);
   res.status(201).json({ message: 'Application received' });
 };
 
@@ -159,7 +212,26 @@ const setStatus = async (req, res) => {
   if (error) return handleDbError(error, res);
 
   await logAction(req.user.id, 'application.status', 'application', id, { from: before.status, to: status });
-  res.json({ application: toClient(data) });
+
+  // "Accepted" or "rejected": the candidate gets a letter (once per decision).
+  const emailSent = DECISIONS.includes(status) ? await tellDecision(data, req.user.id) : null;
+  res.json({ application: toClient({ ...data, decision_emailed: emailSent ? status : data.decision_emailed }), emailSent });
+};
+
+// "Send the letter again": for a decision that is already made (Gmail failed, or the candidate lost the letter).
+const resendDecisionEmail = async (req, res) => {
+  const { id } = req.params;
+  if (!isUuid(id)) return res.status(400).json({ message: 'Invalid id' });
+
+  const { data: application } = await supabase.from('job_applications').select(COLUMNS).eq('id', id).maybeSingle();
+  if (!application) return res.status(404).json({ message: 'Application not found' });
+  if (!DECISIONS.includes(application.status)) return res.status(409).json({ message: 'Accept or reject the candidate first' });
+  if (application.status === 'accepted' && req.user.role !== 'Admin') return res.status(403).json({ message: 'Only the Admin can change an accepted candidate' });
+  if (!application.email) return res.status(409).json({ message: 'This application has no e-mail' });
+
+  const emailSent = await tellDecision(application, req.user.id, { force: true });
+  if (!emailSent) return res.status(502).json({ message: 'The letter was not sent. Try again later.' });
+  res.json({ emailSent });
 };
 
 // Admin only, after "accepted": makes the account on purpose, one click, one time.
@@ -202,4 +274,4 @@ const createAccount = async (req, res) => {
   res.status(201).json({ user: { id: user.id, username: user.username, role: user.role }, temporaryPassword });
 };
 
-module.exports = { apply, listApplications, getApplication, getResumeLink, addNote, setStatus, createAccount };
+module.exports = { apply, listApplications, getApplication, getResumeLink, addNote, setStatus, resendDecisionEmail, createAccount };

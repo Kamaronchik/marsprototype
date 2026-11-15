@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LoginForm from './LoginForm';
 import LoginTools from './LoginTools';
@@ -14,9 +15,15 @@ const LoginPage = () => {
           <h2 className="font-display text-[3.2rem] font-semibold leading-[1.06] tracking-tight text-ink">{t('auth.heroTitle')}</h2>
           <p className="mt-5 max-w-md text-[15px] leading-relaxed text-ink-soft">{t('auth.heroText')}</p>
         </div>
-        <section className="w-full max-w-md justify-self-center rounded-2xl border border-line bg-card p-8 shadow-xl lg:justify-self-end">
-          <LoginForm />
-        </section>
+        <div className="w-full max-w-md justify-self-center lg:justify-self-end">
+          <section className="rounded-2xl border border-line bg-card p-8 shadow-xl">
+            <LoginForm />
+          </section>
+          {/* For people who do not have an account yet: the job application form. */}
+          <p className="mt-5 text-center text-sm text-ink-soft">
+            {t('apply.loginQuestion')} <Link to="/apply" className="font-medium text-mars hover:text-mars-deep">{t('apply.loginLink')}</Link>
+          </p>
+        </div>
       </div>
     </div>
   );
