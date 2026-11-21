@@ -55,9 +55,23 @@ const PenaltyForm = ({ onIssued }) => {
         <div>
           <label htmlFor="p-search" className="field-label">{t('penalty.teacher', { total: teachers.length })}</label>
           <input id="p-search" className="field" value={search} placeholder={t('penalty.searchTeacher')} onChange={(e) => setSearch(e.target.value)} />
-          <select aria-label={t('penalty.teacher', { total: teachers.length })} className="field mt-2" size="6" value={userId} onChange={(e) => setUserId(e.target.value)}>
-            {shown.map((p) => <option key={p.id} value={p.id}>{p.fullName}</option>)}
-          </select>
+          {/* Buttons, not a <select size>: the browser highlights the first row of a list box
+              even when nothing is chosen, and a click on it then changes nothing. */}
+          <ul role="radiogroup" aria-label={t('penalty.teacher', { total: teachers.length })} className="mt-2 max-h-48 overflow-y-auto rounded-lg border border-line">
+            {shown.map((p) => (
+              <li key={p.id}>
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={userId === p.id}
+                  onClick={() => setUserId(p.id)}
+                  className={`block w-full px-3 py-2 text-left text-sm ${userId === p.id ? 'bg-mars-tint font-semibold text-ink' : 'text-ink-soft hover:bg-sunken'}`}
+                >
+                  {p.fullName}
+                </button>
+              </li>
+            ))}
+          </ul>
           {!staff.loading && shown.length === 0 && <p className="mt-1 text-xs text-ink-faint">{t('penalty.noTeachers')}</p>}
         </div>
 

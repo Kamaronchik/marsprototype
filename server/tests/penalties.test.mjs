@@ -94,6 +94,19 @@ describe.skipIf(!hasDatabase)('penalties', () => {
     expect(after).toEqual({ status: 'cancelled', comment: 'He had permission' });
   });
 
+  it('tells the teacher about every penalty taken back, not only the first one', async () => {
+    const before = await supabase.from('notifications').select('id', { count: 'exact', head: true })
+      .eq('user_id', ctx.users.teacher2.id).eq('type', 'penalty.removed');
+    for (const ruleCode of ['MARS_1_1', 'MARS_2_3']) {
+      const res = await give('auditor', { ...base(), userId: ctx.users.teacher2.id, ruleCode });
+      made.push(res.body.id);
+      expect((await closeAs('auditor', res.body.id, { outcome: 'dismissed', comment: 'Not him on the video' })).status).toBe(200);
+    }
+    const after = await supabase.from('notifications').select('id', { count: 'exact', head: true })
+      .eq('user_id', ctx.users.teacher2.id).eq('type', 'penalty.removed');
+    expect(after.count - before.count).toBe(2);
+  });
+
   it('lets the CEO confirm a penalty', async () => {
     const res = await give('owner', { ...base(), ruleCode: 'MARS_2_2' });
     expect(res.status).toBe(201);

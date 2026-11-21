@@ -63,10 +63,13 @@ describe.skipIf(!hasDatabase)('penalties page, on the real server', () => {
   it('the auditor gives a penalty, the CEO sees it, the auditor takes it back with a reason', async () => {
     // 1. The auditor: every teacher is in the list, the form sends the penalty.
     openAs('auditor', 'Auditor');
-    await screen.findByRole('option', { name: 'ZZ Test teacher' }, { timeout: 15000 });
-    expect(screen.getByRole('option', { name: 'ZZ Test teacher2' })).toBeTruthy();
+    const teacher = await screen.findByRole('radio', { name: 'ZZ Test teacher' }, { timeout: 15000 });
+    expect(screen.getByRole('radio', { name: 'ZZ Test teacher2' })).toBeTruthy();
+    // Nobody is chosen until a click.
+    expect(screen.getAllByRole('radio').some((r) => r.getAttribute('aria-checked') === 'true')).toBe(false);
 
-    fireEvent.change(screen.getByLabelText(/Учитель/, { selector: 'select' }), { target: { value: ctx.users.teacher.id } });
+    fireEvent.click(teacher);
+    expect(teacher.getAttribute('aria-checked')).toBe('true');
     await screen.findByRole('option', { name: /3\.2 · Телефон во время урока/ });
     fireEvent.change(screen.getByLabelText('Правило'), { target: { value: 'MARS_3_2' } });
     expect(screen.getByText(/Объяснительная на имя руководителя/)).toBeTruthy();

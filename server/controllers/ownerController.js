@@ -189,7 +189,7 @@ const closeViolation = async (req, res) => {
       .update({ status: 'cancelled', closed_at: new Date().toISOString(), closed_by: req.user.id, comment })
       .eq('violation_id', id).eq('status', 'issued');
   }
-  if (outcome === 'dismissed') await afterCancel(before, req.user, comment);
+  if (outcome === 'dismissed') await afterCancel({ ...before, id }, req.user, comment);
   await logAction(req.user.id, `violation.${outcome === 'resolved' ? 'resolve' : 'dismiss'}`, 'violation', id, { auto: false }, { reasonComment: comment });
   res.json({ message: 'Done' });
 };
