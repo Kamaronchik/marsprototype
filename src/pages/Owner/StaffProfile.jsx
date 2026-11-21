@@ -6,6 +6,7 @@ import { useFetch } from '../../lib/useFetch';
 import { formatDate, formatDateTime } from '../../lib/format';
 import { useAuditSentence } from '../../lib/useAuditSentence';
 import StatusBadge from './StatusBadge';
+import { violationTitle } from './violationTitle';
 
 const Block = ({ title, children }) => (
   <section className="rounded-xl border border-line bg-card">
@@ -42,7 +43,7 @@ const StaffProfile = () => {
             {data.violations.map((v) => (
               <li key={v.id} className="flex items-center justify-between gap-3 px-5 py-3 text-sm">
                 <span>
-                  <span className="block font-semibold text-ink">{v.details.groupName}</span>
+                  <span className="block font-semibold text-ink">{violationTitle(t, v)}</span>
                   <span className="text-xs text-ink-faint">{formatDate(v.date, i18n.language)}</span>
                 </span>
                 <StatusBadge status={v.status} />

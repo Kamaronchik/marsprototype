@@ -56,6 +56,12 @@ import Purchases from './Student/Purchases';
 import Shop from './Student/Shop';
 import Tutor from './Student/Tutor';
 import BattleArena from './Student/BattleArena';
+import OwnerOverview from './Owner/Overview';
+import OwnerViolations from './Owner/Violations';
+import OwnerStaff from './Owner/Staff';
+import OwnerFines from './Owner/Fines';
+import OwnerPenalties from './Owner/Penalties';
+import OwnerRules from './Owner/Rules';
 
 const require = createRequire(import.meta.url);
 
@@ -75,8 +81,10 @@ const ROLES = {
     StudentHome, MySchedule, StudentAttendance, StudentHomework, StudentGrades, Tutor, BattleArena, Shop, StudentCoins,
     Purchases, StudentProfile,
   },
+  Owner: { OwnerOverview, OwnerViolations, OwnerStaff, OwnerFines, OwnerPenalties, OwnerRules },
+  Auditor: { OwnerOverview, OwnerViolations, OwnerStaff, OwnerFines, OwnerPenalties },
 };
-const KEY = { Admin: 'admin', Financier: 'financier', Teacher: 'teacher', AcademicManager: 'academic', Student: 'student' };
+const KEY = { Admin: 'admin', Financier: 'financier', Teacher: 'teacher', AcademicManager: 'academic', Student: 'student', Owner: 'owner', Auditor: 'auditor' };
 
 // jsdom has no scrolling
 Element.prototype.scrollIntoView = () => {};

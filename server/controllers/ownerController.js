@@ -5,6 +5,7 @@ const { logAction } = require('../utils/audit');
 const { runAttendanceRule } = require('../utils/violations');
 const { loadNames } = require('../utils/auditNames');
 const { tashkentNow } = require('../utils/schedule');
+const { afterCancel } = require('./penaltyController');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const db = require('../databaseService');
@@ -103,9 +104,10 @@ const toViolation = (v) => ({
 const STATUS_FILTERS = ['open', 'acknowledged', 'escalated', 'resolved', 'dismissed'];
 
 // ?status=open|acknowledged|escalated|resolved|dismissed|active (active = not closed yet)
+// ?source=audit shows only the penalties given by auditors.
 const listViolations = async (req, res) => {
-  const { status, userId } = req.query;
-  if ((status && status !== 'active' && !STATUS_FILTERS.includes(status)) || (userId && !isUuid(userId))) {
+  const { status, userId, source } = req.query;
+  if ((status && status !== 'active' && !STATUS_FILTERS.includes(status)) || (userId && !isUuid(userId)) || (source && source !== 'audit')) {
     return res.status(400).json({ message: 'Invalid filter' });
   }
   const { page, pageSize } = pageOf(req.query);
@@ -115,6 +117,7 @@ const listViolations = async (req, res) => {
   if (status === 'active') q = q.in('status', OPEN_STATUSES);
   else if (status) q = q.eq('status', status);
   if (userId) q = q.eq('user_id', userId);
+  if (source) q = q.eq('details->>source', source);
 
   const { data, error, count } = await q;
   if (error) return handleDbError(error, res);
@@ -158,6 +161,7 @@ const acknowledge = async (req, res) => {
 };
 
 // Closing by hand is possible only with a comment: "resolved" (it was fixed) or "dismissed" (a false alarm).
+// The CEO closes anything. The auditor may only take back (dismiss) a penalty that an auditor gave.
 const closeViolation = async (req, res) => {
   const { id } = req.params;
   const { outcome } = req.body;
@@ -166,8 +170,11 @@ const closeViolation = async (req, res) => {
   if (!['resolved', 'dismissed'].includes(outcome)) return res.status(400).json({ message: 'Invalid outcome' });
   if (comment.length < 3 || comment.length > 500) return res.status(400).json({ message: 'A comment is required (3 to 500 characters)' });
 
-  const { data: before } = await supabase.from('violations').select('detected_at').eq('id', id).in('status', OPEN_STATUSES).maybeSingle();
+  const { data: before } = await supabase.from('violations').select('detected_at, user_id, details').eq('id', id).in('status', OPEN_STATUSES).maybeSingle();
   if (!before) return res.status(404).json({ message: 'Violation not found' });
+  if (req.user.role !== 'Owner' && (outcome !== 'dismissed' || before.details?.source !== 'audit')) {
+    return res.status(403).json({ message: 'Forbidden' });
+  }
 
   const seconds = Math.round((Date.now() - Date.parse(before.detected_at)) / 1000);
   const { error } = await supabase.from('violations').update({
@@ -182,6 +189,7 @@ const closeViolation = async (req, res) => {
       .update({ status: 'cancelled', closed_at: new Date().toISOString(), closed_by: req.user.id, comment })
       .eq('violation_id', id).eq('status', 'issued');
   }
+  if (outcome === 'dismissed') await afterCancel(before, req.user, comment);
   await logAction(req.user.id, `violation.${outcome === 'resolved' ? 'resolve' : 'dismiss'}`, 'violation', id, { auto: false }, { reasonComment: comment });
   res.json({ message: 'Done' });
 };
@@ -246,7 +254,8 @@ const getStaff = async (req, res) => {
 const toRule = (r) => ({ code: r.code, title: r.title, enabled: r.enabled, severity: r.severity, levels: r.levels, fineAmount: r.fine_amount ?? 0, updatedAt: r.updated_at });
 
 const listRules = async (req, res) => {
-  const { data, error } = await supabase.from('audit_rules').select('*').order('code');
+  // The rules of Mars (MARS_...) are picked by auditors by hand, so they are not on the page of the engine rules.
+  const { data, error } = await supabase.from('audit_rules').select('*').not('code', 'like', 'MARS%').order('code');
   if (error) return handleDbError(error, res);
   res.json({ rules: data.map(toRule) });
 };

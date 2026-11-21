@@ -92,7 +92,8 @@
       "accounts": "Akkauntlar",
       "fines": "Jarimalar",
       "password": "Mening parolim",
-      "sectionMine": "Mening akkauntim"
+      "sectionMine": "Mening akkauntim",
+      "penalties": "Jazolar"
     },
     "bell": {
       "title": "Bildirishnomalar",
@@ -128,7 +129,11 @@
       "violation_escalated": "O'qituvchi {{teacherName}} {{groupName}} guruhining {{date}} kungi davomatini belgilamadi (belgilanmagan: {{count}})",
       "fine_issued": "Sizga {{amount}} jarima belgilandi: {{groupName}} guruhining {{date}} kungi davomati o'z vaqtida belgilanmadi",
       "fine_issued_ceo": "Avtomatik jarima {{amount}}: {{teacherName}}, {{groupName}} guruhi, {{date}}",
-      "application_new": "Ishga yangi ariza: {{name}}"
+      "application_new": "Ishga yangi ariza: {{name}}",
+      "penalty_issued": "{{auditorName}} jazo berdi: {{teacherName}}, {{rule}}-qoida. Qaroringiz kerak",
+      "penalty_cancelled": "Auditor jazoni olib tashladi: {{teacherName}}, {{rule}}-qoida{{reason}}",
+      "penalty_received": "Siz mentorlar ichki qoidasining {{rule}}-bandini buzdingiz. Iltimos, qoidalarga amal qiling",
+      "penalty_removed": "{{rule}}-qoida bo'yicha jazo olib tashlandi{{reason}}"
     },
     "errors": {
       "ROOM_BUSY": "Bu xona shu vaqtda band",
@@ -911,7 +916,9 @@
       "tell_us_about_your_strong_side_at_least_10_characters": "Kuchli tomoningiz haqida yozing (kamida 10 belgi)",
       "accept_or_reject_the_candidate_first": "Avval nomzodni qabul qiling yoki rad eting",
       "this_application_has_no_e_mail": "Bu arizada pochta yo'q",
-      "the_letter_was_not_sent_try_again_later": "Xat yuborilmadi. Keyinroq urinib ko'ring."
+      "the_letter_was_not_sent_try_again_later": "Xat yuborilmadi. Keyinroq urinib ko'ring.",
+      "choose_a_rule": "Qoidani tanlang",
+      "describe_what_happened_3_to_500_characters": "Nima bo'lganini yozing (3 dan 500 belgigacha)"
     },
     "ranks": {
       "cadet": "Kursant",
@@ -1569,6 +1576,83 @@
       "sending": "Yuborilmoqda",
       "sentTitle": "Ariza qabul qilindi",
       "sentText": "Rahmat. Arizani ko'rib chiqib, javobni {{email}} manziliga yuboramiz."
+    },
+    "penalty": {
+      "title": "Jazolar",
+      "hintCeo": "Auditorlar Mars qoidalari bo'yicha bergan jazolar. Har birini tasdiqlang yoki bekor qiling, sabab majburiy.",
+      "hintAuditor": "O'qituvchini va buzilgan qoidani tanlang. Jazo CEO ga boradi. Uni faqat sabab bilan olib tashlash mumkin.",
+      "newTitle": "Yangi jazo",
+      "teacher": "O'qituvchi (jami {{total}})",
+      "searchTeacher": "Ism bo'yicha qidirish",
+      "noTeachers": "O'qituvchilar topilmadi",
+      "ruleLabel": "Qoida",
+      "chooseRule": "Qoidani tanlang",
+      "amount": "Jarima, so'm (ixtiyoriy)",
+      "amountHint": "Pul jarimasi bo'lmasa bo'sh yoki 0",
+      "whatHappened": "Nima bo'ldi",
+      "issue": "Jazo berish",
+      "issued": "Jazo berildi va CEO ga yuborildi",
+      "ruleTitle": "{{number}}-qoida · {{text}}",
+      "by": "bergan: {{name}}",
+      "reason": "Sabab",
+      "reasonLabel": "Sabab (majburiy)",
+      "confirm": "Tasdiqlash",
+      "remove": "Jazoni olib tashlash",
+      "confirmed": "Jazo tasdiqlandi",
+      "removed": "Jazo olib tashlandi",
+      "empty": "Jazolar yo'q",
+      "tab": {
+        "active": "Qaror kutmoqda",
+        "resolved": "Tasdiqlangan",
+        "dismissed": "Olib tashlangan",
+        "all": "Hammasi"
+      },
+      "status": {
+        "open": "CEO qarorini kutmoqda",
+        "resolved": "Tasdiqlangan",
+        "dismissed": "Olib tashlangan"
+      },
+      "level": {
+        "reminder": "Eslatma",
+        "green": "Green",
+        "yellow": "Yellow",
+        "red": "Red",
+        "black": "Black"
+      },
+      "consequence": {
+        "reminder": "Do'stona eslatma, jazosiz.",
+        "green": "Ogohlantirish.",
+        "yellow": "Qoidabuzarlik tavsifi bilan ogohlantirish.",
+        "red": "Korxona rahbari nomiga tushuntirish xati, reytingga tasir qiladi.",
+        "black": "Tushuntirish xati; korxona qaroriga ko'ra ishdan ozod etish yoki lavozimni tushirish, bonus va KPI berilmaydi."
+      },
+      "rule": {
+        "MARS_1_1": "Hududda bedjik taqish",
+        "MARS_1_2": "O'quvchilar darsda chalg'iyapti",
+        "MARS_1_3": "Darsdan keyin parta va stullar tartibga keltirilmagan",
+        "MARS_2_1": "Kechikish yoki Verifix orqali check-in yo'q",
+        "MARS_2_2": "Tashqi ko'rinish va kiyinish qoidasi",
+        "MARS_2_3": "Coworkingda shovqin va gaplashish",
+        "MARS_2_4": "Kompaniya jihozlaridan ehtiyotsiz foydalanish",
+        "MARS_2_5": "Muammo haqida filial rahbariga xabar berilmagan",
+        "MARS_2_6": "Dars 6+ daqiqa kech tugatilgan",
+        "MARS_2_7": "Kun davomida ikkinchi marta bedjiksiz",
+        "MARS_3_1": "Dars o'z vaqtida boshlanmagan yoki kelmagan",
+        "MARS_3_2": "Dars vaqtida telefon",
+        "MARS_3_3": "Dars vaqtida xonani tark etgan",
+        "MARS_3_4": "Dars vaqtida ovqatlanish",
+        "MARS_3_5": "Qiz o'quvchi bilan shaxsiy chat yoki o'quvchi bilan yolg'iz",
+        "MARS_3_6": "O'quvchilar bilan diniy mavzular",
+        "MARS_3_7": "Administratsiya hududida bemaqsad",
+        "MARS_3_8": "Darsda o'yin, musiqa, kino yoki ijtimoiy tarmoqlar",
+        "MARS_3_9": "Dars vaqtida uxlash",
+        "MARS_3_10": "Coworkingda uxlash",
+        "MARS_3_11": "O'quvchilarni haqorat qilish",
+        "MARS_4_1": "Hududda urushish, janjal yoki so'kinish",
+        "MARS_4_2": "Hududda spirtli ichimlik yoki tamaki",
+        "MARS_4_3": "O'quvchini urish, haqorat qilish yoki jazolash",
+        "MARS_4_4": "Qiz o'quvchini bezovta qilish"
+      }
     }
   }
 }

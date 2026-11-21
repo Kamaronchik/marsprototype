@@ -34,7 +34,8 @@ applied to a real database.
 | 019 | `019_auditor_role.sql` | Auditor role (read-only access to the audit panel) |
 | 020 | `020_fines.sql` | automatic fines for ignored warnings |
 | 021 | `021_applications_form.sql` | job application form: candidate e-mail, language, decision letter |
-| 022+ | later files | see the list in this folder |
+| 022 | `022_mars_penalties.sql` | rules of Mars for penalties by auditors (index for the penalty list) |
+| 023+ | later files | see the list in this folder |
 
 4. Put the keys into `.env` (see `.env.example`): `SUPABASE_URL` and `SUPABASE_SECRET_KEY`
    (Project settings -> API -> `service_role`). The secret key stays on the server only.

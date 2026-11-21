@@ -92,7 +92,8 @@
       "accounts": "Accounts",
       "fines": "Fines",
       "password": "My password",
-      "sectionMine": "My account"
+      "sectionMine": "My account",
+      "penalties": "Penalties"
     },
     "bell": {
       "title": "Notifications",
@@ -128,7 +129,11 @@
       "violation_escalated": "Teacher {{teacherName}} has not marked attendance of group {{groupName}} for {{date}} (not marked: {{count}})",
       "fine_issued": "You were fined {{amount}}: attendance of group {{groupName}} for {{date}} was not marked in time",
       "fine_issued_ceo": "Automatic fine {{amount}}: {{teacherName}}, group {{groupName}}, {{date}}",
-      "application_new": "New job application: {{name}}"
+      "application_new": "New job application: {{name}}",
+      "penalty_issued": "{{auditorName}} gave a penalty: {{teacherName}}, rule {{rule}}. Your decision is needed",
+      "penalty_cancelled": "An auditor took back a penalty: {{teacherName}}, rule {{rule}}{{reason}}",
+      "penalty_received": "You broke rule {{rule}} of the internal rules for mentors. Please follow the rules",
+      "penalty_removed": "The penalty for rule {{rule}} was taken back{{reason}}"
     },
     "errors": {
       "ROOM_BUSY": "This room is already taken at that time",
@@ -911,7 +916,9 @@
       "tell_us_about_your_strong_side_at_least_10_characters": "Tell us about your strong side (at least 10 characters)",
       "accept_or_reject_the_candidate_first": "Accept or reject the candidate first",
       "this_application_has_no_e_mail": "This application has no e-mail",
-      "the_letter_was_not_sent_try_again_later": "The letter was not sent. Try again later."
+      "the_letter_was_not_sent_try_again_later": "The letter was not sent. Try again later.",
+      "choose_a_rule": "Choose a rule",
+      "describe_what_happened_3_to_500_characters": "Describe what happened (3 to 500 characters)"
     },
     "ranks": {
       "cadet": "Cadet",
@@ -1569,6 +1576,83 @@
       "sending": "Sending",
       "sentTitle": "Application received",
       "sentText": "Thank you. We will look at it and send the answer to {{email}}."
+    },
+    "penalty": {
+      "title": "Penalties",
+      "hintCeo": "Penalties by the rules of Mars from auditors. Confirm or cancel each one, a reason is required.",
+      "hintAuditor": "Choose a teacher and the broken rule. The penalty goes to the CEO. It can be taken back only with a reason.",
+      "newTitle": "New penalty",
+      "teacher": "Teacher ({{total}} in total)",
+      "searchTeacher": "Search by name",
+      "noTeachers": "No teachers found",
+      "ruleLabel": "Rule",
+      "chooseRule": "Choose a rule",
+      "amount": "Fine, sum (optional)",
+      "amountHint": "Empty or 0 for no money fine",
+      "whatHappened": "What happened",
+      "issue": "Give the penalty",
+      "issued": "The penalty was given and sent to the CEO",
+      "ruleTitle": "Rule {{number}} · {{text}}",
+      "by": "given by {{name}}",
+      "reason": "Reason",
+      "reasonLabel": "Reason (required)",
+      "confirm": "Confirm",
+      "remove": "Take back",
+      "confirmed": "The penalty was confirmed",
+      "removed": "The penalty was taken back",
+      "empty": "No penalties",
+      "tab": {
+        "active": "Waiting",
+        "resolved": "Confirmed",
+        "dismissed": "Taken back",
+        "all": "All"
+      },
+      "status": {
+        "open": "Waiting for the CEO",
+        "resolved": "Confirmed",
+        "dismissed": "Taken back"
+      },
+      "level": {
+        "reminder": "Reminder",
+        "green": "Green",
+        "yellow": "Yellow",
+        "red": "Red",
+        "black": "Black"
+      },
+      "consequence": {
+        "reminder": "A friendly reminder, no penalty.",
+        "green": "A warning.",
+        "yellow": "A warning with a description of what happened.",
+        "red": "An explanatory letter to the head of the company; it affects the rating.",
+        "black": "An explanatory letter; by the decision of the company, dismissal or demotion, no bonus and KPI."
+      },
+      "rule": {
+        "MARS_1_1": "Badge on the premises",
+        "MARS_1_2": "Students distracted in the lesson",
+        "MARS_1_3": "Desks and chairs not tidied after the lesson",
+        "MARS_2_1": "Late or no Verifix check-in",
+        "MARS_2_2": "Appearance and dress code",
+        "MARS_2_3": "Noise and chatter in the coworking area",
+        "MARS_2_4": "Careless with company equipment",
+        "MARS_2_5": "Did not report a problem to the branch head",
+        "MARS_2_6": "Lesson ended 6+ minutes late",
+        "MARS_2_7": "No badge for the second time in a day",
+        "MARS_3_1": "Lesson not started on time or no-show",
+        "MARS_3_2": "Phone during the lesson",
+        "MARS_3_3": "Left the classroom during the lesson",
+        "MARS_3_4": "Eating during the lesson",
+        "MARS_3_5": "Private chat with a girl student or alone with a student",
+        "MARS_3_6": "Religious talk with students",
+        "MARS_3_7": "In the admin area without a reason",
+        "MARS_3_8": "Games, music, films or social media in the lesson",
+        "MARS_3_9": "Sleeping in the lesson",
+        "MARS_3_10": "Sleeping in the coworking area",
+        "MARS_3_11": "Insulting students",
+        "MARS_4_1": "Fight, quarrel or swearing on the premises",
+        "MARS_4_2": "Alcohol or tobacco on the premises",
+        "MARS_4_3": "Hit, insulted or punished a student",
+        "MARS_4_4": "Harassing a girl student"
+      }
     }
   }
 }

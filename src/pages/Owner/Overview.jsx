@@ -9,6 +9,7 @@ import { useFetch } from '../../lib/useFetch';
 import { api, errorText } from '../../lib/api';
 import { formatDateTime } from '../../lib/format';
 import StatusBadge from './StatusBadge';
+import { violationTitle } from './violationTitle';
 
 const Tile = ({ label, value, alert = false }) => (
   <div className="px-5 py-4">
@@ -70,7 +71,7 @@ const Overview = () => {
             {open.data?.violations.map((v) => (
               <li key={v.id} className="flex items-center justify-between gap-3 px-5 py-3 text-sm">
                 <span>
-                  <span className="block font-semibold text-ink">{v.details.groupName}</span>
+                  <span className="block font-semibold text-ink">{violationTitle(t, v)}</span>
                   <span className="text-xs text-ink-faint">{v.person?.name} · {formatDateTime(v.detectedAt, i18n.language)}</span>
                 </span>
                 <StatusBadge status={v.status} />

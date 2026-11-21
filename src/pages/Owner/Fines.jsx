@@ -10,6 +10,7 @@ import { useFetch } from '../../lib/useFetch';
 import { api, errorText } from '../../lib/api';
 import { formatDate, formatDateTime } from '../../lib/format';
 import { formatMoney } from '../../lib/money';
+import { violationTitle } from './violationTitle';
 
 const PAGE_SIZE = 20;
 const TABS = ['issued', 'deducted', 'cancelled', ''];
@@ -47,7 +48,7 @@ const FineCard = ({ fine, canDecide, onChanged }) => {
         <div>
           <Link to={`/owner/staff/${fine.person.id}`} className="text-sm font-semibold text-ink hover:text-mars">{fine.person.name}</Link>
           <p className="mt-0.5 text-sm text-ink-soft">
-            {t(`owner.rule.${fine.ruleCode}`)}: {fine.details.groupName}, {formatDate(fine.details.date, i18n.language)}
+            {violationTitle(t, fine)}, {formatDate(fine.details.date, i18n.language)}
           </p>
           <p className="text-xs text-ink-faint">{formatDateTime(fine.issuedAt, i18n.language)}</p>
         </div>

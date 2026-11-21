@@ -1,4 +1,4 @@
-// Test accounts of all 5 roles plus a small fixture (two groups, one mark).
+// Test accounts of every role plus a small fixture (two groups, one mark).
 // Run:  npm run seed-test-users
 // The accounts are called zz_test_*. Their passwords are random and never printed:
 // tests open sessions directly in the database, so nobody can log in with them.
@@ -16,6 +16,8 @@ const ACCOUNTS = [
   ['student', 'Student'],
   ['student2', 'Student'],
   ['victim', 'Student'], // the account whose role the Admin changes in tests
+  ['owner', 'Owner'],
+  ['auditor', 'Auditor'],
 ];
 
 const ALL_DAYS = [1, 2, 3, 4, 5, 6, 7];

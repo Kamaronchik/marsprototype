@@ -10,6 +10,7 @@ import { useFetch } from '../../lib/useFetch';
 import { api, errorText } from '../../lib/api';
 import { formatDate, formatDateTime } from '../../lib/format';
 import StatusBadge from './StatusBadge';
+import { violationTitle } from './violationTitle';
 
 const PAGE_SIZE = 20;
 const TABS = ['active', 'resolved', 'dismissed', ''];
@@ -109,7 +110,7 @@ const Violations = () => {
           <li key={v.id} className="rounded-xl border border-line bg-card">
             <button className="flex w-full flex-wrap items-center justify-between gap-3 px-5 py-4 text-left" onClick={() => setOpenId(openId === v.id ? null : v.id)}>
               <span>
-                <span className="block text-sm font-semibold text-ink">{t(`owner.rule.${v.ruleCode}`)}: {v.details.groupName}</span>
+                <span className="block text-sm font-semibold text-ink">{violationTitle(t, v)}</span>
                 <span className="text-xs text-ink-faint">
                   {v.person?.name} · {formatDate(v.date, i18n.language)} · {formatDateTime(v.detectedAt, i18n.language)}
                 </span>
