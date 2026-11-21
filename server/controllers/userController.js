@@ -7,7 +7,7 @@ const { topUp } = require('../utils/balance');
 const { logAction } = require('../utils/audit');
 const { announceToStudent } = require('../utils/telegramAnnounce');
 
-const ROLES = ['Admin', 'Teacher', 'Financier', 'Student'];
+const ROLES = ['Admin', 'Teacher', 'Financier', 'Student', 'AcademicManager'];
 const STATUSES = ['active', 'blocked', 'frozen'];
 
 // Never send password_hash to the browser.
@@ -57,15 +57,26 @@ const handleDbError = (error, res) => {
   return res.status(500).json({ message: 'Database error' });
 };
 
+// The CEO (role Owner) and the auditors check the Admin, so the Admin cannot see, change or delete their accounts.
+// They are created by the CEO in the CEO panel (or, the first CEO, with npm run create-owner).
+const CEO_SIDE_ROLES = ['Owner', 'Auditor'];
+// Only the CEO adds these roles (on the Accounts page of the CEO panel). The Admin cannot create them or promote anybody to them.
+const CEO_ONLY_ROLES = ['Admin', 'AcademicManager'];
+const isOwnerAccount = async (id) => {
+  const { data } = await supabase.from('users').select('role').eq('id', id).maybeSingle();
+  return CEO_SIDE_ROLES.includes(data?.role);
+};
+
 const listUsers = async (req, res) => {
   const { data, error } = await supabase
-    .from('users').select(COLUMNS).order('created_at', { ascending: false });
+    .from('users').select(COLUMNS).not('role', 'in', '(Owner,Auditor)').order('created_at', { ascending: false });
   if (error) return handleDbError(error, res);
   res.json({ users: data.map(toClient) });
 };
 
 const createUser = async (req, res) => {
   const { username, email, fullName, password, role, groupId } = req.body;
+  if (CEO_ONLY_ROLES.includes(role)) return res.status(403).json({ message: 'Only the CEO can add this role' });
   const problem = validate({ username, email, fullName, password, role }, { partial: false });
   if (problem) return res.status(400).json({ message: problem });
 
@@ -94,6 +105,7 @@ const createUser = async (req, res) => {
     .single();
   if (error) return handleDbError(error, res);
 
+  await logAction(req.user.id, 'user.create', 'user', data.id, { role: data.role });
   if (groupId) {
     const result = await addStudentToGroup(groupId, data, req.user.id);
     if (result.error) return handleDbError(result.error, res);
@@ -104,6 +116,12 @@ const createUser = async (req, res) => {
 const updateUser = async (req, res) => {
   const { id } = req.params;
   const { username, email, fullName, password, role, status } = req.body;
+  if (await isOwnerAccount(id)) return res.status(404).json({ message: 'User not found' });
+  // Promoting somebody to Admin or Academic Manager is adding that role: the CEO does it. Keeping the role is fine.
+  if (CEO_ONLY_ROLES.includes(role)) {
+    const { data: current } = await supabase.from('users').select('role').eq('id', id).maybeSingle();
+    if (current && current.role !== role) return res.status(403).json({ message: 'Only the CEO can add this role' });
+  }
 
   const problem = validate({ username, email, fullName, password, role }, { partial: true });
   if (problem) return res.status(400).json({ message: problem });
@@ -144,16 +162,20 @@ const updateUser = async (req, res) => {
     }
   }
 
-  let previousStatus = null;
-  if (status !== undefined) {
-    const { data: before } = await supabase.from('users').select('status').eq('id', id).maybeSingle();
-    previousStatus = before?.status ?? null;
-  }
+  // What the account was before the change (for the journal and for the Telegram notice).
+  const { data: before } = await supabase.from('users').select('role, status').eq('id', id).maybeSingle();
+  const previousStatus = before?.status ?? null;
 
   const { data, error } = await supabase
     .from('users').update(updates).eq('id', id).select(COLUMNS).maybeSingle();
   if (error) return handleDbError(error, res);
   if (!data) return res.status(404).json({ message: 'User not found' });
+
+  // Roles, blocking and password changes are the most sensitive actions: they are always in the journal.
+  if (role !== undefined && role !== before?.role) await logAction(req.user.id, 'user.role_change', 'user', id, { from: before?.role, to: role });
+  if (status !== undefined && status !== previousStatus) await logAction(req.user.id, 'user.status_change', 'user', id, { from: previousStatus, to: status });
+  if (password) await logAction(req.user.id, 'user.password_change', 'user', id);
+  if (fullName !== undefined || email !== undefined || username !== undefined) await logAction(req.user.id, 'user.update', 'user', id);
 
   // Blocked and frozen users lose all active sessions immediately.
   if (status === 'blocked' || status === 'frozen') await supabase.from('sessions').delete().eq('user_id', id);
@@ -195,8 +217,11 @@ const deleteUser = async (req, res) => {
   if (id === req.user.id) {
     return res.status(400).json({ message: 'You cannot delete your own account' });
   }
+  if (await isOwnerAccount(id)) return res.status(404).json({ message: 'User not found' });
+  const { data: removed } = await supabase.from('users').select('full_name, role').eq('id', id).maybeSingle();
   const { error } = await supabase.from('users').delete().eq('id', id);
   if (error) return handleDbError(error, res);
+  await logAction(req.user.id, 'user.delete', 'user', id, { name: removed?.full_name ?? null, role: removed?.role ?? null });
   db.clearSessionCache();
   res.json({ message: 'User deleted' });
 };

@@ -1,5 +1,5 @@
 // End-to-end check of homework, grades and the AI tutor against the real database.
-// Run AFTER schema_learning.sql:  npm run test-learning
+// Run AFTER 011_learning.sql:  npm run test-learning
 // Test accounts are the fixed "zz_test_*" ones (blocked again at the end); the test group is deleted.
 const {
   supabase, check, markFailed, ensureUser, openSession, startServer, call, finish,
@@ -126,7 +126,7 @@ const cleanup = async (users) => {
 
   try {
     const { error: missing } = await supabase.from('homework').select('id').limit(1);
-    if (missing) throw new Error('Run schema_learning.sql in Supabase first.');
+    if (missing) throw new Error('Run 011_learning.sql in Supabase first.');
 
     const raw = {
       admin: await ensureUser('admin', 'Admin'),

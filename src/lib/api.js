@@ -1,3 +1,7 @@
+// The browser fires this when the server says "no session" while somebody is signed in
+// (the session expired, or the account was blocked). The store listens and signs the person out.
+export const SESSION_EXPIRED = 'mars:session-expired';
+
 // The one place that talks to the backend. A failed request throws an Error with
 // the server message, plus .code (to pick a translation) and .status.
 export const api = async (url, options = {}) => {
@@ -16,6 +20,7 @@ export const api = async (url, options = {}) => {
     throw error;
   }
   const data = await res.json().catch(() => ({}));
+  if (res.status === 401 && !url.startsWith('/api/auth/')) window.dispatchEvent(new Event(SESSION_EXPIRED));
   if (!res.ok) {
     const error = new Error(data.message || 'Request failed');
     error.code = data.code;

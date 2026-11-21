@@ -14,21 +14,22 @@ import PageSkeleton from './components/PageSkeleton';
 // Every page is its own chunk: the browser downloads a role's screens only once that role signs
 // in, instead of all four roles' worth of code on the very first visit (the login screen).
 const DeviceVerificationPage = lazy(() => import('./pages/auth/DeviceVerificationPage'));
+const Apply = lazy(() => import('./pages/public/Apply'));
 
 const AdminLayout = lazy(() => import('./layouts/Admin/AdminLayout'));
 const AdminDashboard = lazy(() => import('./pages/Admin/AdminDashboard'));
 const UserManagement = lazy(() => import('./pages/Admin/UserManagement'));
 const Groups = lazy(() => import('./pages/Admin/Groups'));
-const AdminAttendance = lazy(() => import('./pages/Admin/Attendance'));
 const Students = lazy(() => import('./pages/shared/Students'));
 const Payments = lazy(() => import('./pages/shared/Payments'));
 const Salaries = lazy(() => import('./pages/shared/Salaries'));
-const ShopProducts = lazy(() => import('./pages/Admin/ShopProducts'));
-const ShopOrders = lazy(() => import('./pages/Admin/ShopOrders'));
-const AdminCoins = lazy(() => import('./pages/Admin/Coins'));
-const AdminBattles = lazy(() => import('./pages/Admin/Battles'));
 const AdminTelegram = lazy(() => import('./pages/Admin/Telegram'));
 const Settings = lazy(() => import('./pages/Admin/Settings'));
+const Subjects = lazy(() => import('./pages/shared/Subjects'));
+const Expenses = lazy(() => import('./pages/shared/Expenses'));
+const Reports = lazy(() => import('./pages/shared/Reports'));
+const Applications = lazy(() => import('./pages/shared/Applications'));
+const MySchedule = lazy(() => import('./pages/shared/MySchedule'));
 
 const FinancierLayout = lazy(() => import('./layouts/Financier/FinancierLayout'));
 const FinanceOverview = lazy(() => import('./pages/shared/FinanceOverview'));
@@ -40,6 +41,27 @@ const MyGroups = lazy(() => import('./pages/Teacher/MyGroups'));
 const TeacherCoins = lazy(() => import('./pages/Teacher/Coins'));
 const TeacherHomework = lazy(() => import('./pages/Teacher/Homework'));
 const TeacherGrades = lazy(() => import('./pages/Teacher/Grades'));
+const TeacherLessons = lazy(() => import('./pages/Teacher/Lessons'));
+
+const AcademicManagerLayout = lazy(() => import('./layouts/AcademicManager/AcademicManagerLayout'));
+const AcademicDashboard = lazy(() => import('./pages/AcademicManager/Dashboard'));
+const AcademicSchedule = lazy(() => import('./pages/AcademicManager/Schedule'));
+const AcademicLessons = lazy(() => import('./pages/AcademicManager/Lessons'));
+const AcademicStudents = lazy(() => import('./pages/AcademicManager/Students'));
+const AcademicTeachers = lazy(() => import('./pages/AcademicManager/Teachers'));
+const AcademicGroups = lazy(() => import('./pages/AcademicManager/Groups'));
+const AcademicRoster = lazy(() => import('./pages/AcademicManager/Roster'));
+
+const OwnerLayout = lazy(() => import('./layouts/Owner/OwnerLayout'));
+const OwnerOverview = lazy(() => import('./pages/Owner/Overview'));
+const OwnerViolations = lazy(() => import('./pages/Owner/Violations'));
+const OwnerStaff = lazy(() => import('./pages/Owner/Staff'));
+const OwnerStaffProfile = lazy(() => import('./pages/Owner/StaffProfile'));
+const OwnerRules = lazy(() => import('./pages/Owner/Rules'));
+const OwnerAccounts = lazy(() => import('./pages/Owner/Accounts'));
+const OwnerFines = lazy(() => import('./pages/Owner/Fines'));
+const OwnerPenalties = lazy(() => import('./pages/Owner/Penalties'));
+const OwnerPassword = lazy(() => import('./pages/Owner/Password'));
 
 const StudentLayout = lazy(() => import('./layouts/Student/StudentLayout'));
 const StudentHome = lazy(() => import('./features/student/StudentHome'));
@@ -66,6 +88,8 @@ const AppRoutes = () => {
         <Suspense fallback={<PageSkeleton />}>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          {/* Public: the job application form, linked from the login page. */}
+          <Route path="/apply" element={<Apply />} />
           <Route path="/verify-device" element={<DeviceVerificationPage />} />
 
           {/* Admin Routes */}
@@ -81,16 +105,15 @@ const AppRoutes = () => {
             <Route path="users" element={<UserManagement />} />
             <Route path="students" element={<Students />} />
             <Route path="groups" element={<Groups />} />
-            <Route path="attendance" element={<AdminAttendance />} />
             <Route path="payments" element={<Payments />} />
             <Route path="salaries" element={<Salaries />} />
             <Route path="debts" element={<Students debts />} />
-            <Route path="shop" element={<ShopProducts />} />
-            <Route path="orders" element={<ShopOrders />} />
-            <Route path="coins" element={<AdminCoins />} />
-            <Route path="battles" element={<AdminBattles />} />
             <Route path="telegram" element={<AdminTelegram />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="subjects" element={<Subjects />} />
+            <Route path="expenses" element={<Expenses />} />
+            <Route path="reports" element={<Reports />} />
+            <Route path="applications" element={<Applications />} />
           </Route>
 
           {/* Financier Routes */}
@@ -107,6 +130,8 @@ const AppRoutes = () => {
             <Route path="salaries" element={<Salaries />} />
             <Route path="debts" element={<Students debts />} />
             <Route path="students" element={<Students />} />
+            <Route path="expenses" element={<Expenses />} />
+            <Route path="reports" element={<Reports />} />
           </Route>
 
           {/* Teacher Routes */}
@@ -120,10 +145,52 @@ const AppRoutes = () => {
           >
             <Route index element={<TeacherHome />} />
             <Route path="groups" element={<MyGroups />} />
+            <Route path="schedule" element={<MySchedule />} />
+            <Route path="lessons" element={<TeacherLessons />} />
             <Route path="attendance" element={<TeacherAttendance />} />
             <Route path="homework" element={<TeacherHomework />} />
             <Route path="grades" element={<TeacherGrades />} />
             <Route path="coins" element={<TeacherCoins />} />
+          </Route>
+
+          {/* Academic manager Routes */}
+          <Route
+            path="/academic"
+            element={
+              <ProtectedRoute allowedRoles={['AcademicManager']}>
+                <AcademicManagerLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<AcademicDashboard />} />
+            <Route path="schedule" element={<AcademicSchedule />} />
+            <Route path="lessons" element={<AcademicLessons />} />
+            <Route path="roster" element={<AcademicRoster />} />
+            <Route path="students" element={<AcademicStudents />} />
+            <Route path="teachers" element={<AcademicTeachers />} />
+            <Route path="groups" element={<AcademicGroups />} />
+            <Route path="subjects" element={<Subjects />} />
+            <Route path="applications" element={<Applications />} />
+          </Route>
+
+          {/* CEO panel (role Owner) and read-only view for the auditor. */}
+          <Route
+            path="/owner"
+            element={
+              <ProtectedRoute allowedRoles={['Owner', 'Auditor']}>
+                <OwnerLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<OwnerOverview />} />
+            <Route path="violations" element={<OwnerViolations />} />
+            <Route path="staff" element={<OwnerStaff />} />
+            <Route path="staff/:id" element={<OwnerStaffProfile />} />
+            <Route path="rules" element={<OwnerRules />} />
+            <Route path="accounts" element={<OwnerAccounts />} />
+            <Route path="fines" element={<OwnerFines />} />
+            <Route path="penalties" element={<OwnerPenalties />} />
+            <Route path="password" element={<OwnerPassword />} />
           </Route>
 
           {/* Student Routes */}
@@ -136,6 +203,7 @@ const AppRoutes = () => {
             }
           >
             <Route index element={<StudentHome />} />
+            <Route path="schedule" element={<MySchedule />} />
             <Route path="attendance" element={<StudentAttendance />} />
             <Route path="homework" element={<StudentHomework />} />
             <Route path="grades" element={<StudentGrades />} />
@@ -148,9 +216,12 @@ const AppRoutes = () => {
             <Route path="profile" element={<StudentProfile />} />
           </Route>
 
-          <Route path="/forbidden" element={<StatusPage code="403" title="status.forbiddenTitle" text="status.forbiddenText" />} />
+          {/* A signed-in person with the wrong role lands here (see ProtectedRoute). /forbidden is the old address. */}
+          <Route path="/unauthorized" element={<StatusPage code="403" title="status.forbiddenTitle" text="status.forbiddenText" />} />
+          <Route path="/forbidden" element={<Navigate to="/unauthorized" replace />} />
+          <Route path="/not-found" element={<StatusPage code="404" title="status.notFoundTitle" text="status.notFoundText" />} />
           <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="*" element={<StatusPage code="404" title="status.notFoundTitle" text="status.notFoundText" />} />
+          <Route path="*" element={<Navigate to="/not-found" replace />} />
         </Routes>
         </Suspense>
     </>

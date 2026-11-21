@@ -10,6 +10,8 @@
     "preview": "vite preview",
     "server": "node server/server.js",
     "create-admin": "node server/scripts/createAdmin.js",
+    "create-owner": "node server/scripts/createOwner.js",
+    "run-rules": "node server/scripts/runRules.js",
     "test-shop": "node server/scripts/testShop.js",
     "test-platform": "node server/scripts/testPlatform.js",
     "test-finance": "node server/scripts/testFinance.js",
@@ -20,11 +22,15 @@
     "test-home": "node server/scripts/testHome.js",
     "test-telegram": "node server/scripts/testTelegram.js",
     "test-learning": "node server/scripts/testLearning.js",
+    "test-academic": "node server/scripts/testAcademic.js",
     "bot": "node server/scripts/botPolling.js",
     "bot-webhook": "node server/scripts/setWebhook.js",
     "test-battle": "node server/scripts/testBattle.js",
     "start": "node server/server.js",
-    "dev-all": "concurrently \"npm run dev\" \"node server/server.js\""
+    "dev-all": "concurrently \"npm run dev\" \"node server/server.js\"",
+    "test": "vitest run",
+    "seed-test-users": "node server/scripts/seedTestUsers.js",
+    "test:ui": "vitest run src"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.14.0",
@@ -40,6 +46,7 @@
     "i18next": "^26.7.1",
     "i18next-browser-languagedetector": "^8.3.0",
     "lucide-react": "^1.68.0",
+    "multer": "^2.5.0",
     "nodemailer": "^10.3.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
@@ -47,10 +54,12 @@
     "react-redux": "^9.3.1",
     "react-router-dom": "^7.18.5",
     "react-toastify": "^11.2.0",
-    "uuid": "^14.0.3"
+    "uuid": "^14.0.3",
+    "write-excel-file": "^4.1.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@testing-library/react": "^16.3.3",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
@@ -59,9 +68,12 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.7",
     "globals": "^17.13.0",
+    "jsdom": "^29.1.1",
     "postcss": "^8.4.35",
+    "supertest": "^7.3.2",
     "tailwindcss": "^3.4.1",
-    "vite": "^8.3.5"
+    "vite": "^8.3.5",
+    "vitest": "^5.1.0"
   },
   "description": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
   "main": "eslint.config.js",

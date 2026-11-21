@@ -113,16 +113,22 @@ const db = {
     const cached = sessionCache.get(sessionIdHash);
     if (cached && cached.until > Date.now()) return cached.session;
 
-    const { data, error } = await supabase
+    const ask = () => supabase
       .from('sessions')
-      .select('*, users(role)')
+      .select('*, users(id, username, full_name, email, role, status)')
       .eq('session_hash', sessionIdHash)
       .maybeSingle();
-    if (error || !data) {
+    let { data, error } = await ask();
+    // A hiccup of the connection is not "the session is gone": ask once more, and if the database still
+    // does not answer, say so (the middleware answers 503) instead of signing the person out.
+    if (error) ({ data, error } = await ask());
+    if (error) throw error;
+    if (!data) {
       sessionCache.delete(sessionIdHash);
       return null;
     }
-    const session = { ...data, role: data.users?.role };
+    // The user comes in the same call, so /api/auth/me does not need a second trip to the database.
+    const session = { ...data, role: data.users?.role, user: data.users };
     sessionCache.set(sessionIdHash, { session, until: Date.now() + SESSION_CACHE_MS });
     if (sessionCache.size > 2000) sessionCache.delete(sessionCache.keys().next().value);
     return session;

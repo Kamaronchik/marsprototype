@@ -43,7 +43,7 @@ const tellAboutCancel = async ({ order, actor }) => {
   if (actor.role === 'Admin') {
     return notify(order.student_id, 'order.cancelled', { total: order.total }, { link: '/student/purchases' });
   }
-  return notifyAdmins('order.cancelled_by_student', { studentName: order.student.full_name, total: order.total }, { link: '/admin/orders' });
+  return notifyAdmins('order.cancelled_by_student', { studentName: order.student.full_name, total: order.total }, { link: '/admin/orders', about: order.student_id });
 };
 
 module.exports = { ORDER_ITEMS_SELECT, toOrderItem, orderAction, tellStudentDelivered, tellAboutCancel };

@@ -10,7 +10,13 @@ const authMiddleware = async (req, res, next) => {
 
   // Hash the token from cookie to match the database record
   const sessionHash = crypto.createHash('sha256').update(sessionToken).digest('hex');
-  const session = await db.getSession(sessionHash);
+  let session;
+  try {
+    session = await db.getSession(sessionHash);
+  } catch (error) {
+    console.error('Session lookup failed:', error.message);
+    return res.status(503).json({ message: 'Database error' });
+  }
 
   if (!session) {
     return res.status(401).json({ message: 'Invalid or expired session' });
@@ -19,6 +25,13 @@ const authMiddleware = async (req, res, next) => {
   if (new Date() > new Date(session.expires_at)) {
     await db.deleteSession(sessionHash);
     return res.status(401).json({ message: 'Session expired' });
+  }
+
+  // A blocked or frozen account has no access, even if an old session is still stored.
+  const accountStatus = session.user?.status;
+  if (accountStatus === 'blocked' || accountStatus === 'frozen') {
+    await db.deleteSession(sessionHash);
+    return res.status(401).json({ message: 'Account is not active' });
   }
 
   // Device verification: ensure the current device matches the session's device

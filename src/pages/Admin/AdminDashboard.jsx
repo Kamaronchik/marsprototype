@@ -49,14 +49,12 @@ const AdminDashboard = () => {
   const people = useFetch('/api/users');
   const groups = useFetch('/api/groups');
   const finance = useFetch('/api/finance/overview');
-  const unmarked = useFetch('/api/attendance/unmarked');
 
   // people.data stays the same object between renders until the request is reloaded, so keying the
   // memo on it (not on a freshly-built `?? []` array) actually skips the work most of the time.
   const users = useMemo(() => people.data?.users ?? [], [people.data]);
   const allGroups = useMemo(() => groups.data?.groups ?? [], [groups.data]);
   const history = useMemo(() => finance.data?.history ?? [], [finance.data]);
-  const lessonsWithoutMarks = unmarked.data?.lessons.length ?? 0;
   const debtors = finance.data?.debtors ?? 0;
 
   // These all re-scan the people/groups lists; without useMemo every one would be redone on every
@@ -84,7 +82,6 @@ const AdminDashboard = () => {
   const peak = useMemo(() => Math.max(1, ...history.map((h) => h.revenue)), [history]);
 
   const attention = [
-    { show: lessonsWithoutMarks > 0, to: '/admin/attendance', text: t('dashboard.unmarked', { count: lessonsWithoutMarks }) },
     { show: debtors > 0, to: '/admin/debts', text: t('dashboard.debtorsHint', { count: debtors }) },
     { show: blocked > 0, to: '/admin/users', text: t('dashboard.blocked', { count: blocked }) },
   ].filter((item) => item.show);

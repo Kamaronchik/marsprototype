@@ -1,5 +1,5 @@
 // End-to-end check of student balance, lesson charges and freezing against the real database.
-// Run AFTER schema_balance.sql:  npm run test-balance
+// Run AFTER 012_balance.sql:  npm run test-balance
 // Test groups and balance history are deleted at the end; the "zz_test_*" accounts are blocked again.
 const {
   supabase, check, markFailed, ensureUser, openSession, startServer, call, finish,

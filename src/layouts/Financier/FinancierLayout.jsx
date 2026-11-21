@@ -1,6 +1,5 @@
-import { LayoutDashboard, CreditCard, Wallet, History, GraduationCap } from 'lucide-react';
-import LedgerShell from '../../shells/LedgerShell';
-import { useRoleLook } from '../../lib/useRoleLook';
+import { LayoutDashboard, CreditCard, Wallet, History, GraduationCap, Receipt, BarChart3 } from 'lucide-react';
+import AppShell from '../../shells/AppShell';
 
 const menuItems = [
   { label: 'nav.overview', path: '/financier', icon: LayoutDashboard },
@@ -8,11 +7,10 @@ const menuItems = [
   { label: 'nav.salaries', path: '/financier/salaries', icon: Wallet },
   { label: 'nav.debts', path: '/financier/debts', icon: History },
   { label: 'nav.students', path: '/financier/students', icon: GraduationCap },
+  { label: 'nav.expenses', path: '/financier/expenses', icon: Receipt },
+  { label: 'nav.reports', path: '/financier/reports', icon: BarChart3 },
 ];
 
-const FinancierLayout = () => {
-  useRoleLook('Financier');
-  return <LedgerShell menuItems={menuItems} />;
-};
+const FinancierLayout = () => <AppShell menuItems={menuItems} eyebrow="eyebrow.finance" search />;
 
 export default FinancierLayout;

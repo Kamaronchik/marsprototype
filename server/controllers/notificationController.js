@@ -2,6 +2,7 @@ const supabase = require('../config/supabase');
 const { handleDbError } = require('../utils/apiErrors');
 const { isUuid } = require('../utils/validate');
 const { remindUnmarked } = require('../utils/attendance');
+const { runRulesThrottled } = require('../utils/violations');
 
 const toClient = (n) => ({
   id: n.id,
@@ -14,6 +15,9 @@ const toClient = (n) => ({
 
 // The bell: the newest notifications of the logged-in user and how many are unread.
 const listNotifications = async (req, res) => {
+  // The rules engine runs whenever somebody is online (at most once a minute), besides the timer.
+  await runRulesThrottled();
+
   // A teacher gets the "you have not marked attendance" reminder when they open the bell.
   if (req.user.role === 'Teacher') {
     try {

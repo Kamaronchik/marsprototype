@@ -1,5 +1,5 @@
 // End-to-end check of the translation editor against the real database.
-// Run AFTER schema_battle.sql (it creates the "translations" table):  npm run test-i18n
+// Run AFTER 007_battle.sql (it creates the "translations" table):  npm run test-i18n
 // The test changes one real text, checks it, and puts the original back.
 const {
   supabase, check, markFailed, ensureUser, openSession, startServer, call, finish,
@@ -80,7 +80,7 @@ const cleanup = async (users, real) => {
 
   try {
     const { error: missing } = await supabase.from('translations').select('key').limit(1);
-    if (missing) throw new Error('Run schema_battle.sql in Supabase first (it creates the translations table).');
+    if (missing) throw new Error('Run 007_battle.sql in Supabase first (it creates the translations table).');
 
     real = await rememberReal();
 

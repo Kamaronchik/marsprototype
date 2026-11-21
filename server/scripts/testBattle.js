@@ -1,5 +1,5 @@
 // End-to-end check of the Battle Arena against the real database.
-// Run AFTER schema_battle.sql and  npm run seed-battle :   npm run test-battle
+// Run AFTER 007_battle.sql and  npm run seed-battle :   npm run test-battle
 // Test accounts are the fixed "zz_test_*" ones. Finished battles stay (a reward row points at them).
 const {
   supabase, check, markFailed, ensureUser, openSession, startServer, call, finish, minutesFromNow,
@@ -256,7 +256,7 @@ const cleanup = async (users) => {
 
   try {
     const { error: missing } = await supabase.from('battle_questions').select('id').limit(1);
-    if (missing) throw new Error('Run schema_battle.sql in Supabase first, then npm run seed-battle.');
+    if (missing) throw new Error('Run 007_battle.sql in Supabase first, then npm run seed-battle.');
 
     const raw = {
       admin: await ensureUser('admin', 'Admin'),

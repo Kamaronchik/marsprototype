@@ -4,6 +4,7 @@ const emailService = require('../services/emailService');
 const db = require('../databaseService');
 const supabase = require('../config/supabase');
 const { hashCode, generateCode } = require('../utils/codes');
+const { logAction } = require('../utils/audit');
 
 const hashToken = (token) => {
   return crypto.createHash('sha256').update(token).digest('hex');
@@ -47,6 +48,7 @@ const login = async (req, res) => {
     const emailMatch = noEmailAdmin ||
       (!!user.email && !!email && user.email.toLowerCase() === String(email).trim().toLowerCase());
     if (!isMatch || !emailMatch) {
+      await logAction(user.id, 'auth.login_failed', 'user', user.id);
       return res.status(401).json({ message: 'Invalid username or password' });
     }
 
@@ -69,6 +71,7 @@ const login = async (req, res) => {
       await db.createSession(sessionHash, user.id, deviceHash, expiresAt);
 
       res.cookie('sessionId', sessionToken, getCookieOptions(24 * 60 * 60 * 1000));
+      await logAction(user.id, 'auth.login', 'user', user.id);
 
       return res.status(200).json({
         message: 'Login successful',
@@ -122,6 +125,13 @@ const verifyDevice = async (req, res) => {
     }
 
     const deviceHash = hashToken(deviceToken);
+
+    // A code sent before the account was blocked must not open a session.
+    const account = await db.findUserById(userId);
+    if (!account || account.status === 'blocked' || account.status === 'frozen') {
+      return res.status(403).json({ message: 'Your account is blocked. Contact administrator.' });
+    }
+
     const record = await db.getVerificationCode(userId);
 
     if (!record) {
@@ -158,6 +168,7 @@ const verifyDevice = async (req, res) => {
     await db.createSession(sessionHash, userId, deviceHash, expiresAt);
 
     res.cookie('sessionId', sessionToken, getCookieOptions(24 * 60 * 60 * 1000));
+    await logAction(userId, 'auth.login', 'user', userId, { newDevice: true });
 
     res.status(200).json({
       message: 'Device verified successfully',
@@ -185,6 +196,9 @@ const resendCode = async (req, res) => {
     const user = await db.findUserById(userId);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
+    }
+    if (user.status === 'blocked' || user.status === 'frozen') {
+      return res.status(403).json({ message: 'Your account is blocked. Contact administrator.' });
     }
 
     // A new code can be requested once per minute (prevents email spam).
@@ -238,7 +252,7 @@ const me = async (req, res) => {
   const session = await db.getSession(hashToken(sessionToken));
   if (!session || new Date() > new Date(session.expires_at)) return guest();
 
-  const user = await db.findUserById(session.user_id);
+  const user = session.user ?? await db.findUserById(session.user_id);
   if (!user || user.status === 'blocked' || user.status === 'frozen') return guest();
 
   res.status(200).json({

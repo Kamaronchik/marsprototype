@@ -1,0 +1,365 @@
+// The new features: late status, my schedule, audit log, subjects, expenses and reports, careers.
+// Tests of a migration are skipped until it is applied (see supabase/migrations).
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { createRequire } from 'node:module';
+import { as, supabase, setup, teardown, hasDatabase, tableExists, emailService } from './helpers.mjs';
+
+const careers = createRequire(import.meta.url)('../controllers/careersController');
+
+const subjectsReady = await tableExists('subjects');
+const expensesReady = await tableExists('expenses');
+const careersReady = await tableExists('job_applications');
+const formReady = await tableExists('job_applications', 'decision_emailed');
+
+const PAST_MONDAY = '2020-01-06'; // a fixed past day: the groups of the tests have lessons on every weekday
+// The action codes written to the audit log that match the filter, the newest first.
+const loggedActions = async (filter) => {
+  const { data } = await supabase.from('audit_log').select('action').match(filter).order('created_at', { ascending: false }).limit(100);
+  return (data ?? []).map((row) => row.action);
+};
+
+describe.skipIf(!hasDatabase)('new features', () => {
+  let ctx;
+  beforeAll(async () => { ctx = await setup(); });
+  afterAll(async () => { await teardown(); });
+
+  describe('late status', () => {
+    it('Admin marks a student late and the student sees it in the statistics', async () => {
+      const res = await as(ctx.cookies.admin).put('/api/attendance/mark').send({
+        groupId: ctx.groupA.id, studentId: ctx.users.student.id, status: 'late', date: PAST_MONDAY,
+      });
+      expect(res.status).toBe(200);
+
+      const mine = await as(ctx.cookies.student).get(`/api/attendance/mine?from=${PAST_MONDAY}&to=${PAST_MONDAY}`);
+      expect(mine.body.stats.late).toBe(1);
+      expect(mine.body.stats.percent).toBe(100); // late = was at the lesson
+    });
+
+    it('refuses an unknown status', async () => {
+      const res = await as(ctx.cookies.admin).put('/api/attendance/mark').send({
+        groupId: ctx.groupA.id, studentId: ctx.users.student.id, status: 'sleeping', date: PAST_MONDAY,
+      });
+      expect(res.status).toBe(400);
+    });
+  });
+
+  describe('my schedule', () => {
+    it('student and teacher get a week of seven days', async () => {
+      for (const who of ['student', 'teacher']) {
+        const res = await as(ctx.cookies[who]).get('/api/schedule/mine');
+        expect(res.status).toBe(200);
+        expect(res.body.days).toHaveLength(7);
+      }
+    });
+
+    it('the teacher sees only the own group, the student only theirs', async () => {
+      const teacher = await as(ctx.cookies.teacher).get('/api/schedule/mine');
+      const names = teacher.body.days.flatMap((d) => d.lessons.map((l) => l.groupName));
+      expect(names).toContain('zz_test_group_a');
+      expect(names).not.toContain('zz_test_group_b');
+    });
+
+    it('other roles have no personal schedule', async () => {
+      expect((await as(ctx.cookies.academic).get('/api/schedule/mine')).status).toBe(403);
+      expect((await as(ctx.cookies.financier).get('/api/schedule/mine')).status).toBe(403);
+    });
+  });
+
+  describe('student list of the Academic Manager', () => {
+    it('shows students with their groups, without e-mail or payments', async () => {
+      const res = await as(ctx.cookies.academic).get('/api/academic/students?q=zz_test');
+      expect(res.status).toBe(200);
+      expect(res.body.students.length).toBeGreaterThan(0);
+      const text = JSON.stringify(res.body);
+      for (const secret of ['email', 'payment', 'balance', 'password']) expect(text.toLowerCase()).not.toContain(secret);
+      const student = res.body.students.find((s) => s.fullName === 'ZZ Test student');
+      expect(student.groups.map((g) => g.name)).toContain('zz_test_group_a');
+    });
+
+    it('can be limited to one group, and is closed to other roles', async () => {
+      const res = await as(ctx.cookies.academic).get(`/api/academic/students?groupId=${ctx.groupB.id}`);
+      expect(res.body.students.map((s) => s.fullName)).toEqual(['ZZ Test student2']);
+      expect((await as(ctx.cookies.academic).get('/api/academic/students?groupId=bad')).status).toBe(400);
+      for (const who of ['teacher', 'student', 'financier']) expect((await as(ctx.cookies[who]).get('/api/academic/students')).status).toBe(403);
+    });
+  });
+
+  describe('audit log', () => {
+    it('writes a role change', async () => {
+      const admin = as(ctx.cookies.admin);
+      await admin.patch(`/api/users/${ctx.users.victim.id}`).send({ role: 'Teacher' });
+      await admin.patch(`/api/users/${ctx.users.victim.id}`).send({ role: 'Student' });
+
+      const written = await loggedActions({ action: 'user.role_change', entity_id: ctx.users.victim.id });
+      expect(written.length).toBeGreaterThan(0);
+    });
+
+    it('writes marks and attendance', async () => {
+      const { data } = await supabase.from('audit_log').select('action').in('action', ['attendance.mark', 'attendance.change']).limit(1);
+      expect(data.length).toBe(1);
+    });
+
+    it('has no page to read it: the old addresses are gone', async () => {
+      expect((await as(ctx.cookies.admin).get('/api/audit')).status).toBe(404);
+    });
+  });
+
+  describe.skipIf(!subjectsReady)('subjects', () => {
+    let subject;
+    afterAll(async () => { if (subject) await supabase.from('subjects').delete().eq('id', subject.id); });
+
+    it('Academic Manager creates, Teacher and Student cannot', async () => {
+      const name = `zz_test_subject_${Date.now()}`;
+      expect((await as(ctx.cookies.teacher).post('/api/subjects').send({ name })).status).toBe(403);
+      expect((await as(ctx.cookies.student).get('/api/subjects')).status).toBe(403);
+      const res = await as(ctx.cookies.academic).post('/api/subjects').send({ name, nameRu: 'Тест' });
+      expect(res.status).toBe(201);
+      subject = res.body.subject;
+      expect((await as(ctx.cookies.academic).post('/api/subjects').send({ name })).status).toBe(409);
+    });
+
+    it('the subject of a group is seen in the group, by the teacher and by the student', async () => {
+      const set = await as(ctx.cookies.academic).patch(`/api/academic/groups/${ctx.groupA.id}/subject`).send({ subjectId: subject.id });
+      expect(set.status).toBe(200);
+
+      const groups = await as(ctx.cookies.admin).get('/api/groups');
+      expect(groups.body.groups.find((g) => g.id === ctx.groupA.id).subject.id).toBe(subject.id);
+      const mine = await as(ctx.cookies.teacher).get('/api/groups/mine');
+      expect(mine.body.groups.find((g) => g.id === ctx.groupA.id).subject.id).toBe(subject.id);
+      const home = await as(ctx.cookies.student).get('/api/home/student');
+      expect(home.body.crews.find((g) => g.id === ctx.groupA.id).subject.id).toBe(subject.id);
+    });
+
+    it('the analytics of the Academic Manager can be limited to a subject', async () => {
+      const academic = as(ctx.cookies.academic);
+      for (const path of ['dashboard', 'students/risk', 'teachers']) {
+        expect((await academic.get(`/api/academic/${path}?subjectId=${subject.id}`)).status).toBe(200);
+      }
+      expect((await academic.get('/api/academic/dashboard?subjectId=bad')).status).toBe(400);
+    });
+
+    it('deleting a subject keeps its groups', async () => {
+      expect((await as(ctx.cookies.admin).delete(`/api/subjects/${subject.id}`)).status).toBe(200);
+      subject = null;
+      const { data } = await supabase.from('groups').select('id, subject_id').eq('id', ctx.groupA.id).single();
+      expect(data.subject_id).toBeNull();
+    });
+  });
+
+  describe.skipIf(!expensesReady)('expenses and reports', () => {
+    const today = new Date().toISOString().slice(0, 10);
+
+    it('Financier adds, changes and deletes an expense; every change is in the journal', async () => {
+      const financier = as(ctx.cookies.financier);
+      const created = await financier.post('/api/finance/expenses').send({ category: 'rent', amount: 500000, date: today, comment: 'zz_test' });
+      expect(created.status).toBe(201);
+      const id = created.body.expense.id;
+
+      expect((await financier.patch(`/api/finance/expenses/${id}`).send({ amount: 600000 })).body.expense.amount).toBe(600000);
+
+      const list = await financier.get(`/api/finance/expenses?month=${today.slice(0, 7)}&category=rent`);
+      expect(list.body.expenses.some((e) => e.id === id)).toBe(true);
+
+      expect((await financier.delete(`/api/finance/expenses/${id}`)).status).toBe(200);
+      expect((await financier.delete(`/api/finance/expenses/${id}`)).status).toBe(404);
+
+      const written = await loggedActions({ actor_id: ctx.users.financier.id });
+      const mine = written.filter((a) => a.startsWith('expense.'));
+      expect(mine).toEqual(expect.arrayContaining(['expense.create', 'expense.update', 'expense.delete']));
+    });
+
+    it('checks the form', async () => {
+      const financier = as(ctx.cookies.financier);
+      expect((await financier.post('/api/finance/expenses').send({ category: 'party', amount: 10 })).status).toBe(400);
+      expect((await financier.post('/api/finance/expenses').send({ category: 'rent', amount: -5 })).status).toBe(400);
+      expect((await financier.post('/api/finance/expenses').send({ category: 'rent', amount: 1.5 })).status).toBe(400);
+      expect((await financier.get('/api/finance/expenses?month=2026-13')).status).toBe(400);
+    });
+
+    it('nobody else touches expenses', async () => {
+      for (const who of ['academic', 'teacher', 'student']) {
+        expect((await as(ctx.cookies[who]).post('/api/finance/expenses').send({ category: 'rent', amount: 1 })).status).toBe(403);
+      }
+    });
+
+    it('the report adds up: profit = income - expenses - salaries', async () => {
+      const res = await as(ctx.cookies.financier).get(`/api/finance/reports?from=${today.slice(0, 7)}-01&to=${today}`);
+      expect(res.status).toBe(200);
+      const r = res.body;
+      expect(r.profit).toBe(r.income - r.expenses.total - r.salaries);
+      expect(r.expenses.byCategory.reduce((sum, c) => sum + c.amount, 0)).toBe(r.expenses.total);
+      expect(r.expenses.byCategory.map((c) => c.category)).toEqual(['rent', 'salaries', 'advertising', 'utilities', 'materials', 'other']);
+      expect(typeof r.activeStudents).toBe('number');
+    });
+
+    it('refuses a bad period', async () => {
+      expect((await as(ctx.cookies.admin).get('/api/finance/reports?from=2026-02-10&to=2026-02-01')).status).toBe(400);
+    });
+  });
+
+  describe.skipIf(!careersReady)('job applications', () => {
+    let applicationId;
+    afterAll(async () => {
+      await supabase.from('job_applications').delete().like('full_name', 'zz_test_%');
+      // The form is public, so the real staff were told about the test candidates too.
+      await supabase.from('notifications').delete().eq('type', 'application.new').like('data->>name', 'zz_test_%');
+    });
+
+    it('the public form accepts an application and answers no data', async () => {
+      const res = await as(null).post('/api/careers/apply').send({ fullName: 'zz_test_candidate', contact: '+998900000000', position: 'Teacher' });
+      expect(res.status).toBe(201);
+      expect(Object.keys(res.body)).toEqual(['message']);
+      const { data } = await supabase.from('job_applications').select('id').eq('full_name', 'zz_test_candidate').limit(1).single();
+      applicationId = data.id;
+    });
+
+    it('checks the fields and the file type', async () => {
+      expect((await as(null).post('/api/careers/apply').send({ fullName: 'a', contact: '1', position: '' })).status).toBe(400);
+      const exe = await as(null).post('/api/careers/apply')
+        .field('fullName', 'zz_test_candidate').field('contact', '+998900000001').field('position', 'Teacher')
+        .attach('resume', Buffer.from('MZ-not-a-resume-but-an-exe-file'), 'cv.pdf');
+      expect(exe.status).toBe(400);
+    });
+
+    it('an application with a PDF goes to the private bucket and is opened by a signed link', async () => {
+      const pdf = Buffer.from('%PDF-1.4\n1 0 obj<<>>endobj\ntrailer<<>>\n%%EOF');
+      const res = await as(null).post('/api/careers/apply')
+        .field('fullName', 'zz_test_with_pdf').field('contact', '+998900000002').field('position', 'Teacher')
+        .attach('resume', pdf, 'cv.pdf');
+      expect(res.status).toBe(201);
+      const { data } = await supabase.from('job_applications').select('id, resume_path').eq('full_name', 'zz_test_with_pdf').limit(1).single();
+      expect(data.resume_path).toMatch(/\.pdf$/);
+
+      const link = await as(ctx.cookies.academic).get(`/api/careers/applications/${data.id}/resume`);
+      expect(link.status).toBe(200);
+      expect(link.body.url).toContain('token=');
+      await supabase.storage.from('resumes').remove([data.resume_path]);
+    });
+
+    it('only Academic Manager and Admin read the list', async () => {
+      for (const who of ['teacher', 'student', 'financier']) {
+        expect((await as(ctx.cookies[who]).get('/api/careers/applications')).status).toBe(403);
+      }
+      expect((await as(null).get('/api/careers/applications')).status).toBe(401);
+      expect((await as(ctx.cookies.academic).get('/api/careers/applications')).status).toBe(200);
+    });
+
+    it('Academic Manager writes notes but cannot accept or make accounts', async () => {
+      const academic = as(ctx.cookies.academic);
+      expect((await academic.post(`/api/careers/applications/${applicationId}/notes`).send({ text: 'good candidate' })).status).toBe(201);
+      expect((await academic.patch(`/api/careers/applications/${applicationId}/status`).send({ status: 'interview' })).status).toBe(200);
+      expect((await academic.patch(`/api/careers/applications/${applicationId}/status`).send({ status: 'accepted' })).status).toBe(403);
+      const account = await academic.post(`/api/careers/applications/${applicationId}/account`).send({ username: 'zz_test_hire', email: 'a@b.co', role: 'Teacher' });
+      expect(account.status).toBe(403);
+    });
+
+    it('an account is made only after "accepted", and only once', async () => {
+      const admin = as(ctx.cookies.admin);
+      const body = { username: 'zz_test_hire', email: 'zz_test_hire@example.invalid', role: 'Teacher' };
+      expect((await admin.post(`/api/careers/applications/${applicationId}/account`).send(body)).status).toBe(409);
+
+      expect((await admin.patch(`/api/careers/applications/${applicationId}/status`).send({ status: 'accepted' })).status).toBe(200);
+      const first = await admin.post(`/api/careers/applications/${applicationId}/account`).send(body);
+      expect([201, 409]).toContain(first.status); // 409: the fixed test username exists from an earlier run
+      if (first.status === 201) {
+        expect(first.body.temporaryPassword.length).toBeGreaterThanOrEqual(10);
+        expect((await admin.post(`/api/careers/applications/${applicationId}/account`).send(body)).status).toBe(409);
+        await supabase.from('users').update({ status: 'blocked' }).eq('username', 'zz_test_hire');
+      }
+      expect((await admin.post(`/api/careers/applications/${applicationId}/account`).send({ ...body, role: 'Admin' })).status).toBe(400);
+    });
+  });
+
+  // The form on the site (/apply), the bell for the staff and the letter with the decision (migration 021).
+  describe.skipIf(!formReady)('job application form on the site', () => {
+    const realSend = emailService.sendApplicationDecisionEmail;
+    let letters = [];
+    let siteId;
+
+    beforeAll(() => { emailService.sendApplicationDecisionEmail = async (email, data) => { letters.push({ email, ...data }); }; });
+    afterAll(async () => {
+      emailService.sendApplicationDecisionEmail = realSend;
+      const { data } = await supabase.from('job_applications').select('id, resume_path').like('full_name', 'zz_test_%');
+      for (const row of data ?? []) {
+        await supabase.from('notifications').delete().like('dedupe_key', `application:${row.id}:%`);
+        if (row.resume_path) await supabase.storage.from('resumes').remove([row.resume_path]);
+      }
+      await supabase.from('job_applications').delete().like('full_name', 'zz_test_%');
+    });
+
+    // The controller is called directly here: the public route allows only a few applications per visitor.
+    const applyDirectly = async (body) => {
+      const res = { code: 200, status(code) { this.code = code; return this; }, json() { return this; } };
+      await careers.apply({ body }, res);
+      return res.code;
+    };
+    const good = { fullName: 'zz_test_site', email: 'zz_test_site@example.invalid', position: 'intern', strength: 'I explain hard things simply' };
+
+    it('checks the e-mail, the vacancy and the strong side', async () => {
+      expect(await applyDirectly({ ...good, email: 'not-an-email' })).toBe(400);
+      expect(await applyDirectly({ ...good, position: 'director' })).toBe(400);
+      expect(await applyDirectly({ ...good, strength: 'short' })).toBe(400);
+    });
+
+    it('saves the application and tells the Admin and the Academic Manager in the bell', async () => {
+      const pdf = Buffer.from('%PDF-1.4\n1 0 obj<<>>endobj\ntrailer<<>>\n%%EOF');
+      const res = await as(null).post('/api/careers/apply')
+        .field('fullName', good.fullName).field('email', 'ZZ_Test_Site@Example.invalid').field('position', 'intern')
+        .field('strength', good.strength).field('language', 'uz')
+        .attach('resume', pdf, 'cv.pdf');
+      expect(res.status).toBe(201);
+      expect(Object.keys(res.body)).toEqual(['message']);
+
+      const { data } = await supabase.from('job_applications').select('*').eq('full_name', good.fullName).limit(1).single();
+      siteId = data.id;
+      expect(data).toMatchObject({ email: good.email, contact: good.email, position: 'intern', language: 'uz', message: good.strength, status: 'new' });
+
+      for (const who of ['admin', 'academic']) {
+        const { data: bell } = await supabase.from('notifications').select('type').eq('dedupe_key', `application:${siteId}:${ctx.users[who].id}`);
+        expect(bell).toHaveLength(1);
+        expect(bell[0].type).toBe('application.new');
+      }
+    });
+
+    it('the candidate gets one letter per decision, in the language of the form', async () => {
+      const academic = as(ctx.cookies.academic);
+      const admin = as(ctx.cookies.admin);
+      const setStatus = (who, status) => who.patch(`/api/careers/applications/${siteId}/status`).send({ status });
+
+      expect((await setStatus(academic, 'accepted')).status).toBe(403);
+      expect(letters).toHaveLength(0);
+
+      const rejected = await setStatus(academic, 'rejected');
+      expect(rejected.status).toBe(200);
+      expect(rejected.body.emailSent).toBe(true);
+      expect(letters).toEqual([{ email: good.email, name: good.fullName, decision: 'rejected', language: 'uz' }]);
+
+      await setStatus(academic, 'rejected'); // the same decision again: no second letter
+      expect(letters).toHaveLength(1);
+
+      const accepted = await setStatus(admin, 'accepted');
+      expect(accepted.body.application.decisionEmailed).toBe('accepted');
+      expect(letters).toHaveLength(2);
+      expect(letters[1].decision).toBe('accepted');
+
+      // "Send again" is for a decision that is made; an accepted candidate belongs to the Admin.
+      expect((await academic.post(`/api/careers/applications/${siteId}/decision-email`)).status).toBe(403);
+      expect((await admin.post(`/api/careers/applications/${siteId}/decision-email`)).status).toBe(200);
+      expect(letters).toHaveLength(3);
+    });
+
+    it('a failed letter does not undo the decision', async () => {
+      const { data: row } = await supabase.from('job_applications')
+        .insert({ full_name: 'zz_test_no_mail', contact: good.email, email: good.email, position: 'teacher', message: good.strength }).select('id').single();
+      emailService.sendApplicationDecisionEmail = async () => { throw new Error('Gmail is down'); };
+
+      const admin = as(ctx.cookies.admin);
+      const res = await admin.patch(`/api/careers/applications/${row.id}/status`).send({ status: 'rejected' });
+      expect(res.status).toBe(200);
+      expect(res.body.emailSent).toBe(false);
+      expect(res.body.application).toMatchObject({ status: 'rejected', decisionEmailed: null });
+      expect((await admin.post(`/api/careers/applications/${row.id}/decision-email`)).status).toBe(502);
+      expect((await admin.post(`/api/careers/applications/${siteId}/notes`).send({ text: 'x' })).status).toBe(201);
+    });
+  });
+});

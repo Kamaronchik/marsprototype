@@ -1,7 +1,7 @@
-import { Check, X, Minus } from 'lucide-react';
+import { Check, X, Minus, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-// A tick (present), a cross (absent) or a dash (not marked yet), with a text label for screen readers.
+// A tick (present), a clock (late), a cross (absent) or a dash (not marked yet), with a text label for screen readers.
 const AttendanceMark = ({ status }) => {
   const { t } = useTranslation();
 
@@ -10,6 +10,14 @@ const AttendanceMark = ({ status }) => {
       <span title={t('attendance.present')} className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-moss-tint text-moss">
         <Check size={16} strokeWidth={2.6} />
         <span className="sr-only">{t('attendance.present')}</span>
+      </span>
+    );
+  }
+  if (status === 'late') {
+    return (
+      <span title={t('attendance.late')} className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-ochre-tint text-ochre">
+        <Clock size={15} strokeWidth={2.4} />
+        <span className="sr-only">{t('attendance.late')}</span>
       </span>
     );
   }

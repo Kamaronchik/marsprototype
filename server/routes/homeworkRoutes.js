@@ -11,10 +11,10 @@ router.use(authMiddleware);
 router.get('/mine', requireRole('Student'), listMyHomework);
 router.post('/:id/submit', requireRole('Student'), submitHomework);
 
-// Teacher (own groups) and admin
-router.get('/', requireRole('Teacher', 'Admin'), listTeacherHomework);
+// Teacher (own groups) and admin. The academic manager may only look (GET).
+router.get('/', requireRole('Teacher', 'Admin', 'AcademicManager'), listTeacherHomework);
 router.post('/', requireRole('Teacher', 'Admin'), createHomework);
-router.get('/:id/submissions', requireRole('Teacher', 'Admin'), listSubmissions);
+router.get('/:id/submissions', requireRole('Teacher', 'Admin', 'AcademicManager'), listSubmissions);
 router.patch('/submissions/:id/grade', requireRole('Teacher', 'Admin'), gradeSubmission);
 router.delete('/:id', requireRole('Teacher', 'Admin'), archiveHomework);
 

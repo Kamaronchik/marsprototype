@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import { loginStart, loginSuccess, loginFailure } from '../features/auth/authSlice';
 import { messageText } from './api';
+import { homePath } from './roleHome';
 
 // The login logic, shared by the three login screens: the fields, the request and what happens next.
 export const useLogin = () => {
@@ -45,8 +46,7 @@ export const useLogin = () => {
         } else if (data.user) {
           dispatch(loginSuccess(data.user));
           toast.success(`${t('common.welcome')}, ${data.user.fullName || data.user.username}!`);
-          const targetRole = data.user.role?.toLowerCase() || 'student';
-          navigate(`/${targetRole}`);
+          navigate(homePath(data.user.role));
         } else {
           dispatch(loginFailure(t('auth.unexpected')));
           toast.error(t('auth.unexpected'));

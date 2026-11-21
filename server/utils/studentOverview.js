@@ -2,6 +2,7 @@ const supabase = require('../config/supabase');
 const { nextLaunch } = require('./schedule');
 const { xpOf, rankFor } = require('./ranks');
 const { buildStats } = require('./attendance');
+const { toSubject } = require('./subjects');
 
 const LOG_ENTRIES = 5;
 
@@ -24,7 +25,7 @@ const loadStudentOverview = async (studentId) => {
       .limit(1000),
     supabase
       .from('group_students')
-      .select('group:groups(id, name, room, weekdays, start_time, status, teacher:users!groups_teacher_id_fkey(full_name))')
+      .select('group:groups(id, name, room, weekdays, start_time, status, teacher:users!groups_teacher_id_fkey(full_name), subject:subjects(id, name, name_ru, name_uz, name_en))')
       .eq('student_id', studentId),
     supabase.rpc('get_wallet_balance', { p_student_id: studentId }),
   ]);
@@ -49,6 +50,7 @@ const loadStudentOverview = async (studentId) => {
         weekdays: g.weekdays,
         startTime: g.start_time.slice(0, 5),
         teacherName: g.teacher?.full_name ?? null,
+        subject: g.subject ? toSubject(g.subject) : null,
       })),
       log: attendance.data.slice(0, LOG_ENTRIES).map((r) => ({ date: r.lesson_date, status: r.status, groupName: r.group?.name ?? null })),
     },

@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { Check, X, Lock } from 'lucide-react';
+import { Check, X, Lock, Clock } from 'lucide-react';
 import PageHeader from '../../components/PageHeader';
 import { api, errorText } from '../../lib/api';
 import { useFetch } from '../../lib/useFetch';
@@ -26,7 +26,8 @@ const Attendance = () => {
 
   const buttonClass = (active, tone) => {
     if (!active) return 'border-line bg-card text-ink-faint hover:border-ink-faint hover:text-ink';
-    return tone === 'ok' ? 'border-moss bg-moss text-on-accent' : 'border-brick bg-brick text-on-accent';
+    if (tone === 'ok') return 'border-moss bg-moss text-on-accent';
+    return tone === 'late' ? 'border-ochre bg-ochre text-on-accent' : 'border-brick bg-brick text-on-accent';
   };
 
   return (
@@ -105,6 +106,15 @@ const Attendance = () => {
                       className={`flex h-10 w-10 items-center justify-center rounded-lg border disabled:cursor-not-allowed disabled:opacity-50 ${buttonClass(s.status === 'present', 'ok')}`}
                     >
                       <Check size={20} strokeWidth={2.4} />
+                    </button>
+                    <button
+                      onClick={() => mark(lesson.groupId, s.id, 'late')}
+                      disabled={!data.markingOpen}
+                      aria-label={`${t('attendance.markLate')}: ${s.fullName}`}
+                      aria-pressed={s.status === 'late'}
+                      className={`flex h-10 w-10 items-center justify-center rounded-lg border disabled:cursor-not-allowed disabled:opacity-50 ${buttonClass(s.status === 'late', 'late')}`}
+                    >
+                      <Clock size={19} strokeWidth={2.4} />
                     </button>
                     <button
                       onClick={() => mark(lesson.groupId, s.id, 'absent')}

@@ -38,7 +38,10 @@
       "Admin": "Admin",
       "Teacher": "Teacher",
       "Financier": "Finance",
-      "Student": "Student"
+      "Student": "Student",
+      "AcademicManager": "Academic manager",
+      "Owner": "CEO",
+      "Auditor": "Auditor"
     },
     "nav": {
       "overview": "Overview",
@@ -73,7 +76,24 @@
       "telegram": "Telegram",
       "homework": "Homework",
       "grades": "Grades",
-      "tutor": "AI tutor"
+      "tutor": "AI tutor",
+      "schedule": "Schedule",
+      "lessons": "Lessons",
+      "atRisk": "At risk",
+      "teachers": "Teachers",
+      "mySchedule": "My schedule",
+      "subjects": "Subjects",
+      "applications": "Applications",
+      "expenses": "Expenses",
+      "reports": "Reports",
+      "violations": "Violations",
+      "staff": "Staff",
+      "rules": "Rules",
+      "accounts": "Accounts",
+      "fines": "Fines",
+      "password": "My password",
+      "sectionMine": "My account",
+      "penalties": "Penalties"
     },
     "bell": {
       "title": "Notifications",
@@ -101,7 +121,19 @@
       "homework_new": "New homework in {{groupName}}: {{title}}",
       "homework_graded": "Your homework \"{{title}}\" is graded: {{score}} / {{maxScore}}",
       "homework_submitted": "{{student}} sent homework \"{{title}}\"",
-      "grade_added": "New mark in {{groupName}}: {{title}}, {{score}} / {{maxScore}}"
+      "grade_added": "New mark in {{groupName}}: {{title}}, {{score}} / {{maxScore}}",
+      "academic_message": "{{text}}",
+      "lesson_rate": "How were the lessons this week? Rate the lesson \"{{topic}}\" ({{groupName}}) on your home page.",
+      "attendance_late": "You were marked late in {{groupName}} on {{date}}",
+      "violation_attendance": "Attendance of group {{groupName}} for {{date}} is not marked. Students not marked: {{count}}. Please mark it",
+      "violation_escalated": "Teacher {{teacherName}} has not marked attendance of group {{groupName}} for {{date}} (not marked: {{count}})",
+      "fine_issued": "You were fined {{amount}}: attendance of group {{groupName}} for {{date}} was not marked in time",
+      "fine_issued_ceo": "Automatic fine {{amount}}: {{teacherName}}, group {{groupName}}, {{date}}",
+      "application_new": "New job application: {{name}}",
+      "penalty_issued": "{{auditorName}} gave a penalty: {{teacherName}}, rule {{rule}}. Your decision is needed",
+      "penalty_cancelled": "An auditor took back a penalty: {{teacherName}}, rule {{rule}}{{reason}}",
+      "penalty_received": "You broke rule {{rule}} of the internal rules for mentors. Please follow the rules",
+      "penalty_removed": "The penalty for rule {{rule}} was taken back{{reason}}"
     },
     "errors": {
       "ROOM_BUSY": "This room is already taken at that time",
@@ -231,7 +263,9 @@
       "teacher": "Teacher",
       "date": "Date",
       "room": "Room",
-      "lesson": "Lesson"
+      "lesson": "Lesson",
+      "late": "Late",
+      "markLate": "Mark late"
     },
     "auth": {
       "login": "Sign in",
@@ -581,7 +615,8 @@
       "forbiddenTitle": "This page is not for your account",
       "forbiddenText": "Your role does not have access here. If you think that is a mistake, ask an administrator.",
       "notFoundTitle": "We could not find that page",
-      "notFoundText": "The link may be old or mistyped."
+      "notFoundText": "The link may be old or mistyped.",
+      "toCabinet": "Go to my cabinet"
     },
     "comingSoon": {
       "title": "Nothing here yet",
@@ -640,7 +675,8 @@
       "Admin": "Admins",
       "Teacher": "Teachers",
       "Student": "Students",
-      "Financier": "Finance"
+      "Financier": "Finance",
+      "AcademicManager": "Academic managers"
     },
     "settings": {
       "title": "Settings",
@@ -801,13 +837,88 @@
       "title_is_required_up_to_120_characters": "Title is required (up to 120 characters)",
       "too_many_questions_try_again_in_15_minutes": "Too many questions. Try again in 15 minutes.",
       "write_a_question": "Write a question",
-      "write_an_answer_or_add_a_link": "Write an answer or add a link"
-    },
-    "theme": {
-      "label": "Style",
-      "mars": "Mars: warm paper",
-      "orbit": "Orbit: deep space",
-      "terminal": "Terminal: code editor"
+      "write_an_answer_or_add_a_link": "Write an answer or add a link",
+      "choose_a_different_group": "Choose a different group",
+      "choose_a_group": "Choose a group",
+      "choose_a_weekday": "Choose a weekday",
+      "deleted": "Deleted",
+      "end_time_must_look_like_19_30": "End time must look like 19:30",
+      "homework_title_1_120_characters": "Homework title: 1-120 characters",
+      "invalid_attendance": "Invalid attendance",
+      "invalid_lesson": "Invalid lesson",
+      "invalid_request": "Invalid request",
+      "lesson_time_not_found": "Lesson time not found",
+      "lessons_are_from_09_00_to_22_00": "Lessons are from 09:00 to 22:00",
+      "mark_the_students": "Mark the students",
+      "not_found": "Not found",
+      "saved": "Saved",
+      "start_time_must_look_like_18_00": "Start time must look like 18:00",
+      "student_moved": "Student moved",
+      "teacher_assigned": "Teacher assigned",
+      "thank_you": "Thank you",
+      "the_ai_analysis_is_not_available_right_now_try_again_later": "The AI analysis is not available right now. Try again later.",
+      "the_lesson_must_end_after_it_starts": "The lesson must end after it starts",
+      "the_message_is_too_long": "The message is too long",
+      "the_notes_are_too_long": "The notes are too long",
+      "the_topic_is_too_long": "The topic is too long",
+      "this_lesson_time_is_already_in_the_schedule": "This lesson time is already in the schedule",
+      "too_many_ai_requests_try_again_in_15_minutes": "Too many AI requests. Try again in 15 minutes.",
+      "update_the_analysis_first": "Update the analysis first",
+      "write_the_message": "Write the message",
+      "write_the_topic_of_the_lesson": "Write the topic of the lesson",
+      "score_must_be_from_1_to_5": "Score must be from 1 to 5",
+      "lesson_not_found": "Lesson not found",
+      "you_already_rated_this_lesson": "You already rated this lesson",
+      "you_can_rate_a_lesson_once_a_week": "You can rate a lesson once a week",
+      "a_subject_with_this_name_already_exists": "A subject with this name already exists",
+      "accept_the_candidate_first": "Accept the candidate first",
+      "account_is_not_active": "Account is not active",
+      "application_not_found": "Application not found",
+      "application_received": "Application received",
+      "choose_a_vacancy": "Choose a vacancy",
+      "contact_is_required_phone_telegram_or_e_mail": "Contact is required (phone, Telegram or e-mail)",
+      "expense_deleted": "Expense deleted",
+      "expense_not_found": "Expense not found",
+      "invalid_expense_category": "Invalid expense category",
+      "invalid_subject": "Invalid subject",
+      "month_must_look_like_2026_11": "Month must look like 2026-11",
+      "name_is_required": "Name is required",
+      "note_text_is_required": "Note text is required",
+      "only_the_admin_can_accept_a_candidate": "Only the Admin can accept a candidate",
+      "only_the_admin_can_change_an_accepted_candidate": "Only the Admin can change an accepted candidate",
+      "status_must_be_present_late_or_absent": "Status must be present, late or absent",
+      "subject_assigned": "Subject assigned",
+      "subject_deleted": "Subject deleted",
+      "subject_not_found": "Subject not found",
+      "the_account_was_already_created": "The account was already created",
+      "the_resume_must_be_a_pdf_or_word_file": "The resume must be a PDF or Word file",
+      "this_application_has_no_resume": "This application has no resume",
+      "too_many_applications_try_again_later": "Too many applications. Try again later.",
+      "the_resume_is_too_big_up_to_4_mb": "The resume is too big (up to 4 MB)",
+      "invalid_form": "Invalid form",
+      "only_the_admin_can_change_a_mark": "Only the Admin can change a mark",
+      "invalid_violation": "Invalid violation",
+      "violation_not_found": "Violation not found",
+      "invalid_outcome": "Invalid outcome",
+      "a_comment_is_required_3_to_500_characters": "A comment is required (3 to 500 characters)",
+      "invalid_user": "Invalid user",
+      "invalid_rule": "Invalid rule",
+      "invalid_levels": "Invalid chain of warnings",
+      "rule_not_found": "Rule not found",
+      "cron_is_not_configured": "The timer is not configured",
+      "invalid_cron_secret": "Invalid timer secret",
+      "password_must_be_at_least_12_characters": "Password must be at least 12 characters",
+      "invalid_fine_amount": "Invalid fine amount",
+      "invalid_fine": "Invalid fine",
+      "fine_not_found": "Fine not found",
+      "current_password_is_wrong": "Current password is wrong",
+      "only_the_ceo_can_add_this_role": "Only the CEO can add this role",
+      "tell_us_about_your_strong_side_at_least_10_characters": "Tell us about your strong side (at least 10 characters)",
+      "accept_or_reject_the_candidate_first": "Accept or reject the candidate first",
+      "this_application_has_no_e_mail": "This application has no e-mail",
+      "the_letter_was_not_sent_try_again_later": "The letter was not sent. Try again later.",
+      "choose_a_rule": "Choose a rule",
+      "describe_what_happened_3_to_500_characters": "Describe what happened (3 to 500 characters)"
     },
     "ranks": {
       "cadet": "Cadet",
@@ -819,17 +930,9 @@
       "student": "Crew deck",
       "admin": "Mission Control",
       "teacher": "Commander's station",
-      "finance": "Logistics bay"
-    },
-    "design": {
-      "label": "Design",
-      "cockpit": "Cockpit: a HUD and a dock",
-      "base": "Mars Base: a rail and a landscape",
-      "console": "Console: a code editor"
-    },
-    "console": {
-      "explorer": "Explorer",
-      "rank": "rank"
+      "finance": "Logistics bay",
+      "academic": "Study office",
+      "owner": "Owner bridge"
     },
     "home": {
       "navigation": "Main navigation",
@@ -984,6 +1087,572 @@
       "thinking": "Thinking…",
       "placeholder": "Write a question. Enter sends, Shift+Enter is a new line",
       "send": "Send"
+    },
+    "lessons": {
+      "todayTitle": "Today's lessons",
+      "todaySubtitle": "After a lesson: write the topic, mark the students and add homework. It takes less than a minute.",
+      "topic": "Topic of the lesson",
+      "topicRequired": "Write the topic of the lesson",
+      "saved": "Lesson saved",
+      "addHomework": "Add homework",
+      "homeworkTitle": "Homework title",
+      "hold": "Hold the lesson",
+      "edit": "Change",
+      "reviews": "What students say",
+      "reviewsHint": "Answers are anonymous: you see the score and the words, not the name.",
+      "noReviews": "No comments yet.",
+      "average_one": "Average rating {{value}} of 5 ({{count}} answer)",
+      "average_other": "Average rating {{value}} of 5 ({{count}} answers)"
+    },
+    "rating": {
+      "title": "How were the lessons this week?",
+      "lesson": "Rate the lesson \"{{topic}}\" ({{group}}, {{date}}) from 1 to 5.",
+      "comment": "A comment, if you want",
+      "anonymous": "Your answer is anonymous: the teacher will not see your name.",
+      "thanks": "Thank you for your rating!"
+    },
+    "academic": {
+      "dashboardHint": "Today at school, in numbers.",
+      "lessonsToday": "Lessons today",
+      "withoutTopic": "Lessons without a topic",
+      "unmarked": "Lessons with unmarked students",
+      "ungraded": "Homework not checked",
+      "missingList": "Lessons without a topic (last 2 weeks)",
+      "nothingMissing": "Every lesson has a topic.",
+      "sendWeeklyQuestion": "Send the weekly question",
+      "promptsSent": "The question was sent to {{count}} students",
+      "scheduleHint": "When every group has its lessons. Groups without rows here use the days and time of the group itself.",
+      "weekday": "Weekday",
+      "start": "Start",
+      "end": "End",
+      "time": "Time",
+      "teacher": "Teacher",
+      "lessonsHint": "Lessons that took place, with their topics.",
+      "allGroups": "All groups",
+      "allTeachers": "All teachers",
+      "noLessons": "No lessons found.",
+      "rating": "Rating",
+      "riskHint": "Students with 3 or more absences in two weeks, or with marks going down.",
+      "noRisk": "No students at risk now.",
+      "absences": "Absences in 2 weeks: {{count}}",
+      "falling": "Marks went down: {{from}}% to {{to}}%",
+      "analysis": "Analysis",
+      "analysisFrom": "Analysis of {{date}}",
+      "noAnalysis": "No analysis yet. Press \"Update analysis\".",
+      "update": "Update analysis",
+      "writeWithAi": "Write with AI",
+      "draftTitle": "Message",
+      "draftHint": "This is a draft. Read it, change it, and send it yourself. Nothing is sent before you press the button.",
+      "send": "Send",
+      "sent": "Sent to {{count}} people, {{telegram}} of them also in Telegram",
+      "teachersHint": "Average rating of lessons, checked homework and lessons without a topic.",
+      "averageRating": "Average rating",
+      "checkedHomework": "Homework checked",
+      "reviews": "Anonymous reviews",
+      "groupsHint": "Change the teacher of a group or move a student to another group.",
+      "moved": "Student moved",
+      "moveTo": "Move to...",
+      "lates_one": "Late {{count}} time in 2 weeks",
+      "lates_few": "Late {{count}} times in 2 weeks",
+      "lates_many": "Late {{count}} times in 2 weeks",
+      "lates_other": "Late {{count}} times in 2 weeks",
+      "rosterHint": "Every student and the groups they are in. Payments are not shown here.",
+      "searchStudents": "Name or group",
+      "studentsTotal_one": "{{count}} student",
+      "studentsTotal_few": "{{count}} students",
+      "studentsTotal_many": "{{count}} students",
+      "studentsTotal_other": "{{count}} students",
+      "frozen": "frozen",
+      "noStudentsFound": "No students found"
+    },
+    "schedule": {
+      "mineHint": "Your lessons for the week.",
+      "today": "Today",
+      "noLessons": "No lessons"
+    },
+    "subjects": {
+      "title": "Subjects",
+      "hint": "One group has one subject. The subject is shown in the group, to the teacher and to the student.",
+      "add": "Add subject",
+      "edit": "Edit subject",
+      "empty": "No subjects yet",
+      "name": "Name",
+      "nameRu": "In Russian",
+      "nameUz": "In Uzbek",
+      "nameEn": "In English",
+      "translationsHint": "Translations are optional: without one, the main name is shown.",
+      "groupsCount_one": "{{count}} group",
+      "groupsCount_few": "{{count}} groups",
+      "groupsCount_many": "{{count}} groups",
+      "groupsCount_other": "{{count}} groups",
+      "deleteTitle": "Delete the subject?",
+      "deleteConfirm": "Delete \"{{name}}\"? Its groups stay, they just have no subject.",
+      "subject": "Subject",
+      "none": "No subject",
+      "all": "All subjects"
+    },
+    "expenses": {
+      "title": "Expenses",
+      "hint": "Money the school spends: rent, advertising and so on.",
+      "add": "Add expense",
+      "edit": "Edit expense",
+      "saved": "Expense saved",
+      "month": "Month",
+      "category": "Category",
+      "allCategories": "All categories",
+      "allMonths": "All months",
+      "total": "Total",
+      "comment": "Comment",
+      "empty": "No expenses for this filter",
+      "deleteTitle": "Delete the expense?",
+      "deleteConfirm": "Delete the expense \"{{category}}\", {{amount}}? This cannot be undone.",
+      "salariesHint": "Teachers' salaries are added on the Salaries page. Use this category for other staff.",
+      "categories": {
+        "rent": "Rent",
+        "salaries": "Salaries",
+        "advertising": "Advertising",
+        "utilities": "Utilities",
+        "materials": "Materials",
+        "other": "Other"
+      }
+    },
+    "reports": {
+      "title": "Report",
+      "hint": "Income, expenses, profit and debts for a day, a month or any period.",
+      "period": "Period",
+      "day": "Day",
+      "month": "Month",
+      "range": "Chosen period",
+      "badPeriod": "Choose the period: the start must not be after the end.",
+      "income": "Income (student payments)",
+      "expenses": "Expenses by category",
+      "expensesTotal": "Expenses total",
+      "teacherSalaries": "Teacher salaries",
+      "profit": "Profit",
+      "students": "Students",
+      "debtors": "Debtors",
+      "activeStudents": "Active students",
+      "excel": "Excel",
+      "print": "Print / PDF",
+      "exportFailed": "Could not make the Excel file"
+    },
+    "audit": {
+      "action": "Action code",
+      "who": "Who",
+      "empty": "No entries",
+      "page": "Page {{page}} of {{pages}}",
+      "prev": "Back",
+      "next": "Next",
+      "values": {
+        "present": "present",
+        "late": "late",
+        "absent": "absent",
+        "active": "active",
+        "blocked": "blocked",
+        "frozen": "frozen",
+        "Admin": "Admin",
+        "Teacher": "Teacher",
+        "Financier": "Financier",
+        "Student": "Student",
+        "AcademicManager": "Academic manager",
+        "Owner": "CEO",
+        "Auditor": "auditor"
+      },
+      "actions": {
+        "user": {
+          "create": "created an account ({{role}}) for {{target}}",
+          "update": "changed the profile of {{target}}",
+          "role_change": "changed the role of {{target}}: {{from}} → {{to}}",
+          "status_change": "changed the status of {{target}}: {{from}} → {{to}}",
+          "password_change": "changed the password of {{target}}",
+          "delete": "deleted the account of {{target}}"
+        },
+        "attendance": {
+          "mark": "marked {{target}} as {{status}} ({{group}}, {{date}})",
+          "change": "changed the mark of {{target}}: {{from}} → {{to}} ({{group}}, {{date}})"
+        },
+        "grade": {
+          "add": "gave a mark \"{{title}}\"",
+          "delete": "deleted a mark"
+        },
+        "homework": {
+          "grade": "graded the homework \"{{title}}\" of {{target}}"
+        },
+        "lesson": {
+          "create": "held a lesson in {{target}}: {{title}}"
+        },
+        "group": {
+          "create": "created the group {{target}}",
+          "update": "changed the group {{target}}",
+          "archive": "archived the group {{target}}",
+          "add_student": "added a student to the group {{target}}",
+          "remove_student": "removed a student from the group {{target}}",
+          "transfer_student": "moved a student to the group {{target}}",
+          "assign_teacher": "changed the teacher of the group {{target}}",
+          "assign_subject": "changed the subject of the group {{target}}"
+        },
+        "schedule": {
+          "create": "added a lesson to the schedule",
+          "update": "changed the schedule",
+          "delete": "removed a lesson from the schedule"
+        },
+        "subject": {
+          "create": "created the subject {{target}}",
+          "update": "changed the subject {{target}}",
+          "delete": "deleted the subject {{target}}"
+        },
+        "academic": {
+          "message": "sent a message"
+        },
+        "payment": {
+          "create": "recorded a payment of {{amount}}",
+          "remind_debtors": "reminded the debtors"
+        },
+        "salary": {
+          "create": "recorded a teacher salary of {{amount}}"
+        },
+        "expense": {
+          "create": "added an expense \"{{category}}\", {{amount}}",
+          "update": "changed an expense",
+          "delete": "deleted an expense \"{{category}}\", {{amount}}"
+        },
+        "balance": {
+          "topup": "topped up the balance of {{target}} by {{amount}}"
+        },
+        "student": {
+          "payment_status": "changed the payment status of {{target}}"
+        },
+        "application": {
+          "receive": "A new job application came",
+          "note": "wrote a note about a candidate",
+          "status": "changed the status of a candidate: {{from}} → {{to}}",
+          "view_resume": "opened the resume of a candidate",
+          "create_account": "created an account for a candidate",
+          "decision_email": "sent the candidate a letter with the decision"
+        },
+        "coins": {
+          "award": "gave coins to {{target}}",
+          "grant": "gave coins to a teacher pool",
+          "monthly_topup": "ran the monthly top-up of teacher pools"
+        },
+        "order": {
+          "create": "bought a reward",
+          "deliver": "handed over an order",
+          "cancel": "cancelled an order"
+        },
+        "product": {
+          "create": "added a product",
+          "update": "changed a product",
+          "archive": "archived a product",
+          "delete": "deleted a product"
+        },
+        "translation": {
+          "save": "changed a text of the site",
+          "reset": "reset a text of the site"
+        },
+        "auth": {
+          "login": "signed in",
+          "login_failed": "failed sign-in attempt"
+        },
+        "db": {
+          "attendance": {
+            "insert": "an attendance mark was added in the database",
+            "update": "an attendance mark was changed in the database",
+            "delete": "an attendance mark was deleted in the database"
+          },
+          "grades": {
+            "insert": "a grade was added in the database",
+            "update": "a grade was changed in the database",
+            "delete": "a grade was deleted in the database"
+          }
+        },
+        "violation": {
+          "open": "violation: attendance of group {{group}} for {{date}} is not marked",
+          "escalate": "violation passed to the next person in the chain",
+          "acknowledge": "acknowledged a violation",
+          "resolve": "violation closed as fixed",
+          "dismiss": "violation closed as a false alarm"
+        },
+        "rule": {
+          "update": "changed the rule {{code}}"
+        },
+        "owner": {
+          "view": "opened in the panel: {{path}}",
+          "export": "exported the journal to CSV",
+          "run_rules": "ran the rules check",
+          "create": "an owner account was created"
+        },
+        "fine": {
+          "issue": "the system issued a fine of {{amount}} ({{group}})",
+          "deduct": "took the fine from the salary: {{amount}}",
+          "cancel": "cancelled the fine: {{amount}}"
+        }
+      }
+    },
+    "applications": {
+      "title": "Job applications",
+      "hint": "People who applied on the site. Read the resume, write notes, accept or reject: the candidate gets a letter.",
+      "contact": "Contact",
+      "position": "Vacancy",
+      "received": "Received",
+      "status": "Status",
+      "allStatuses": "All statuses",
+      "statuses": {
+        "new": "New",
+        "viewed": "Viewed",
+        "interview": "Interview",
+        "accepted": "Accepted",
+        "rejected": "Rejected"
+      },
+      "resume": "Open the resume",
+      "notes": "Notes",
+      "noNotes": "No notes yet",
+      "notePlaceholder": "Write a note",
+      "addNote": "Add",
+      "createAccount": "Create account",
+      "accountCreated": "The account was already created.",
+      "accountHint": "The account is made only after you press the button. A one-time password will be shown to you.",
+      "accountReady": "The account is ready",
+      "tempPassword": "Temporary password",
+      "shownOnce": "The password is shown once. Give it to the person and ask them to change it.",
+      "empty": "No applications",
+      "positions": {
+        "intern": "Intern",
+        "teacher": "Teacher"
+      },
+      "accept": "Accept",
+      "reject": "Reject",
+      "confirm": {
+        "accepted": "Accept the candidate {{name}}?",
+        "rejected": "Reject the candidate {{name}}?"
+      },
+      "confirmLetter": "A letter with the decision will go to {{email}}.",
+      "confirmNoEmail": "This application has no e-mail, no letter will be sent.",
+      "letterSent": "The letter to the candidate was sent",
+      "letterNotSent": "The letter to the candidate was not sent",
+      "sendAgain": "Send again"
+    },
+    "theme": {
+      "dark": "Dark mode",
+      "light": "Light mode"
+    },
+    "owner": {
+      "overviewTitle": "Owner panel",
+      "overviewHint": "What needs attention right now. Everything you do in this panel is recorded too.",
+      "checkNow": "Check now",
+      "checkDone": "Check finished. New violations: {{created}}, closed: {{resolved}}, passed on: {{escalated}}",
+      "openViolations": "Open violations",
+      "violationsToday": "Violations today",
+      "reaction": "Average reaction time",
+      "minutes": "{{count}} min",
+      "latestOpen": "Open violations",
+      "showAll": "Show all",
+      "noOpen": "No open violations",
+      "topOffenders": "Most violations (30 days)",
+      "noOffenders": "No violations in 30 days",
+      "role": "Role",
+      "violationsTitle": "Violations",
+      "violationsHint": "The chain: rule, warning, reaction, closing. A violation can be closed by hand only with a comment.",
+      "tab": {
+        "active": "Open",
+        "resolved": "Fixed",
+        "dismissed": "False alarms",
+        "all": "All"
+      },
+      "noViolations": "No violations",
+      "openProfile": "Staff profile",
+      "event": {
+        "detected": "Violation detected",
+        "notified": "Warning: {{who}} ({{channel}})",
+        "escalated": "Passed on: {{who}} ({{channel}})",
+        "acknowledged": "Acknowledged: {{who}}",
+        "resolved": "Closed as fixed",
+        "dismissed": "Closed as a false alarm"
+      },
+      "channel": {
+        "bell": "bell",
+        "telegram": "Telegram"
+      },
+      "auto": "automatically",
+      "closeComment": "Comment (required to close)",
+      "acknowledge": "Acknowledge",
+      "markResolved": "Fixed",
+      "markDismissed": "False alarm",
+      "reactionTime": "Time from detection to closing: {{count}} min",
+      "staffTitle": "Staff",
+      "staffHint": "Teachers, academic managers, financiers and admins with the number of their violations.",
+      "openCount": "Open",
+      "totalCount": "Total",
+      "backToStaff": "Back to staff",
+      "devices": "Sign-ins and devices",
+      "latestActions": "Latest actions",
+      "rulesTitle": "Rules",
+      "rulesHint": "Time thresholds and the chain of warnings.",
+      "enabled": "Rule is on",
+      "severity": "Severity",
+      "severities": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+        "critical": "Critical"
+      },
+      "levels": "Whom to tell and when",
+      "afterMinutes": "Minutes after the lesson starts:",
+      "removeLevel": "Remove step",
+      "addLevel": "Add step",
+      "save": "Save",
+      "rule": {
+        "ATT_LATE": "Attendance not marked"
+      },
+      "ruleHint": {
+        "ATT_LATE": "The lesson started but the teacher has not marked every student. The first step is a reminder to the teacher. The next steps: if nobody reacted, the warning goes further."
+      },
+      "status": {
+        "open": "Open",
+        "acknowledged": "Acknowledged",
+        "escalated": "Passed on",
+        "resolved": "Fixed",
+        "dismissed": "False alarm"
+      },
+      "fullName": "Name",
+      "username": "Username",
+      "email": "Email (the sign-in code comes here)",
+      "password": "Password (at least 12 characters)",
+      "createAccount": "Create account",
+      "block": "Block",
+      "unblock": "Unblock",
+      "newPassword": "New password",
+      "setPassword": "Change password",
+      "statusLabel": "Status",
+      "actions": "Actions",
+      "noAccounts": "No accounts yet",
+      "accountsTitle": "Accounts",
+      "accountsHint": "Here the CEO creates admins, financiers and auditors, blocks them and changes their passwords. The auditor only reads and changes nothing.",
+      "finesTitle": "Fines",
+      "finesHint": "Fines arrive here by themselves: when a worker ignores a warning, the system issues a fine by the rule. You take it from the salary or cancel it with a comment.",
+      "monthFines": "Fines this month",
+      "monthAmount": "Amount this month",
+      "monthWaiting": "Waiting for your decision",
+      "mostFined": "Most fines",
+      "fineTab": {
+        "issued": "Waiting",
+        "deducted": "Deducted",
+        "cancelled": "Cancelled",
+        "all": "All"
+      },
+      "fineStatus": {
+        "issued": "Waiting for a decision",
+        "deducted": "Deducted from the salary",
+        "cancelled": "Cancelled"
+      },
+      "fineComment": "Comment (required to cancel)",
+      "deduct": "Deduct from the salary",
+      "cancelFine": "Cancel the fine",
+      "noFines": "No fines",
+      "fineAmount": "Fine, sum",
+      "fineAmountHint": "Issued automatically when the warning reached the second step and was ignored. 0 = the rule does not fine. A false alarm cancels the fine.",
+      "passwordTitle": "My password",
+      "passwordHint": "Change your password. You are signed out on other devices.",
+      "currentPassword": "Current password",
+      "repeatPassword": "Repeat the new password",
+      "passwordMismatch": "Passwords do not match",
+      "passwordChanged": "Password changed"
+    },
+    "apply": {
+      "loginQuestion": "Want to work with us?",
+      "loginLink": "Apply for a job",
+      "title": "Work at Mars Space",
+      "text": "Tell us about yourself and attach your resume. We will look at the application and answer by e-mail.",
+      "backToLogin": "Back to sign in",
+      "fullName": "Full name",
+      "email": "Your Gmail",
+      "position": "The job you want",
+      "strength": "Your strong side",
+      "strengthHint": "What are you best at? Write a couple of sentences.",
+      "resume": "Resume",
+      "resumeHint": "A PDF or Word file, up to 4 MB.",
+      "fileTooBig": "The file is too big. Up to 4 MB is allowed.",
+      "submit": "Send application",
+      "sending": "Sending",
+      "sentTitle": "Application received",
+      "sentText": "Thank you. We will look at it and send the answer to {{email}}."
+    },
+    "penalty": {
+      "title": "Penalties",
+      "hintCeo": "Penalties by the rules of Mars from auditors. Confirm or cancel each one, a reason is required.",
+      "hintAuditor": "Choose a teacher and the broken rule. The penalty goes to the CEO. It can be taken back only with a reason.",
+      "newTitle": "New penalty",
+      "teacher": "Teacher ({{total}} in total)",
+      "searchTeacher": "Search by name",
+      "noTeachers": "No teachers found",
+      "ruleLabel": "Rule",
+      "chooseRule": "Choose a rule",
+      "amount": "Fine, sum (optional)",
+      "amountHint": "Empty or 0 for no money fine",
+      "whatHappened": "What happened",
+      "issue": "Give the penalty",
+      "issued": "The penalty was given and sent to the CEO",
+      "ruleTitle": "Rule {{number}} · {{text}}",
+      "by": "given by {{name}}",
+      "reason": "Reason",
+      "reasonLabel": "Reason (required)",
+      "confirm": "Confirm",
+      "remove": "Take back",
+      "confirmed": "The penalty was confirmed",
+      "removed": "The penalty was taken back",
+      "empty": "No penalties",
+      "tab": {
+        "active": "Waiting",
+        "resolved": "Confirmed",
+        "dismissed": "Taken back",
+        "all": "All"
+      },
+      "status": {
+        "open": "Waiting for the CEO",
+        "resolved": "Confirmed",
+        "dismissed": "Taken back"
+      },
+      "level": {
+        "reminder": "Reminder",
+        "green": "Green",
+        "yellow": "Yellow",
+        "red": "Red",
+        "black": "Black"
+      },
+      "consequence": {
+        "reminder": "A friendly reminder, no penalty.",
+        "green": "A warning.",
+        "yellow": "A warning with a description of what happened.",
+        "red": "An explanatory letter to the head of the company; it affects the rating.",
+        "black": "An explanatory letter; by the decision of the company, dismissal or demotion, no bonus and KPI."
+      },
+      "rule": {
+        "MARS_1_1": "Badge on the premises",
+        "MARS_1_2": "Students distracted in the lesson",
+        "MARS_1_3": "Desks and chairs not tidied after the lesson",
+        "MARS_2_1": "Late or no Verifix check-in",
+        "MARS_2_2": "Appearance and dress code",
+        "MARS_2_3": "Noise and chatter in the coworking area",
+        "MARS_2_4": "Careless with company equipment",
+        "MARS_2_5": "Did not report a problem to the branch head",
+        "MARS_2_6": "Lesson ended 6+ minutes late",
+        "MARS_2_7": "No badge for the second time in a day",
+        "MARS_3_1": "Lesson not started on time or no-show",
+        "MARS_3_2": "Phone during the lesson",
+        "MARS_3_3": "Left the classroom during the lesson",
+        "MARS_3_4": "Eating during the lesson",
+        "MARS_3_5": "Private chat with a girl student or alone with a student",
+        "MARS_3_6": "Religious talk with students",
+        "MARS_3_7": "In the admin area without a reason",
+        "MARS_3_8": "Games, music, films or social media in the lesson",
+        "MARS_3_9": "Sleeping in the lesson",
+        "MARS_3_10": "Sleeping in the coworking area",
+        "MARS_3_11": "Insulting students",
+        "MARS_4_1": "Fight, quarrel or swearing on the premises",
+        "MARS_4_2": "Alcohol or tobacco on the premises",
+        "MARS_4_3": "Hit, insulted or punished a student",
+        "MARS_4_4": "Harassing a girl student"
+      }
     }
   }
 }

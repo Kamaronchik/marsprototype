@@ -21,12 +21,14 @@ const isMarkingOpen = (now = tashkentNow()) => now.minutes >= DAY_OPEN && now.mi
 
 const lessonEnd = (group) => toTime(toMinutes(group.start_time) + LESSON_MINUTES);
 
-// Percent of lessons attended, rounded. null when there is nothing to count.
+// Percent of lessons attended, rounded. A student who came late was at the lesson, so 'late' counts as attended.
+// null when there is nothing to count. "present" is the number of lessons attended on time.
 const buildStats = (records) => {
   const present = records.filter((r) => r.status === 'present').length;
+  const late = records.filter((r) => r.status === 'late').length;
   const absent = records.filter((r) => r.status === 'absent').length;
-  const total = present + absent;
-  return { present, absent, total, percent: total ? Math.round((present / total) * 100) : null };
+  const total = present + late + absent;
+  return { present, late, absent, total, percent: total ? Math.round(((present + late) / total) * 100) : null };
 };
 
 // The groups of a teacher with their students, as needed for one lesson day.

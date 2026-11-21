@@ -6,6 +6,7 @@ const { buildSystemPrompt } = require('./aiContext');
 const { LANGUAGES, LANGUAGE_NAMES, say, actionOfLabel, menuFor } = require('./botTexts');
 const telegram = require('../services/telegram');
 const { askGemini } = require('../services/gemini');
+const { saveRating } = require('./ratings');
 
 const AI_DAILY_LIMIT = Number(process.env.AI_DAILY_LIMIT) || 30;
 const HISTORY_MESSAGES = 6;
@@ -181,8 +182,21 @@ const handleMessage = async (deps, message) => {
   return question ? saveReason(deps, link, question, text) : answerWithAi(deps, link, text);
 };
 
+// A pressed 1-5 button under the weekly question: "rate:<lessonId>:<score>".
+const handleRating = async (deps, callback) => {
+  const [, lessonId, score] = callback.data.split(':');
+  const { data: link } = await supabase
+    .from('telegram_links').select('user_id, chat_id, language').eq('chat_id', callback.message.chat.id).maybeSingle();
+  if (!link) return;
+
+  const result = await saveRating(link.user_id, lessonId, Number(score));
+  const key = { INVALID: 'rateFailed', NOT_FOUND: 'rateFailed', ALREADY: 'rateAlready', TOO_SOON: 'rateTooSoon' }[result.error] ?? 'rateThanks';
+  await sayTo(deps, link, key);
+};
+
 const handleCallback = async (deps, callback) => {
   await deps.answerCallback(callback.id).catch(() => {});
+  if (callback.data?.startsWith('rate:')) return handleRating(deps, callback);
   const language = callback.data?.startsWith('lang:') ? callback.data.slice(5) : null;
   if (!LANGUAGES.includes(language)) return;
   const { data: link } = await supabase

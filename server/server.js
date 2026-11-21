@@ -28,6 +28,15 @@ const adminTelegramRoutes = require('./routes/adminTelegramRoutes');
 const homeworkRoutes = require('./routes/homeworkRoutes');
 const gradeRoutes = require('./routes/gradeRoutes');
 const tutorRoutes = require('./routes/tutorRoutes');
+const lessonRoutes = require('./routes/lessonRoutes');
+const scheduleRoutes = require('./routes/scheduleRoutes');
+const ratingRoutes = require('./routes/ratingRoutes');
+const academicRoutes = require('./routes/academicRoutes');
+const subjectRoutes = require('./routes/subjectRoutes');
+const careersRoutes = require('./routes/careersRoutes');
+const ownerRoutes = require('./routes/ownerRoutes');
+const cronRoutes = require('./routes/cronRoutes');
+const { requestContext } = require('./utils/requestContext');
 
 const app = express();
 
@@ -36,12 +45,17 @@ app.set('trust proxy', 1);
 
 // Middleware
 app.use(helmet());
+// The site, and the Careers site (it only needs POST /api/careers/apply: the session cookie is SameSite=lax,
+// so it is never sent from another site anyway).
+const allowedOrigins = [process.env.CLIENT_URL || 'http://localhost:5173', process.env.CAREERS_URL].filter(Boolean);
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: (origin, done) => done(null, !origin || allowedOrigins.includes(origin)),
   credentials: true
 }));
 app.use(cookieParser());
 app.use(express.json());
+// The IP and the browser of every request go into the audit log.
+app.use(requestContext);
 
 // API Routes
 app.use('/api/users', userRoutes);
@@ -62,6 +76,14 @@ app.use('/api/admin/telegram', adminTelegramRoutes);
 app.use('/api/homework', homeworkRoutes);
 app.use('/api/grades', gradeRoutes);
 app.use('/api/tutor', tutorRoutes);
+app.use('/api/lessons', lessonRoutes);
+app.use('/api/schedule', scheduleRoutes);
+app.use('/api/ratings', ratingRoutes);
+app.use('/api/academic', academicRoutes);
+app.use('/api/subjects', subjectRoutes);
+app.use('/api/careers', careersRoutes);
+app.use('/api/owner', ownerRoutes);
+app.use('/api/cron', cronRoutes);
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'Mars Space Backend is running' });

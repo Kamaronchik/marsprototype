@@ -5,7 +5,7 @@ const { logAction } = require('../utils/audit');
 const { notify } = require('../utils/notify');
 const { changePaymentStatus } = require('../utils/students');
 const { tashkentNow, TIMEZONE } = require('../utils/schedule');
-const { isDate } = require('../utils/attendance');
+const { readRange, applyRange } = require('../utils/financeRange');
 
 const METHODS = ['cash', 'card', 'transfer'];
 const PERIOD_PATTERN = /^\d{4}-(0[1-9]|1[0-2])$/;
@@ -50,20 +50,6 @@ const shiftMonth = (month, delta) => {
 };
 
 const cleanNote = (note) => (typeof note === 'string' ? note.trim().slice(0, 200) : '') || null;
-
-// Date range for ?from and ?to (inclusive days).
-const readRange = (query) => {
-  const { from, to } = query;
-  if ((from && !isDate(from)) || (to && !isDate(to)) || (from && to && from > to)) return null;
-  return { from, to };
-};
-
-const applyRange = (query, { from, to }) => {
-  let ranged = query;
-  if (from) ranged = ranged.gte('paid_at', `${from}T00:00:00+05:00`);
-  if (to) ranged = ranged.lt('paid_at', `${new Date(Date.parse(`${to}T00:00:00Z`) + 86400000).toISOString().slice(0, 10)}T00:00:00+05:00`);
-  return ranged;
-};
 
 // Numbers for the front page: people, debtors, this month's money and the last 6 months.
 const getOverview = async (req, res) => {

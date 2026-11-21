@@ -8,8 +8,9 @@ import { SkeletonText } from '../../components/Skeleton';
 import { api, errorText } from '../../lib/api';
 import { useFetch } from '../../lib/useFetch';
 import { weekdayName, weekdaysText } from '../../lib/format';
+import { subjectName } from '../../lib/subject';
 
-const EMPTY_FORM = { name: '', teacherId: '', room: '', weekdays: [], startTime: '', monthlyPrice: '' };
+const EMPTY_FORM = { name: '', teacherId: '', subjectId: '', room: '', weekdays: [], startTime: '', monthlyPrice: '' };
 
 // Buttons that can be greyed out: used for lesson times and rooms.
 const choiceClass = (selected, disabled) => {
@@ -86,6 +87,7 @@ const Groups = () => {
   const groupsQuery = useFetch('/api/groups');
   const optionsQuery = useFetch('/api/groups/options');
   const usersQuery = useFetch('/api/users');
+  const subjectsQuery = useFetch('/api/subjects');
   const studentsQuery = useFetch('/api/students');
 
   const [editing, setEditing] = useState(null); // null = closed, {} = new group, {id,...} = existing
@@ -109,7 +111,7 @@ const Groups = () => {
   const openForm = (group) => {
     setEditing(group ?? {});
     setForm(group
-      ? { name: group.name, teacherId: group.teacherId, room: group.room, weekdays: group.weekdays, startTime: group.startTime, monthlyPrice: group.monthlyPrice || '' }
+      ? { name: group.name, teacherId: group.teacherId, subjectId: group.subjectId ?? '', room: group.room, weekdays: group.weekdays, startTime: group.startTime, monthlyPrice: group.monthlyPrice || '' }
       : EMPTY_FORM);
   };
 
@@ -123,6 +125,7 @@ const Groups = () => {
     const body = {
       name: form.name,
       teacherId: form.teacherId,
+      subjectId: form.subjectId || null,
       room: form.room,
       weekdays: form.weekdays,
       startTime: form.startTime,
@@ -188,7 +191,10 @@ const Groups = () => {
             {!groupsQuery.loading && groups.map((g) => (
               <Fragment key={g.id}>
                 <tr className="hover:bg-sunken/40">
-                  <td className="px-5 py-3.5 text-sm font-semibold text-ink">{g.name}</td>
+                  <td className="px-5 py-3.5 text-sm font-semibold text-ink">
+                    {g.name}
+                    {g.subject && <span className="block text-xs font-normal text-ink-soft">{subjectName(g.subject, i18n.language)}</span>}
+                  </td>
                   <td className="px-5 py-3.5 text-sm text-ink-soft">{g.teacherName}</td>
                   <td className="px-5 py-3.5 text-sm font-medium text-ink">{g.room}</td>
                   <td className="px-5 py-3.5 text-sm text-ink-soft">{weekdaysText(g.weekdays, i18n.language)}</td>
@@ -251,6 +257,13 @@ const Groups = () => {
                   {teachers.map((teacher) => <option key={teacher.id} value={teacher.id}>{teacher.fullName}</option>)}
                 </select>
               </div>
+            </div>
+            <div>
+              <label htmlFor="group-subject" className="field-label">{t('subjects.subject')}</label>
+              <select id="group-subject" value={form.subjectId} onChange={(e) => setForm({ ...form, subjectId: e.target.value })} className="field">
+                <option value="">{t('subjects.none')}</option>
+                {(subjectsQuery.data?.subjects ?? []).map((s) => <option key={s.id} value={s.id}>{subjectName(s, i18n.language)}</option>)}
+              </select>
             </div>
 
             <fieldset>
