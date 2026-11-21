@@ -199,7 +199,11 @@ describe.skipIf(!hasDatabase)('new features', () => {
 
   describe.skipIf(!careersReady)('job applications', () => {
     let applicationId;
-    afterAll(async () => { await supabase.from('job_applications').delete().like('full_name', 'zz_test_%'); });
+    afterAll(async () => {
+      await supabase.from('job_applications').delete().like('full_name', 'zz_test_%');
+      // The form is public, so the real staff were told about the test candidates too.
+      await supabase.from('notifications').delete().eq('type', 'application.new').like('data->>name', 'zz_test_%');
+    });
 
     it('the public form accepts an application and answers no data', async () => {
       const res = await as(null).post('/api/careers/apply').send({ fullName: 'zz_test_candidate', contact: '+998900000000', position: 'Teacher' });

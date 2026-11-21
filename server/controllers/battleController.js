@@ -1,4 +1,5 @@
 const supabase = require('../config/supabase');
+const { hiddenFor, withoutIds } = require('../utils/bots');
 const { handleDbError, sendRpcError } = require('../utils/apiErrors');
 const { isUuid } = require('../utils/validate');
 const { notify } = require('../utils/notify');
@@ -246,10 +247,11 @@ const listChallenges = async (req, res) => {
   await supabase.from('battles').update({ status: 'expired' })
     .eq('mode', 'pvp').eq('status', 'open').lt('created_at', new Date(Date.now() - CHALLENGE_TTL_MS).toISOString());
 
-  const { data, error } = await supabase
+  const hidden = await hiddenFor(req.user); // challenges of test and demo accounts
+  const { data, error } = await withoutIds(supabase
     .from('battles')
     .select('id, course, level, creator_id, created_at, creator:users!battles_creator_id_fkey(full_name)')
-    .eq('mode', 'pvp').eq('status', 'open').order('created_at', { ascending: false }).limit(50);
+    .eq('mode', 'pvp').eq('status', 'open'), 'creator_id', hidden).order('created_at', { ascending: false }).limit(50);
   if (error) return handleDbError(error, res);
 
   res.json({
@@ -395,10 +397,12 @@ const getHistory = async (req, res) => {
 
 // Admin: numbers about the competitions and the size of the question bank.
 const getAdminStats = async (req, res) => {
+  const hidden = await hiddenFor(req.user); // battles of test and demo accounts are not counted
   const [battlesQuery, bankQuery, recentQuery] = await Promise.all([
-    supabase.from('battles').select('course, mode, status').limit(5000),
+    withoutIds(supabase.from('battles').select('course, mode, status'), 'creator_id', hidden).limit(5000),
     supabase.from('battle_questions').select('course, level').eq('is_active', true).limit(5000),
-    supabase.from('battles').select(BATTLE_COLUMNS).eq('status', 'finished').order('finished_at', { ascending: false }).limit(20),
+    withoutIds(supabase.from('battles').select(BATTLE_COLUMNS).eq('status', 'finished'), 'creator_id', hidden)
+      .order('finished_at', { ascending: false }).limit(20),
   ]);
   const failed = [battlesQuery, bankQuery, recentQuery].find((r) => r.error);
   if (failed) return handleDbError(failed.error, res);

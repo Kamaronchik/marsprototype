@@ -1,4 +1,5 @@
 const supabase = require('../config/supabase');
+const { hiddenFor, withoutIds } = require('../utils/bots');
 const { handleDbError } = require('../utils/apiErrors');
 const { ORDER_ITEMS_SELECT, toOrderItem, orderAction, tellStudentDelivered, tellAboutCancel } = require('../utils/orders');
 
@@ -20,6 +21,7 @@ const toClient = (o) => ({
 
 // All shop orders of all students, newest first. Optional filter: ?status=Pending
 const listOrders = async (req, res) => {
+  const hidden = await hiddenFor(req.user);
   const { status } = req.query;
   if (status !== undefined && !STATUSES.includes(status)) {
     return res.status(400).json({ message: 'Invalid status' });
@@ -30,6 +32,7 @@ const listOrders = async (req, res) => {
     .select(`id, student_id, total, status, purchased_at, completed_at, completed_by, cancelled_at, student:users!orders_student_id_fkey(full_name, email), ${ORDER_ITEMS_SELECT}`)
     .order('purchased_at', { ascending: false });
   if (status) query = query.eq('status', status);
+  query = withoutIds(query, 'student_id', hidden); // test and demo accounts
 
   const { data, error } = await query;
   if (error) return handleDbError(error, res);

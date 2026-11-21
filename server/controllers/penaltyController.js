@@ -35,9 +35,10 @@ const activeOwners = async () => {
 };
 
 // Tells every active CEO. The text is made by the frontend from the type and the data.
-const tellOwners = async (type, data) => {
+// about = the teacher: a penalty of a test or demo account is not told to the real CEO.
+const tellOwners = async (type, data, about) => {
   const owners = await activeOwners();
-  await Promise.all(owners.map((owner) => notify(owner.id, type, data, { link: '/owner/penalties' })));
+  await Promise.all(owners.map((owner) => notify(owner.id, type, data, { link: '/owner/penalties', about })));
 };
 
 // The list of rules for the form: number, level and code (the text is in the language files).
@@ -95,7 +96,7 @@ const issuePenalty = async (req, res) => {
   }
 
   // The CEO decides; the teacher learns which rule was broken.
-  await tellOwners('penalty.issued', { teacherName: teacher.full_name, rule: rule.number, auditorName: issuedByName });
+  await tellOwners('penalty.issued', { teacherName: teacher.full_name, rule: rule.number, auditorName: issuedByName }, teacher.id);
   await notify(teacher.id, 'penalty.received', { rule: rule.number }, { dedupeKey: `penalty-received:${violation.id}` });
 
   await logAction(req.user.id, 'penalty.issue', 'violation', violation.id,
@@ -109,7 +110,7 @@ const afterCancel = async (violation, actor, comment) => {
   if (details.source !== 'audit') return;
   const { data: teacher } = await supabase.from('users').select('full_name').eq('id', violation.user_id).maybeSingle();
   if (actor.role === 'Auditor') {
-    await tellOwners('penalty.cancelled', { teacherName: teacher?.full_name ?? '', rule: details.ruleNumber, reason: comment });
+    await tellOwners('penalty.cancelled', { teacherName: teacher?.full_name ?? '', rule: details.ruleNumber, reason: comment }, violation.user_id);
   }
   await notify(violation.user_id, 'penalty.removed', { rule: details.ruleNumber, reason: comment }, { dedupeKey: `penalty-removed:${violation.id}` });
 };

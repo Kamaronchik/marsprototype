@@ -6,6 +6,7 @@ const { runAttendanceRule } = require('../utils/violations');
 const { loadNames } = require('../utils/auditNames');
 const { tashkentNow } = require('../utils/schedule');
 const { afterCancel } = require('./penaltyController');
+const { hiddenFor, withoutIds } = require('../utils/bots');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const db = require('../databaseService');
@@ -53,11 +54,14 @@ const overview = async (req, res) => {
   const dayStart = `${tashkentNow().date}T00:00:00+05:00`;
   const monthAgo = new Date(Date.now() - 30 * 86400000).toISOString();
 
+  // Violations of test and demo accounts are not counted.
+  const hidden = await hiddenFor(req.user);
+  const real = (query) => withoutIds(query, 'user_id', hidden);
   const [open, today, recent, resolved] = await Promise.all([
-    supabase.from('violations').select('id', { count: 'exact', head: true }).in('status', OPEN_STATUSES),
-    supabase.from('violations').select('id', { count: 'exact', head: true }).gte('detected_at', dayStart),
-    supabase.from('violations').select('user_id').gte('detected_at', monthAgo).not('user_id', 'is', null),
-    supabase.from('violations').select('reaction_seconds').eq('status', 'resolved').gte('detected_at', monthAgo).not('reaction_seconds', 'is', null),
+    real(supabase.from('violations').select('id', { count: 'exact', head: true }).in('status', OPEN_STATUSES)),
+    real(supabase.from('violations').select('id', { count: 'exact', head: true }).gte('detected_at', dayStart)),
+    real(supabase.from('violations').select('user_id').gte('detected_at', monthAgo).not('user_id', 'is', null)),
+    real(supabase.from('violations').select('reaction_seconds').eq('status', 'resolved').gte('detected_at', monthAgo).not('reaction_seconds', 'is', null)),
   ]);
   const failed = [open, today, recent, resolved].find((r) => r.error);
   if (failed) return handleDbError(failed.error, res);
@@ -118,6 +122,7 @@ const listViolations = async (req, res) => {
   else if (status) q = q.eq('status', status);
   if (userId) q = q.eq('user_id', userId);
   if (source) q = q.eq('details->>source', source);
+  q = withoutIds(q, 'user_id', await hiddenFor(req.user)); // test and demo accounts
 
   const { data, error, count } = await q;
   if (error) return handleDbError(error, res);
@@ -198,8 +203,9 @@ const closeViolation = async (req, res) => {
 
 // Everybody who works at the school, with the number of violations of each.
 const listStaff = async (req, res) => {
+  const hidden = await hiddenFor(req.user); // test and demo accounts are not staff
   const [{ data: people, error }, { data: violations }] = await Promise.all([
-    supabase.from('users').select('id, full_name, role, status').in('role', STAFF_ROLES).order('full_name'),
+    withoutIds(supabase.from('users').select('id, full_name, role, status').in('role', STAFF_ROLES), 'id', hidden).order('full_name'),
     supabase.from('violations').select('user_id, status').not('user_id', 'is', null),
   ]);
   if (error) return handleDbError(error, res);
@@ -407,14 +413,16 @@ const listFines = async (req, res) => {
   const { page, pageSize } = pageOf(req.query);
   const monthStart = `${tashkentNow().date.slice(0, 7)}-01T00:00:00+05:00`;
 
+  const hidden = await hiddenFor(req.user); // fines of test and demo accounts
   let list = supabase.from('fines').select(FINE_COLUMNS, { count: 'exact' })
     .order('issued_at', { ascending: false }).range((page - 1) * pageSize, page * pageSize - 1);
   if (status) list = list.eq('status', status);
   if (userId) list = list.eq('user_id', userId);
 
   const [{ data, error, count }, month] = await Promise.all([
-    list,
-    supabase.from('fines').select('user_id, amount, status, user:users!fines_user_id_fkey(full_name)').gte('issued_at', monthStart).neq('status', 'cancelled'),
+    withoutIds(list, 'user_id', hidden),
+    withoutIds(supabase.from('fines').select('user_id, amount, status, user:users!fines_user_id_fkey(full_name)')
+      .gte('issued_at', monthStart).neq('status', 'cancelled'), 'user_id', hidden),
   ]);
   if (error) return handleDbError(error, res);
 

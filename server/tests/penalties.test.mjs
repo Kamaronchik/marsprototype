@@ -67,6 +67,17 @@ describe.skipIf(!hasDatabase)('penalties', () => {
     expect(list.body.violations.every((x) => x.details.source === 'audit')).toBe(true);
   });
 
+  it('does not tell a real CEO about a penalty of a test account', async () => {
+    const { data: realOwners } = await supabase.from('users').select('id').eq('role', 'Owner').eq('status', 'active')
+      .not('email', 'like', '%@example.invalid');
+    const res = await give('auditor', base());
+    made.push(res.body.id);
+    if (!realOwners.length) return;
+    const { data: told } = await supabase.from('notifications').select('id').in('user_id', realOwners.map((o) => o.id))
+      .eq('type', 'penalty.issued').eq('data->>teacherName', 'ZZ Test teacher');
+    expect(told).toHaveLength(0);
+  });
+
   it('lets the auditor take a penalty back only with a reason, and never confirm it', async () => {
     const res = await give('auditor', base());
     made.push(res.body.id);

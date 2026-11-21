@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const { botsAmong } = require('../utils/bots');
 const bcrypt = require('bcryptjs');
 const supabase = require('../config/supabase');
 const { handleDbError } = require('../utils/apiErrors');
@@ -46,9 +47,13 @@ const toClient = (a) => ({
 const COLUMNS = 'id, full_name, contact, position, message, resume_path, status, account_user_id, created_at, email, language, decision_emailed';
 
 // Tells every active Admin and Academic Manager in the bell that somebody applied.
-const announceApplication = async (applicationId, name) => {
+// An application from a test address (@example.invalid) is told only to the test accounts, not to real staff.
+const announceApplication = async (applicationId, name, contact) => {
   const { data: staff } = await supabase.from('users').select('id, role').in('role', ['Admin', 'AcademicManager']).eq('status', 'active');
-  await Promise.all((staff ?? []).map((person) => notify(
+  const bots = await botsAmong((staff ?? []).map((person) => person.id));
+  const fromBot = /@example\.invalid$/i.test(contact ?? '');
+  const told = (staff ?? []).filter((person) => bots.includes(person.id) === fromBot);
+  await Promise.all(told.map((person) => notify(
     person.id,
     'application.new',
     { name },
@@ -122,7 +127,7 @@ const apply = async (req, res) => {
   }
 
   await logAction(null, 'application.receive', 'application', data.id, { position });
-  await announceApplication(data.id, fullName);
+  await announceApplication(data.id, fullName, contact);
   res.status(201).json({ message: 'Application received' });
 };
 

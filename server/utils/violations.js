@@ -1,4 +1,5 @@
 const supabase = require('../config/supabase');
+const { sameKind } = require('./bots');
 const { notify } = require('./notify');
 const { logAction } = require('./audit');
 const { sayTo, defaults } = require('./telegramBot');
@@ -77,6 +78,8 @@ const tellLevel = async (violation, levelIndex, rule, missing) => {
   const recipients = await recipientsOf(level.to, violation);
 
   for (const userId of recipients) {
+    // A violation of a test or demo account is not told to real people (neither in the bell nor in Telegram).
+    if (violation.user_id && !(await sameKind(userId, violation.user_id))) continue;
     const { data: user } = await supabase.from('users').select('role').eq('id', userId).maybeSingle();
     await notify(
       userId,
@@ -108,7 +111,7 @@ const issueFine = async (violation, rule) => {
   await notify(violation.user_id, 'fine.issued', info, { dedupeKey: `fine:${fine.id}:${violation.user_id}` });
   const { data: ceos } = await supabase.from('users').select('id').eq('role', 'Owner').eq('status', 'active');
   for (const ceo of ceos ?? []) {
-    await notify(ceo.id, 'fine.issued_ceo', info, { link: '/owner/fines', dedupeKey: `fine:${fine.id}:${ceo.id}` });
+    await notify(ceo.id, 'fine.issued_ceo', info, { link: '/owner/fines', dedupeKey: `fine:${fine.id}:${ceo.id}`, about: violation.user_id });
   }
   await logAction(null, 'fine.issue', 'fine', fine.id, { amount, groupName: info.groupName, userId: violation.user_id });
 };
