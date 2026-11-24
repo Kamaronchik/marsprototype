@@ -41,6 +41,10 @@ const sendPush = async (userId, type, data, link) => {
       return { token: row.token, data: { title, body, link: link ?? '/' } };
     });
     const result = await fcm.sendEach(messages);
+    if (result.failureCount) {
+      const codes = result.responses.filter((r) => !r.success).map((r) => r.error?.code);
+      console.log(`[Push] ${result.successCount} of ${messages.length} delivered, errors: ${codes.join(', ')}`);
+    }
 
     const dead = result.responses
       .map((response, i) => (!response.success && DEAD_TOKEN.includes(response.error?.code) ? rows[i].token : null))
