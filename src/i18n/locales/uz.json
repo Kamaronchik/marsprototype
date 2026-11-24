@@ -908,6 +908,7 @@
       "cron_is_not_configured": "Taymer sozlanmagan",
       "invalid_cron_secret": "Taymer siri noto'g'ri",
       "password_must_be_at_least_12_characters": "Parol kamida 12 belgidan iborat bo'lishi kerak",
+      "invalid_push_token": "Bildirishnoma tokeni noto'g'ri",
       "invalid_fine_amount": "Jarima summasi noto'g'ri",
       "invalid_fine": "Noto'g'ri jarima",
       "fine_not_found": "Jarima topilmadi",
@@ -1435,6 +1436,13 @@
     "theme": {
       "dark": "Qorong'i rejim",
       "light": "Yorug' rejim"
+    },
+    "push": {
+      "turnOn": "Jarimalar haqidagi bildirishnomalarni brauzerda yoqish",
+      "on": "Brauzerda bildirishnomalar yoqilgan",
+      "blocked": "Bildirishnomalar brauzer sozlamalarida bloklangan",
+      "enabled": "Tayyor: jarimalar haqidagi bildirishnomalar brauzerga keladi",
+      "failed": "Bildirishnomalarni yoqib bo'lmadi"
     },
     "owner": {
       "overviewTitle": "Ega paneli",

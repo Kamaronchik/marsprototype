@@ -35,6 +35,7 @@ applied to a real database.
 | 020 | `020_fines.sql` | automatic fines for ignored warnings |
 | 021 | `021_applications_form.sql` | job application form: candidate e-mail, language, decision letter |
 | 022 | `022_mars_penalties.sql` | rules of Mars for penalties by auditors (index for the penalty list) |
+| 023 | `023_push_tokens.sql` | browser push tokens (Firebase) for penalty notifications |
 | 023+ | later files | see the list in this folder |
 
 4. Put the keys into `.env` (see `.env.example`): `SUPABASE_URL` and `SUPABASE_SECRET_KEY`

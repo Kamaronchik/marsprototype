@@ -4,18 +4,24 @@ import { LogOut } from 'lucide-react';
 import NotificationBell from '../components/NotificationBell';
 import LanguageSwitch from '../components/LanguageSwitch';
 import ThemeToggle from '../components/ThemeToggle';
+import PushButton from '../components/PushButton';
 import { useLogout } from '../lib/useLogout';
 
 // Pieces that every shell (page frame) uses in its own place.
 
-// Bell, language and the dark mode button.
-export const ShellTools = ({ bellAlign = 'right' }) => (
-  <div className="flex items-center gap-3">
-    <NotificationBell align={bellAlign} />
-    <LanguageSwitch />
-    <ThemeToggle />
-  </div>
-);
+// Bell, language and the dark mode button. A teacher also gets the "push notifications" button.
+export const ShellTools = ({ bellAlign = 'right' }) => {
+  const role = useSelector((state) => state.auth.user?.role);
+
+  return (
+    <div className="flex items-center gap-3">
+      <NotificationBell align={bellAlign} />
+      {role === 'Teacher' && <PushButton />}
+      <LanguageSwitch />
+      <ThemeToggle />
+    </div>
+  );
+};
 
 // Round initial, name and role of the signed-in person.
 export const UserChip = ({ compact = false }) => {

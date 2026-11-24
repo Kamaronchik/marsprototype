@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { forgetPush } from '../../lib/push';
 
 const initialState = {
   user: null, // { id, username, role, fullName, email }
@@ -57,6 +58,7 @@ export const restoreSession = () => async (dispatch) => {
 // Log out on the server (deletes the session) and then clear the UI state.
 export const logoutUser = () => async (dispatch) => {
   try {
+    await forgetPush(); // while still logged in: this browser stops getting pushes of this account
     await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
   } finally {
     dispatch(logout());

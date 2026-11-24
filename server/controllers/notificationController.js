@@ -74,4 +74,29 @@ const markAllRead = async (req, res) => {
   res.json({ message: 'Done' });
 };
 
-module.exports = { listNotifications, markRead, markAllRead };
+// POST /api/notifications/push-token  { token, language }
+// The browser agreed to get pushes: remember its Firebase token for the logged-in user.
+// The same browser used by another person later moves to that person.
+const savePushToken = async (req, res) => {
+  const token = typeof req.body.token === 'string' ? req.body.token.trim() : '';
+  const language = ['ru', 'uz', 'en'].includes(req.body.language) ? req.body.language : 'ru';
+  if (token.length < 20 || token.length > 4096) return res.status(400).json({ message: 'Invalid push token' });
+
+  const { error } = await supabase
+    .from('push_tokens')
+    .upsert({ token, user_id: req.user.id, language, updated_at: new Date().toISOString() }, { onConflict: 'token' });
+  if (error) return handleDbError(error, res);
+  res.json({ message: 'Done' });
+};
+
+// DELETE /api/notifications/push-token  { token }  (on logout: this browser stops getting pushes)
+const deletePushToken = async (req, res) => {
+  const token = typeof req.body?.token === 'string' ? req.body.token : '';
+  if (!token) return res.status(400).json({ message: 'Invalid push token' });
+
+  const { error } = await supabase.from('push_tokens').delete().eq('token', token).eq('user_id', req.user.id);
+  if (error) return handleDbError(error, res);
+  res.json({ message: 'Done' });
+};
+
+module.exports = { listNotifications, markRead, markAllRead, savePushToken, deletePushToken };

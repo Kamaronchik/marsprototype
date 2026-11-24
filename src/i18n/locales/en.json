@@ -908,6 +908,7 @@
       "cron_is_not_configured": "The timer is not configured",
       "invalid_cron_secret": "Invalid timer secret",
       "password_must_be_at_least_12_characters": "Password must be at least 12 characters",
+      "invalid_push_token": "Invalid push token",
       "invalid_fine_amount": "Invalid fine amount",
       "invalid_fine": "Invalid fine",
       "fine_not_found": "Fine not found",
@@ -1435,6 +1436,13 @@
     "theme": {
       "dark": "Dark mode",
       "light": "Light mode"
+    },
+    "push": {
+      "turnOn": "Turn on penalty notifications in the browser",
+      "on": "Browser notifications are on",
+      "blocked": "Notifications are blocked in the browser settings",
+      "enabled": "Done: penalty notifications will come to the browser",
+      "failed": "Could not turn on notifications"
     },
     "owner": {
       "overviewTitle": "Owner panel",

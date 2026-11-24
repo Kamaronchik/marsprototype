@@ -1,19 +1,25 @@
 const supabase = require('../config/supabase');
 const { sameKind } = require('./bots');
+const { hasPushText } = require('./pushTexts');
+const { sendPush } = require('../services/push');
 
 // Puts a notification in the user's bell. The frontend turns type + data into text in the user's language.
 // dedupeKey makes the call safe to repeat: the same key is stored only once.
 // about = the person the news is about: news about a test or demo account never reaches a real person.
 const notify = async (userId, type, data = {}, { link = null, dedupeKey = null, about = null } = {}) => {
   if (about && !(await sameKind(userId, about))) return;
-  const { error } = await supabase
+  const { data: saved, error } = await supabase
     .from('notifications')
     .upsert(
       { user_id: userId, type, data, link, dedupe_key: dedupeKey },
       { onConflict: 'dedupe_key', ignoreDuplicates: true },
-    );
+    )
+    .select('id');
   // A failed notification must never break the action that caused it.
-  if (error) console.error('Notification error:', error.message);
+  if (error) return console.error('Notification error:', error.message);
+
+  // Some types also go to the browser as a push (see pushTexts.js). A repeated dedupeKey saves nothing, so no second push.
+  if (saved?.length && hasPushText(type)) await sendPush(userId, type, data, link);
 };
 
 // The same notification for every active admin ("a new order came in", "a student cancelled").
